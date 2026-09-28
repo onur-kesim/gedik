@@ -1,0 +1,29 @@
+# proje.toml — kapilar.py ve CI bunu okur. Komutlar README'deki komutlarla AYNIDIR (tek doğru).
+# Desenler fnmatch'tir: '*' '/' karakterini de geçer; 'src/**' ile 'src/*' aynı anlama gelir.
+
+[proje]
+ad = "proje-sablonu"
+asama = "yapim"             # kesif | yapim — KEŞİF: fikir/araştırma/danışma/tasarım, süre tavanı yok, ürün nabzı kapısı ATLANDI; YAPIM'a geçiş insanın "başla" sözüyle (tarih DURUM karar günlüğüne)
+profil = "yazilim"          # profiller/<ad>.md ; ikinci profil gerekirse: profil2 = "tasarim"
+mod = "NORMAL"              # NORMAL | KRİTİK (para/hukuk/güvenlik → yalnız TESLİM'de denetim turu 2; KUR/altyapıda tek tur)
+
+[yigin]
+ad = "python"               # node | python | flutter | android | web-statik | yok
+os = "ubuntu"               # ubuntu | windows  (windows: CI şu sürümde ölçülmedi, README'de yazılı)
+
+[komutlar]                  # boş dize = kapı ATLANDI olarak raporlanır (sessiz değil)
+kur = ""
+test = "python araclar/kapilar.py --pozitif-kontrol"
+lint = "python -m py_compile araclar/kapilar.py"
+build = ""
+
+[urun]                      # ürün nabzı ve kod sağlığı bu desenlere bakar
+desen = ["araclar/*", "profiller/*", ".github/*", "CLAUDE.md", "README.md", "DURUM.md", "DILIM.md", "KURULUM.md", "proje.toml"]
+belge_desen = ["*.md"]
+
+[kapilar]
+dosya_satir_tavan = 400
+karmasiklik_tavan = 15
+belge_kod_oran_tavan = 0    # 0 = kapalı: bu deponun ürünü belgedir; kod projesinde 1.0
+nabiz_gun_tavan = 7
+taban_dosya_ihlal = 0       # dondurulmuş taban: bugünkü ihlal sayısı; bir fazlası kırmızı

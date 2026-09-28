@@ -1,0 +1,21 @@
+# Bağımlılık güncelleyici (G3). Yalnız her projede var olan ekosistem açık: GitHub Actions.
+# Ölçüm (26 Eyl 2026): manifesti olmayan ekosistem (pip/pub/gradle) sessiz geçmiyor, koşum "failure" veriyor.
+# Bu yüzden yığının satırı KUR'da eklenir — örnekler aşağıda yorumda; proje.toml [yigin] ne diyorsa onu aç.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+#  - package-ecosystem: npm        # yigin = node
+#    directory: /
+#    schedule: { interval: weekly }
+#  - package-ecosystem: pip        # yigin = python (requirements.txt / pyproject.toml varsa)
+#    directory: /
+#    schedule: { interval: weekly }
+#  - package-ecosystem: pub        # yigin = flutter
+#    directory: /
+#    schedule: { interval: weekly }
+#  - package-ecosystem: gradle     # yigin = android
+#    directory: /
+#    schedule: { interval: weekly }

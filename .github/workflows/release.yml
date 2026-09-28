@@ -1,0 +1,33 @@
+# v* etiketi push'lanınca GitHub Release açar; notları CHANGELOG.md'deki aynı sürüm bölümünden alır (tek doğru).
+# Üçüncü taraf action yok: runner'daki gh CLI ve GITHUB_TOKEN yeter.
+name: surum
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  surum:
+    name: surum
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: CHANGELOG'dan bu sürümün bölümünü al
+        run: |
+          python3 - "$GITHUB_REF_NAME" > notlar.md <<'EOF'
+          import re, sys
+          v = sys.argv[1].lstrip('v')
+          t = open('CHANGELOG.md', encoding='utf-8').read()
+          m = re.search(r'^## \[' + re.escape(v) + r'\][^\n]*\n(.*?)(?=^## \[|\Z)', t, flags=re.S | re.M)
+          print(m.group(1).strip() if m else 'CHANGELOG.md icinde [' + v + '] bolumu yok - OLCULEMEDI')
+          EOF
+          echo "--- notlar.md:"; cat notlar.md
+
+      - name: GitHub Release oluştur
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notlar.md

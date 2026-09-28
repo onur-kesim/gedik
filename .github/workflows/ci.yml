@@ -1,0 +1,58 @@
+# Tek iş akışı, her yığın için aynı gövde: yığın bilgisi proje.toml'dan okunur,
+# yalnız o yığının çalışma zamanı kurulur (koşullu adımlar), sonra kapilar.py sabit sırayı koşar.
+# Yeni yığın = proje.toml'a dört satır + (gerekirse) buraya tek koşullu kurulum adımı.
+name: kapilar
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  kapilar:
+    name: kapilar
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0            # ürün nabzı için tam tarihçe gerekir
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"    # kapilar.py: tomllib >= 3.11
+
+      - name: yığını oku (proje.toml)
+        id: cfg
+        run: python araclar/kapilar.py --yigin >> "$GITHUB_OUTPUT"
+
+      - name: Node kur
+        if: steps.cfg.outputs.yigin == 'node'
+        uses: actions/setup-node@v7
+        with:
+          node-version: "20"
+
+      - name: Java kur (Android/Gradle)
+        if: steps.cfg.outputs.yigin == 'android'
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Flutter kur
+        if: steps.cfg.outputs.yigin == 'flutter'
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: kapılar (öz-test → kur → test → lint → build → kod sağlığı → gizli anahtar → belge/kod → nabız → kanıt)
+        run: python -B araclar/kapilar.py
+
+  kor-kapi:
+    name: kor-kapi
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: pozitif kontrol — bozuk girdi kırmızı, temiz girdi yeşil yakmalı
+        run: python -B araclar/kapilar.py --pozitif-kontrol

@@ -1,0 +1,57 @@
+# --- sırlar (G1) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+secrets/
+
+# --- kanıt ve log depoya girmez (G4) ---
+kanit/
+*.log
+*.err
+
+# --- build çıktıları ---
+build/
+dist/
+out/
+.next/
+.nuxt/
+target/
+*.apk
+*.aab
+*.ipa
+
+# --- bağımlılık klasörleri (kilit dosyaları izlenir, klasörler izlenmez) ---
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.dart_tool/
+.gradle/
+.pub-cache/
+
+# --- ağırlık, veri seti, büyük üretilmiş dosya (G3) ---
+*.pt
+*.pth
+*.onnx
+*.bin
+*.safetensors
+*.h5
+veri/ham/
+
+# --- büyük ikili dosyalar git dışı (E2) — klasörde durur, izlenmez ---
+*.mp4
+*.mov
+*.psd
+
+# --- işletim sistemi / editör ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
