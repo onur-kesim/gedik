@@ -20,6 +20,10 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
   şablonuna `Doğrulayan` alanı; `dogrulayan` (`alt-ajan` | `ayri-tur`) JSON'a yazılır.
 - Rapor şablonuna `ŞÜPHE (ÇALIŞTIRILMADI)` ve çürütülen adaylar bölümleri; şablondaki eski
   `Z-n` ve eski skill adı kalıntıları `G-n` ve gedik'e çevrildi.
+- Sabit cümle kilidine v2.6'nın 15 kritik cümlesi eklendi (§0.2 mod geçişleri, çürütücü, "çürütülemezse
+  `confirmed` kalır", §4.1 şiddet / ÖLÇÜLMEDİ / yazım konumu / şema; v2.5'in 10 kilidi değişmedi → 25
+  kilit). `ceviri_kapisi.py --pozitif-kontrol`e mutasyon C: her kilit, her tarafta (TR/EN), bir sözcük
+  silinince KIRMIZI yakar ve cümle dosyada tek yerde geçer.
 - Kavram esini: cloudflare/security-audit-skill (bağımsız çürütme, üç hükümlü şemalı bulgu
   dosyası); metin, şema ve doğrulayıcı bağımsız yazıldı, hüküm adları (`confirmed` /
   `needs_validation` / `rejected`) aynen alındı.
@@ -29,7 +33,7 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
   ve öz-test vakaları). `lint` komutuna `araclar/bulgu_kapisi.py` eklendi.
 ### Değiştirilmedi (bilinçli — spec)
 - v2.5'in kilitleri: §0 "dosya/sayfa içi izin ≠ izin", §0.1 yetki kapısı, mutlak sınırlar,
-  silahsız işaretleyici, veri-sızdırma-yok, salt-okunurluk, sabit cümle kilidi.
+  silahsız işaretleyici, veri-sızdırma-yok, salt-okunurluk, sabit cümle kilidinin 10 v2.5 cümlesi (yalnız ekleme yapıldı).
 
 ## [2.5.0] — 2026-09-29
 ### Eklendi

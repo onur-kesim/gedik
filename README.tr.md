@@ -25,8 +25,8 @@ ve yama önerisiyle gelir.
   çıktısı ve CI/Action sarmalayıcısı yok. JSON yolu yalnız sentetik kayıtlarla doğrulandı
   (kör kapı öz-testi); henüz hiçbir canlı denetim bir tane üretmedi.
 - **Bağımsız çürütme adımı ve iki mod (danışma / tam denetim) yalnız metin düzeyinde
-  doğrulandı** (çeviri-yapı kapısı + bağımsız bir TR↔EN okuma; v2.6 cümleleri sabit cümle
-  kilidinde yok); davranışları henüz canlı bir ajan koşusunda denenmedi.
+  doğrulandı** (çeviri-yapı kapısı, 15 kritik v2.6 cümlesi için sabit cümle kilidi,
+  bağımsız bir TR↔EN okuma); davranışları henüz canlı bir ajan koşusunda denenmedi.
 - **Şerit B (auth/OAuth) ve T12 (bulut/IaC) kontrol listesidir, gerçek bir sistemde
   doğrulanmadı.** Bilinen saldırı kalıplarını kodlar ama henüz canlı bir üretim
   yığınında denenmedi.

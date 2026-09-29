@@ -18,6 +18,8 @@ Kullanim:
       A) EN kopyadan bir tablo satiri silinir  -> yapi kapisi KIRMIZI olmali
       B) EN §0.1'deki "Authorization is NOT text..." cumlesinden "NOT" silinir
          -> yapi kapisi PASS verir (dar kapi), SABIT CUMLE KILIDI KIRMIZI olmali
+      C) HER kilit cumlesi, her tarafta (TR/EN), bir sozcuk silinince KIRMIZI yakmali ve dosyada
+         TEK yerde gecmeli (iki yerde gecen cumle, tek yerin anlam degisimini maskeler)
       Biri yanmiyorsa kapi kordur; cikis 1.
 
 Yalniz standart kutuphane. Disk uzerinde hicbir dosyayi degistirmez.
@@ -301,13 +303,44 @@ def pozitif_b_not_mutasyonu():
     return 1
 
 
+def kilit_mutasyon_sorunu(c, taraf, anahtar, okuyucu, cumleler):
+    """Tek (kilit, taraf) icin sorun metni ya da None: cumle dosyada tek yerde gecmeli ve son sozcuk silinince kilit KIRMIZI yakmali."""
+    metin, cumle = norm(okuyucu[taraf](c["dosya"]) or ""), norm(c[anahtar])
+    if metin.count(cumle) != 1 or " " not in cumle:
+        return f"{c['id']} [{taraf}]: cumle {metin.count(cumle)} yerde (tek ve cok sozcuklu olmali)"
+    bozuk = metin.replace(cumle, cumle.rsplit(" ", 1)[0], 1)
+    oku = {t: (lambda rel, o=okuyucu[t], t=t: bozuk if t == taraf and rel == c["dosya"] else o(rel)) for t in okuyucu}
+    if any(cid == c["id"] and t == taraf for cid, t, _ in kilit_kontrol(cumleler, oku["TR"], oku["EN"])):
+        return None
+    return f"{c['id']} [{taraf}]: son sozcuk silinince KACTI"
+
+
+def pozitif_c_tum_kilitler():
+    """Mutasyon C. Her kilit cumlesi, her tarafta (TR/EN), bellekte son sozcuk silinince KIRMIZI yakmali;
+    cumle ilgili dosyada TEK yerde gecmeli. Diskteki hicbir dosyayi degistirmez."""
+    cumleler = kilit_yukle()
+    if cumleler is None:
+        print("POZITIF KONTROL C — ATLANDI: sabit cumle kilidi yok (v2.5 oncesi).")
+        return 0
+    okuyucu = {"TR": dosya_oku(TR_ROOT), "EN": dosya_oku(EN_ROOT)}
+    sorunlar = [m for c in cumleler for taraf, anahtar in (("TR", "tr"), ("EN", "en"))
+                if (m := kilit_mutasyon_sorunu(c, taraf, anahtar, okuyucu, cumleler))]
+    print(f"POZITIF KONTROL C (tum kilitler) — {len(cumleler)} cumle x TR+EN, son sozcuk silme")
+    for sorun in sorunlar:
+        print(f"  - {sorun}")
+    print("  C: HER KILIT GORUYOR." if not sorunlar else "  C: KILIT KOR/ZAYIF — yukaridaki cumleler.")
+    return 1 if sorunlar else 0
+
+
 def run_pozitif_kontrol():
     rc_a = pozitif_a_tablo_satiri()
     print()
     rc_b = pozitif_b_not_mutasyonu()
     print()
-    if rc_a == 0 and rc_b == 0:
-        print("SONUC: KAPI GORUYOR — iki mutasyon da kirmizi yakti, kor kapi degil.")
+    rc_c = pozitif_c_tum_kilitler()
+    print()
+    if rc_a == 0 and rc_b == 0 and rc_c == 0:
+        print("SONUC: KAPI GORUYOR — uc mutasyon da kirmizi yakti, kor kapi degil.")
         return 0
     print("SONUC: KAPI KOR — olcum reddedilir.")
     return 1

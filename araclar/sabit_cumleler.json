@@ -60,6 +60,96 @@
       "dosya": "SKILL.md",
       "tr": "sahibi olsa bile — §0.1'deki yetki kapısı açılmadıkça",
       "en": "unless the authorization gate in §0.1 has opened"
+    },
+    {
+      "id": "danisma-dosya-uretmez",
+      "dosya": "SKILL.md",
+      "tr": "**dosya, rapor ya da `gedik-bulgular.json` ÜRETMEZ**",
+      "en": "does **NOT produce a file, a report, or `gedik-bulgular.json`**"
+    },
+    {
+      "id": "tam-denetim-acik-ifade",
+      "dosya": "SKILL.md",
+      "tr": "Kullanıcı açıkça \"denetle\", \"pentest\", \"tam güvenlik taraması\" ya da \"rapor çıkar\" dediğinde",
+      "en": "When the user explicitly says \"audit\", \"pentest\", \"full security scan\", or \"produce a report\""
+    },
+    {
+      "id": "mod-belirsiz-once-tek-soru",
+      "dosya": "SKILL.md",
+      "tr": "**Mod belirsizse** (ne odaklı bir soru ne açık bir denetim isteği) işe ya da dosyaya başlamadan ÖNCE tek soru sor",
+      "en": "**If the mode is unclear** (neither a focused question nor an explicit audit request), ask ONE question BEFORE starting the work or beginning any file"
+    },
+    {
+      "id": "soru-yoksa-danisma",
+      "dosya": "SKILL.md",
+      "tr": "Soru sorulamıyorsa danışma modunda kal (dosya üretme) ve bunu belirt",
+      "en": "If no question can be asked, stay in consultation mode (produce no files) and say so"
+    },
+    {
+      "id": "curutme-gerekce-gormeyen",
+      "dosya": "SKILL.md",
+      "tr": "bulan tarafın gerekçesini görmeyen ayrı bir bakıştan",
+      "en": "that does not see the finder's reasoning; that pass is given only"
+    },
+    {
+      "id": "curutme-adimi-gerekce-gormeyen",
+      "dosya": "SKILL.md",
+      "tr": "bulanın gerekçesini görmeden bulguyu düşürmeye çalışan ayrı bir bakış",
+      "en": "a separate pass that does not see the finder's reasoning and tries to disprove the finding"
+    },
+    {
+      "id": "curutucu-girdi-yalniz-iddia",
+      "dosya": "SKILL.md",
+      "tr": "bu bakışa yalnız iddia, konum ve PoC girdisi verilir",
+      "en": "that pass is given only the claim, the location"
+    },
+    {
+      "id": "curutucu-dusurmeye-calisir",
+      "dosya": "SKILL.md",
+      "tr": "KANITLAMAYA değil DÜŞÜRMEYE çalışır",
+      "en": "finding, not to PROVE it."
+    },
+    {
+      "id": "curutulemezse-confirmed-kalir-k2",
+      "dosya": "SKILL.md",
+      "tr": "Çürütülemezse `confirmed` > kalır; çürütülürse `rejected` (elenme nedeni yazılı) ya da `needs_validation`",
+      "en": "If it cannot be refuted it stays `confirmed`; if it is refuted it becomes"
+    },
+    {
+      "id": "curutulemeyen-confirmed-kalir",
+      "dosya": "SKILL.md",
+      "tr": "Çürütülemeyen `confirmed` kalır; diğerleri `rejected` ya da `needs_validation` olur",
+      "en": "A finding that cannot be refuted stays `confirmed`; the others become `rejected` or `needs_validation`"
+    },
+    {
+      "id": "siddet-yalniz-confirmed",
+      "dosya": "references/kanit-ve-rapor.md",
+      "tr": "**Şiddet yalnız `confirmed` kayıtta bulunur.**",
+      "en": "**Severity appears only on a `confirmed` record.**"
+    },
+    {
+      "id": "olculmedi-hukum-degildir",
+      "dosya": "references/kanit-ve-rapor.md",
+      "tr": "**`ÖLÇÜLMEDİ` bir bulgu hükmü DEĞİLDİR, kapsam durumudur**",
+      "en": "**`NOT MEASURED` is NOT a finding verdict, it is a coverage status**"
+    },
+    {
+      "id": "json-yerine-gecmez",
+      "dosya": "references/kanit-ve-rapor.md",
+      "tr": "JSON onun **yerine geçmez**",
+      "en": "the JSON does **not replace** it"
+    },
+    {
+      "id": "rapor-hedef-agacina-yazilmaz",
+      "dosya": "references/kanit-ve-rapor.md",
+      "tr": "hedef projenin kaynak ağacına yazılmaz",
+      "en": "they are not written into the target project's source tree"
+    },
+    {
+      "id": "sema-uymayan-teslim-edilmez",
+      "dosya": "references/kanit-ve-rapor.md",
+      "tr": "Şemaya uymayan dosya teslim edilmez",
+      "en": "A file that does not match the schema is not delivered"
     }
   ]
 }

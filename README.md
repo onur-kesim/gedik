@@ -26,9 +26,9 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   CI/Action wrapper. The JSON path is verified only against synthetic records (a
   blind-gate self-test); no live audit has produced one yet.
 - **The independent-refutation step and the two modes (consultation / full audit) are
-  verified at the text level only** (translation-structure gate + one independent TR↔EN
-  reading; the v2.6 sentences are not in the locked-sentence gate); their behavior has not
-  yet been tested in a live agent run.
+  verified at the text level only** (translation-structure gate, the locked-sentence gate
+  for 15 key v2.6 sentences, one independent TR↔EN reading); their behavior has not yet
+  been tested in a live agent run.
 - **Lane B (auth/OAuth) and T12 (cloud/IaC) are checklists, not validated on a real
   system.** They encode known attack patterns but have not yet been exercised against a
   live production stack.

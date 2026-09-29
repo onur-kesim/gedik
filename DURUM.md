@@ -3,28 +3,26 @@
 ## DEVİR O3 · 2026-09-29 · yazan: Claude Code · N=544k (🟢)
 Aşama: YAPIM (proje.toml asama). Yerel zincir (hiçbiri push edilmedi): `5429b2d` (canlı kök) → KUR → Dilim 1+2 → Dilim 3 (v2.5) →
 kapilar.py v0.2.1+CI → DEVİR O1 → DÜZELT-2 → DEVİR O2 → Cowork 3. denetim kaydı (`26a8291`) → README rakip satırı (`6cec592`) →
-**Dilim 4 (v2.6) = bu DEVİR'in commit'i**. Dallar: main = KUR · dilim-1-2-repo-yayin = Dilim 1+2 · dilim-3-sinir-spec-v2.5 = v2.5 ·
+Dilim 4 (v2.6, `5a67d7f`) → **Cowork 4. denetim kaydı + kilit genişlemesi = bu DEVİR'in commit'i**. Dallar: main = KUR · dilim-1-2-repo-yayin = Dilim 1+2 · dilim-3-sinir-spec-v2.5 = v2.5 ·
 **dilim-4-makineokur-v2.6 = tepe**.
-Boş kutu: v2.5 — etiket/CHANGELOG(yazılı)/PR/push/insan · v2.6 — Cowork bağımsız denetimi, etiket, PR/push, insan, geri alma planı kutusu (plan DILIM'de yazılı).
+Boş kutu: v2.5 — etiket/CHANGELOG(yazılı)/PR/push/insan · v2.6 — etiket, PR/push, insan, geri alma planı kutusu (plan DILIM'de yazılı); Cowork 4. denetimi TESLİME UYGUN (kutu işaretli).
 Son yapılan: v2.6 uygulandı (spec `_calisma/SINIR_SPEC_GEDIK_v2.6_2026-09-29.md`): `gedik-bulgular.json` + `araclar/bulgu-semasi.json` +
 `araclar/bulgu_kapisi.py` (kör kapı öz-testli, `kapilar.py` zincirinde), SKILL.md §0.2 iki mod, §1 çürütücü notu + §3 "Çürüt" adımı + rapor şablonu
 `Doğrulayan`, referans §4.1; sürüm 2.6.0 dört yerde; README×2 + CHANGELOG. İç doğrulama 2 tur, 10 ajan (ayrı bağlam, salt-okunur) — DILIM DENETİM.
-Yarım kalan: Cowork'ün v2.6 denetimi; TESLİM kutuları (dört sayı, etiket, PR, insan).
-Sıradaki ilk iş: 1) Cowork v2.6'yı denetlesin (DILIM DENETİM'e yazılır; DÜZELT gelirse DÜZELT-3) 2) kullanıcıdan: (a) canlı `main` sızıntısı için karar
-(küçük düzeltme push'u / force-push / depoyu geçici private) (b) "push et" — sıra: v2.5, sonra v2.6 3) etiketler `v2.5.0` → `v2.6.0` (CHANGELOG bölümleri yazılı),
-dört sayı DURUM'a.
+Yarım kalan: TESLİM kutuları (dört sayı, etiket, PR, insan) — hepsi push'a bağlı.
+Sıradaki ilk iş: 1) kullanıcıdan: (a) canlı `main` sızıntısı için karar (küçük düzeltme push'u / force-push / depoyu geçici private) (b) "push et" — sıra: v2.5, sonra v2.6
+2) etiketler `v2.5.0` → `v2.6.0` (CHANGELOG bölümleri yazılı), dört sayı DURUM'a.
 🔴 Açık/kritik: **`onur-kesim/gedik` `main` (origin) 2026-09-28 20:58 UTC'den beri PUBLIC ve canlı; tek commit'i (`5429b2d`) hâlâ 2 iç-ad eşleşmesi taşıyor**
 (CHANGELOG.md + araclar/kapilar.py yorumu; 2026-09-29 21:2x `git ls-remote` ile hâlâ `5429b2d`). Yerel geçmiş temiz; düzeltme yalnız push/force-push ile olur — karar kullanıcıda.
 Spec sahibine açık sorular (ölçüldü, kapatılmadı): (1) 'gedik ara / gedikleri bul / açıkları bul' description tetikleyicileri §0.2'de hiçbir moda açıkça bağlı değil →
-"mod belirsiz" tek sorusu tetiklenir (2) JSON'da KOŞULDU/STATİK ayrımı yok (şemada kanıt türü alanı yok) (3) `ayri-tur` öz-beyandır, kapı doğrulayamaz (4) v2.6'nın yeni
-cümleleri sabit cümle kilidinde YOK (spec kilidi değiştirmeyi yasakladı); önerilen 4 cümle: danışmada `ÜRETMEZ`, çürütücü "gerekçeyi görmeyen", JSON md raporun "yerine geçmez",
-"`ÖLÇÜLMEDİ` hüküm DEĞİLDİR" (5) v2.5 kilit alanında zararsız işaretleyici adı üç farklı (`__GEDIK_KANITI` TR SKILL, `__GEDIK_PROOF` EN SKILL, `__ZAFIYET_KANITI` referanslar +
+"mod belirsiz" tek sorusu tetiklenir (2) JSON'da KOŞULDU/STATİK ayrımı yok (şemada kanıt türü alanı yok) (3) `ayri-tur` öz-beyandır, kapı doğrulayamaz (4) KAPANDI —
+Cowork 4. denetimi önerdi, kullanıcı onayladı: sabit cümle kilidine 15 v2.6 cümlesi eklendi (25 kilit; 10 v2.5 kilidi değişmedi) (5) v2.5 kilit alanında zararsız işaretleyici adı üç farklı (`__GEDIK_KANITI` TR SKILL, `__GEDIK_PROOF` EN SKILL, `__ZAFIYET_KANITI` referanslar +
 serit-A): biriyle enjekte edip ötekini ölçen ajan sahte "enjeksiyon yok" okur (6) referans §6 DEVİR ("kararı proje hafızasına yaz") ↔ SKILL §6 salt-okunur ↔ v2.6 §4.1 rapor konumu
 kuralı; §3 adım 1 "önceki gedik raporları" varsayılan scratch konumunda işlemez.
 Açık karar / bloker: canlı main sızıntısı · "push et" · yukarıdaki spec soruları.
 Araç eksiği: `ceviri_kapisi.py` (sabit cümle kilidi dahil) ve `ic_ad_kapisi.py` CI'da KOŞMUYOR (D2: en geç sonraki teslimde CI'ya bağlanmalı — kullanıcı kararı);
 `taban_dosya_ihlal = 2` bugün 0 ihlalle geçiyor, 0'a çekilebilir (dondurulmuş taban, karar sende).
-Dosyalar: araclar/bulgu_kapisi.py, araclar/bulgu-semasi.json, araclar/kapilar.py, skills/gedik-tr + skills/gedik (SKILL.md, references/kanit-ve-rapor.md),
+Dosyalar: araclar/bulgu_kapisi.py, araclar/bulgu-semasi.json, araclar/kapilar.py, araclar/sabit_cumleler.json, araclar/ceviri_kapisi.py, skills/gedik-tr + skills/gedik (SKILL.md, references/kanit-ve-rapor.md),
 .claude-plugin/*.json, README.md, README.tr.md, CHANGELOG.md, proje.toml, CLAUDE.md, DILIM.md, DURUM.md
 Uyarı: (1) `_calisma/gedik-yerel-yedek-2026-09-29.bundle` ve `..-b.bundle` ESKİ kirli geçmişleri taşır — yalnız yerel, gitignore'lu, asla push edilmeyecek.
 (2) PR gövdesine iş emri §5'teki ham "genelleştirme diff'i"ni YAPIŞTIRMA (silinen satırlarda iç ad var); `_calisma/pr_body.md` taslağı olduğu gibi kullanılmamalı.
@@ -60,3 +58,4 @@ Yeni oturumda yaz:  gedik · O4 · başla
 - 2026-09-29 — **v2.6 (makine-okur çıktı + iki mod + bağımsız çürütücü) YAPILDI, yerelde**; dal `dilim-4-makineokur-v2.6` (v2.5'in üstünde); spec dondurulmuş (yerel, Cowork; karar sahibi: proje sahibi). Yerleştirme/yorum kararları (Cowork teyit etsin): (1) spec "6.5 Çürüt" dedi → §3'te adım 6, Raporla 7, Devret 8 (rapor çürütülmüş hükümleri taşımalı); (2) spec'in adlandırmadığı alanlar `cozulmemis_olgu`, `eleme_nedeni`; üst düzey `sema` sabiti; ASCII enum değerleri; `serit` enum'u A–E, TEST, KOD, CICD; (3) `needs_validation` yalnız `cozulmemis_olgu`, `rejected` yalnız `eleme_nedeni` zorunlu (spec-harfiyen; ilk halim daha katıydı, öz-test yakaladı), `dogrulayan` yalnız `confirmed`'de zorunlu; (4) rapor şablonunda `Z-n`→`G-n`, eski skill adı → `<gedik-sürümü>`, 2.1/2.2 bölümleri eklendi; (5) `araclar/sabit_cumleler.json` DEĞİŞMEDİ; (6) `araclar/kapilar.py` +10 satır (şablon v0.2.1'den sapma); (7) README/CHANGELOG/lint komutu güncellendi; (8) doğrulama sırasında eklenen kurallar: kanıt türü ↔ hüküm (`KOŞULDU`/`STATİK`→`confirmed`, `ÖLÇÜLMEDİ` etiketli aday→`needs_validation`), rapor konumu (çıktı klasörü; hedef kaynak ağacına yazılmaz), "denetle"+odaklı kapsam→tam denetim, danışmada ön-bulgu işareti.
 - 2026-09-29 — **v2.6 iç doğrulama (ayrı bağlam, salt-okunur, 2 tur, 10 ajan)**: 1. tur 6 ajan — çeviri eşitliği TESLİME UYGUN, spec/kapı-kırma/entegrasyon DÜZELT (1 YÜKSEK, 13 ORTA; hepsi kapatıldı: açık `--dosya` yolu, `G-1\n` deliği, öz-test kapsamı 59→0 gerçek hayatta mutant, belge çelişkileri); 2. tur 4 ajan — eşitlik TESLİME UYGUN, regresyon DÜZELT (kendi eklediğim STATİK→needs_validation eşlemesi SS1/SS5/şablon/serit-E ile çelişiyordu; mevcut belgelerle uyumlu eşlemeye çevrildi). Yalnız skill belgelerini okuyan ajanlar (TR+EN, 2 tur) şemaya bakmadan geçerli gedik-bulgular.json yazdı (4/4 PASS). Bu, Cowork'ün resmî denetimi değildir; kutu DILIM'de boş.
 - 2026-09-29 — Ortam/uyum notu: oturum sistem yönergesi geçici dosyayı scratchpad'e yazdırırken proje kuralı 1 yalnız `_calisma\`'ya izin veriyor; ikisi çelişti, scratchpad'e yazıldı (sır yok) ve DEVİR'e uyarı olarak geçti. Sonraki oturumlar `_calisma\` kullanır.
+- 2026-09-29 — **Cowork 4. denetim: v2.6 TESLİME UYGUN.** Şema kuralı bağımsız doğrulandı (`confirmed`+PoC yok RED, `needs_validation`+şiddet RED — kör değil); kapılar 7 PASS/0 FAIL; çeviri + sabit cümle + iç ad 0. Küçük eksik (bloker değil): v2.6 cümleleri sabit cümle kilidinde yoktu → KAPATILDI (kullanıcı: "eklersen"): `araclar/sabit_cumleler.json`'a 15 cümle eklendi (10 v2.5 kilidi DEĞİŞMEDİ, diff yalnız ekleme; 25 kilit × TR+EN birebir PASS); `araclar/ceviri_kapisi.py`'ye kalıcı pozitif kontrol C eklendi (+33 satır, 356 satır): her kilit her tarafta bir sözcük silinince KIRMIZI yakar ve cümle dosyada tek yerde geçer. Ölçüm: 15 yeni kilit × 2 taraf × 4 mutasyon türü = 120 mutasyon, kaçan 0; ilk denemede bir EN çürütücü cümlesi SKILL.md'de iki yerde geçtiği için zayıf çıktı (tek yerin anlam çevrilmesi maskelenirdi) → tek yerde geçen ifadeyle değiştirildi; bilerek zayıf bir kilitle C KIRMIZI yaktı. Push YOK sürüyor.
