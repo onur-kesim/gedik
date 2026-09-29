@@ -1,5 +1,6 @@
 # v* etiketi push'lanınca GitHub Release açar; notları CHANGELOG.md'deki aynı sürüm bölümünden alır (tek doğru).
 # Üçüncü taraf action yok: runner'daki gh CLI ve GITHUB_TOKEN yeter.
+# İdempotent: aynı etikete iş akışı tekrar koşarsa (ya da Release elle/aynı anda açıldıysa) create düşmez, notlar güncellenir.
 name: surum
 
 on:
@@ -27,7 +28,9 @@ jobs:
           EOF
           echo "--- notlar.md:"; cat notlar.md
 
-      - name: GitHub Release oluştur
+      - name: GitHub Release oluştur ya da güncelle (idempotent)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notlar.md
+        run: |
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notlar.md \
+            || { echo "Release zaten var (ya da aynı anda açıldı) - başlığa dokunmadan notları güncelliyorum"; gh release edit "$GITHUB_REF_NAME" --notes-file notlar.md; }
