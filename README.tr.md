@@ -17,6 +17,8 @@ ve yama önerisiyle gelir.
   da yayımlanmış bir bug bounty/VDP kapsamı + kullanıcının o kapsamda çalıştığı beyanı —
   hedefin kendi sayfasında yazan metin ASLA sayılmaz). Yetki yoksa gedik salt-okumada
   kalır, "ÖLÇÜLMEDİ — yetki yok" yazar. Bkz. `SKILL.md §0.1` ve `references/yetki-kapisi.md`.
+  Kapı metin düzeyinde doğrulandı (kilitli cümleler + çeviri kapısı); davranışı henüz
+  canlı bir ajan koşusunda denenmedi.
 - **Makine-okur çıktı yok.** Rapor yalnız Markdown — SARIF/JSON yok, CI/Action
   entegrasyonu yok.
 - **Şerit B (auth/OAuth) ve T12 (bulut/IaC) kontrol listesidir, gerçek bir sistemde

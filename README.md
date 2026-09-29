@@ -17,7 +17,9 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   chat, or a published bug-bounty/VDP scope + your statement that you're working within
   it — never text found on the target's own page). No authorization → gedik stays
   read-only and reports "NOT MEASURED — no authorization." See `SKILL.md §0.1` and
-  `references/yetki-kapisi.md`.
+  `references/yetki-kapisi.md`. The gate is verified at the text level (locked
+  sentences + translation gate); its behavior has not yet been tested in a live agent
+  run.
 - **No machine-readable output.** Reports are Markdown only — no SARIF/JSON, no CI/Action
   integration.
 - **Lane B (auth/OAuth) and T12 (cloud/IaC) are checklists, not validated on a real

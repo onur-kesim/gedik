@@ -44,7 +44,8 @@ DEĞİŞTİRMEYECEĞİ (§7) listesindeki hiçbir satır bozulmadı.
 - [x] sabit cümle kilidi (EK-1.4): `araclar/sabit_cumleler.json` 10 cümle × TR+EN;
       `ceviri_kapisi.py` bunu da koşar; pozitif kontrol B = EN'den "NOT" silme → yapı kapısı
       PASS, kilit KIRMIZI; gerçek koşu diskte 3 mutasyonla (EN NOT, TR DEĞİLDİR, EN STOP) çıkış 1
-- [ ] bağımsız denetim (ayrı bağlam, salt-okunur) — DÜZELT'ten sonra tazeden koşulacak
+- [x] bağımsız denetim (ayrı bağlam, salt-okunur) — 3. denetim (Cowork, 2026-09-29):
+      TESLİME UYGUN (koşullu: README'ye "davranış canlı ajan koşusunda denenmedi" notu — yapıldı)
 - [x] NE ÖLÇÜLEMEDİ yazıldı (aşağıda)
 
 ## TESLİM
@@ -83,6 +84,22 @@ davranışı değil (gedik yürütülebilir kod değil, talimat dosyasıdır) ·
 Hüküm (bu turun): **DÜZELT tamamlandı, yeniden bağımsız denetim gerekiyor** — 🔴 o denetim
 TESLİME UYGUN demeden push YOK.
 
+### 3. denetim — denetleyen: Cowork · 2026-09-29 · hüküm: **TESLİME UYGUN (koşullu)**
+| Kapı | Sonuç | Kanıt |
+|---|---|---|
+| İç ad (Cowork özgün 20 desen), 7 commit | PASS | 0 eşleşme |
+| `kapilar.py` tam koşu | PASS | 7 PASS · 0 FAIL |
+| Çeviri kapısı | PASS | 12/12 |
+| Sabit cümle kilidi, 3 anlam mutasyonu | PASS (2/3 kilit yakaladı) | 3. mutasyon (kalın başlık) kilitli asıl cümleyle korunuyor |
+| §0 madde 1 ↔ EK-1.1 | PASS | uyumlu |
+| Rastgele beyan: kilit pozitif kontrolü | TUTTU | denetçi bağımsız doğruladı (D5) |
+
+Koşul: README "What's not delivered yet" altındaki canlı test maddesine "kapı metin
+düzeyinde doğrulandı, davranışı canlı ajan koşusunda denenmedi" notu → EN + TR eklendi.
+NE ÖLÇÜLEMEDİ (3. denetim): §0.1 davranışsal kör kapı (canlı ajan koşumu) · CI (push
+sonrası) · `/plugin install`.
+Hüküm: TESLİME UYGUN. Push hâlâ YOK — yalnız kullanıcının "push et" demesiyle.
+
 ### DÜZELT (1. tur, 2026-09-29) — kutular 2. denetimde gerçeğe göre düzeltildi
 - [x] 1. İç ad temizliği — **1. turda "bitti" işaretlemiştim, eksikti**: kendi 17 desenimle
       taramıştım; Cowork listesi eksikti (ezmiştim). Gerçek kapanış DÜZELT-2 madde 1'de.
@@ -106,5 +123,6 @@ TESLİME UYGUN demeden push YOK.
 - [x] 4. Bu kutular gerçeğe göre düzeltildi (yukarıdaki DÜZELT 1. tur satırları) + DEVİR yazıldı.
 
 ## Sonuç
-DÜZELT-2 kapandı. Push hâlâ YOK — bağımsız denetim tazeden koşup TESLİME UYGUN demeden bu
-dilim ve önceki dilim (Dilim 1+2) push edilmeyecek.
+DÜZELT-2 kapandı. 3. bağımsız denetim (Cowork, 2026-09-29) TESLİME UYGUN (koşullu, koşul
+yerine getirildi). Push hâlâ YOK — bu dilim ve önceki dilim (Dilim 1+2) yalnız kullanıcının
+"push et" demesiyle gider; canlı `main` sızıntısı kararı da kullanıcıda (DURUM DEVİR).
