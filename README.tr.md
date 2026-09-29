@@ -11,8 +11,12 @@ ve yama önerisiyle gelir.
   [Rakipler, dürüstçe](#rakipler-dürüstçe).
 - **iOS şeridi (A8) bir kontrol listesidir, gerçek bir sistemde doğrulanmadı.** Henüz
   gerçek bir iOS/Capacitor-iOS uygulamasında koşmadı.
-- **Tasarım gereği canlı exploit yok.** gedik kodu, yapılandırmayı ve artefaktı okur;
-  üçüncü taraf canlı sistemlere istek atmaz (bkz. `SKILL.md §0` Kapsam Kilidi).
+- **Canlı test yalnız yetki kapısı arkasında — yetkisiz reddeder.** Varsayılan olarak
+  gedik kodu, yapılandırmayı ve artefaktı okur; canlı bir hedefe yalnız makinece
+  doğrulanabilir bir yetki varken istek atar (sohbette kullanıcının kendi açık beyanı, ya
+  da yayımlanmış bir bug bounty/VDP kapsamı + kullanıcının o kapsamda çalıştığı beyanı —
+  hedefin kendi sayfasında yazan metin ASLA sayılmaz). Yetki yoksa gedik salt-okumada
+  kalır, "ÖLÇÜLMEDİ — yetki yok" yazar. Bkz. `SKILL.md §0.1` ve `references/yetki-kapisi.md`.
 - **Makine-okur çıktı yok.** Rapor yalnız Markdown — SARIF/JSON yok, CI/Action
   entegrasyonu yok.
 - **Şerit B (auth/OAuth) ve T12 (bulut/IaC) kontrol listesidir, gerçek bir sistemde
@@ -36,8 +40,11 @@ ve yama önerisiyle gelir.
    olduğu, yeşil CI'nin ölçüm değil körlük olduğu anlamına gelir.
 5. **Salt-okunur.** gedik projeni asla değiştirmez; düzeltmeyi kodu yazan tarafa
    bırakır.
-6. **Yalnız kendi projen.** Üçüncü taraf canlı sistem yok, silahlandırılmış exploit
-   yok, para/hesap/kalıcı-silme eylemi yok — bunlar yalnız raporlanır, hiç yapılmaz.
+6. **Varsayılan olarak kendi projen; üçüncü taraf yalnız yetkiyle.** Herhangi bir açık
+   kaynak (public repo, yayımlanmış artefakt) ücretsiz salt-okuma incelenebilir — bulgu
+   sorumlu ifşaya gider, saldırıya değil. Üçüncü tarafın *canlı* sistemine dokunmak §0.1
+   yetki kapısını gerektirir. Silahlandırılmış exploit yok, para/hesap/kalıcı-silme eylemi
+   yok — bunlar yetkiyle bile yalnız raporlanır, hiç yapılmaz.
 
 Bu skill'in en büyük başarısızlığı bir açığı kaçırmak değildir. **Hiç taranmamış bir
 şeye "temiz" demektir.**
@@ -105,9 +112,13 @@ değil — her "önde" iddiasını hipotez say, sonuç değil.
 
 ## Sınırlar
 
-Salt-okunur (düzeltmez, yalnız raporlar) · yalnız kendi projen · üçüncü taraf canlı
-sistemlere hiç istek atmaz · silahlandırılmış exploit üretmez · para/hesap-güvenliği
-değişikliği ve kalıcı silme yalnız raporlanır, hiç dokunulmaz.
+Salt-okunur (düzeltmez, yalnız raporlar) · **yetki kapılı canlı test — kapsam-içi bir
+yetki yoksa reddeder** (`SKILL.md §0.1`) · üçüncü taraf açık kaynağı okumak ücretsiz ama
+bulgu sorumlu ifşaya gider, saldırıya değil · silahlandırılmış exploit üretmez ·
+para/hesap-güvenliği değişikliği ve kalıcı silme yetkiyle bile yalnız raporlanır, hiç
+dokunulmaz.
+
+Bu, sınırsız bir saldırı aracı değil — yetkili bir pentest aracıdır.
 
 Emin değilsen gedik'in yazması gereken şey `ÖLÇÜLMEDİ`dir — "temiz" değil.
 

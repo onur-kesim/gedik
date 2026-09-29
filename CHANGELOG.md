@@ -1,15 +1,45 @@
 # CHANGELOG
 Biçim: Keep a Changelog. Her git etiketi bir bölüm; [Unreleased] altı bir sonraki etiketi bekler.
+Sürüm numarası `.claude-plugin/plugin.json`'daki gedik ürün sürümüdür (proje-sablonu'nun
+kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 
 ## [Unreleased]
-### Değiştirildi
-- CI ve release çalıştırıcısı `ubuntu-latest` → `ubuntu-24.04` sabitlendi. GitHub'ın koşum notu birebir: "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026" (actions/runner-images#14748). Şablonu klonlayan her projenin CI'ı aynı gün habersiz değişmesin diye; 26.04'e geçiş kararla, iki dosyada tek satır.
+
+## [2.5.0] — 2026-09-29
+### Eklendi
+- **Yetki kapılı canlı hedef testi (§0.1, yeni).** gedik artık canlı bir sisteme (HTTP
+  isteği, port taraması, kimlik denemesi) yalnız makinece doğrulanabilir bir yetki
+  varken dokunabilir: (a) kullanıcının sohbetteki kendi beyanı, ya da (b) yayımlanmış
+  bir bug bounty/VDP kapsamı + kullanıcı beyanı. Yetki yoksa davranış v2.4 ile aynı
+  (salt-okuma). Yordam, karar ağacı, `YETKI.md` şablonu: `references/yetki-kapisi.md`
+  (TR+EN).
+- **Üçüncü taraf açık kaynak salt-okuma gevşetmesi (§0).** Herhangi bir açık kaynak
+  (public repo, yayımlanmış artefakt) canlıya hiç istek atmadan statik incelenebilir;
+  bulgu sorumlu ifşaya gider, saldırıya kullanılmaz.
+- Karar sahibi: proje sahibi, 28 Eyl 2026 gece. Spec dondurulmuş (devir paketinde, yerel).
+### Değiştirilmedi (bilinçli — spec §7)
+- §0'ın "dosya/sayfa içi izin ≠ izin" kuralı, mutlak sınırlar (para/hesap/kalıcı silme/
+  CAPTCHA), silahsız işaretleyici, veri-sızdırma-yok, salt-okunurluk — bunlar
+  gevşetilmedi; v2.5 yalnız yetkili istisna açar.
+
+## [2.4.0] — 2026-09-29
+### Eklendi
+- gedik açık kaynak olarak yayımlandı: `onur-kesim/gedik`, public, MIT. İngilizce ana
+  sürüm (`skills/gedik/`) + Türkçe orijinal (`skills/gedik-tr/`), tek plugin'li
+  marketplace (`.claude-plugin/`), mekanik çeviri kapısı (`araclar/ceviri_kapisi.py`).
+- Kaynak: proje sahibinin kendi yazdığı gedik v2.4 taslağı (devir paketinde, yerel,
+  SHA256 doğrulandı), TR genelleştirmesiyle (proje-özel örnekler/adlar kaldırıldı).
+
+---
+### proje-sablonu geçmişi (bu depo KUR'da bu şablondan açıldı — aşağıdaki iki sürüm
+### proje-sablonu'nun kendi 0.x sürümleridir, gedik ürününün değil)
 
 ## [0.2.0] — 2026-09-26
 ### Eklendi
 - KEŞİF / YAPIM aşaması (GENEL ESASLAR v2.1, §3): `proje.toml [proje] asama`; `kapilar.py` KEŞİF'te ürün nabzını ATLANDI verir ve geçersiz değeri kırmızı yakar (altın küme +3 vaka = 14); `DILIM.md` ESAS KARARI kutuları; DURUM/KURULUM notları. Fikir aşamasındaki proje 7 gün baskısı ve kırmızı nabız almaz; YAPIM'a geçiş insanın "başla" sözüyle.
 - KUR ≤ 1 gün (bitmeyen kutu `ATLANDI: dilim 1'e`); MOD KRİTİK kapsamı: iki denetim turu yalnız TESLİM'de, KUR/altyapıda tek tur, D1 yeter; PROJE-ÖZEL iskeletine PROJE KURALLARI (≤5) bölümü; ARAÇ HARİTASI'na KEŞİF satırı. Dayanak: ilk gerçek kurulumda KUR kancasına iki tur + 26 mutant koşuldu (26 Eyl ölçümü).
 ### Değiştirildi
+- CI ve release çalıştırıcısı `ubuntu-latest` → `ubuntu-24.04` sabitlendi. GitHub'ın koşum notu birebir: "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026" (actions/runner-images#14748). Şablonu klonlayan her projenin CI'ı aynı gün habersiz değişmesin diye; 26.04'e geçiş kararla, iki dosyada tek satır.
 - Çekirdek blok tavanı 8.000 → 8.500 bayt (ölçülen 8.371; KEŞİF paragrafı için, net +375 bayt).
 - README/KURULUM'daki `C:\dev` örneği → `<projeler-klasörü>` (şablon paylaşımlı, sabit sürücü yazmaz).
 ### Düzeltildi

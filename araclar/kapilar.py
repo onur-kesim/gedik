@@ -9,7 +9,9 @@ Kullanım (depo kökünde):
 Yalnız standart kütüphane. Python >= 3.11 (tomllib). Kör kapı ilkesi: öz-test geçmezse ölçüm yapılmaz.
 """
 import ast
+import contextlib
 import fnmatch
+import io
 import os
 import re
 import subprocess
@@ -44,7 +46,8 @@ def eslesir(rel_yol, desenler):
 def dosyalar(kok):
     """İzlenen dosyalar: git varsa git ls-files, yoksa yürüyüş (atlanan klasörler hariç)."""
     try:
-        cikti = subprocess.run(['git', 'ls-files', '-z'], cwd=kok, capture_output=True, text=True, check=True).stdout
+        cikti = subprocess.run(['git', 'ls-files', '-z'], cwd=kok, capture_output=True, text=True,
+                               encoding='utf-8', errors='replace', check=True).stdout
         return [d for d in cikti.split('\0') if d and os.path.isfile(os.path.join(kok, d))]
     except (subprocess.CalledProcessError, FileNotFoundError):
         sonuc = []
@@ -141,6 +144,57 @@ def nabiz_gun(log_metni, desenler, simdi):
 
 
 # ---------- altın küme: araç önce kendini kanıtlar ----------
+def _utf8_basan_komut(gecersiz=True):
+    """UTF-8 '═' (cp1252/cp1254'te 0x90 çözülemez) + [gecersiz: cp1254 kodlu Türkçe = UTF-8'de geçersiz bayt] + UTF-8 Türkçe son satır basar."""
+    ham = '═'.encode('utf-8') + b'\n' + ('ışğ'.encode('cp1254') + b'\n' if gecersiz else b'') + 'tamam çıktı\n'.encode('utf-8')
+    return f'"{sys.executable}" -c "import sys;sys.stdout.buffer.write({ham!r})"'
+
+
+def _cp1254_altinda(islem):
+    """Türkçe Windows'ta kodlama vermeyen metin-kipi alt süreç çağrısı çıktıyı cp1254 ile çözer; bunu taklit edip islem()'i koşar.
+    Çözme düşerse None (Linux: run() UnicodeDecodeError fırlatır · Windows: okuma parçacığı ölür, stdout None kalır; çağıran None'ı arar)."""
+    gercek = subprocess.run
+
+    def taklit(*a, **kw):
+        if kw.get('text') and not kw.get('encoding'):
+            kw['encoding'] = 'cp1254'
+        return gercek(*a, **kw)
+
+    subprocess.run = taklit
+    try:
+        with contextlib.redirect_stderr(io.StringIO()):  # Windows'ta ölen okuma parçacığının izi konsola düşmesin
+            return islem()
+    except UnicodeDecodeError:
+        return None
+    finally:
+        subprocess.run = gercek
+
+
+def _eski_okuyucu(komut, kok):
+    """Düzeltmeden ÖNCEKİ kapı okuyucusu — bilerek bozuk örnek: kodlama vermez, çıktıyı yerel kodlamayla çözer."""
+    return subprocess.run(komut, shell=True, cwd=kok, capture_output=True, text=True, timeout=60).stdout
+
+
+ALT_SUREC_CAGRILARI = ('run', 'Popen', 'call', 'check_call', 'check_output')
+KODSUZ_ORNEKLER = ('subprocess.run(x, text=True)', "subprocess.run(x, text=True, encoding='utf-8')",
+                   "subprocess.run(x, encoding='utf-8')", "subprocess.check_output(x, text=True, encoding=None, errors='replace')")
+KODLU_ORNEK = "subprocess.run(x, text=True, encoding='utf-8', errors='replace')"
+
+
+def kodlamasiz_alt_surec(metin):
+    """Metin-kipi alt süreç çağrısını encoding='utf-8' ve errors≠'strict' vermeden yerel kodlamaya bırakan işlevlerin adları.
+    Kapsam dışı (bilinen): işlev dışı (modül düzeyi) çağrılar, `from subprocess import run` takma adları."""
+    bulgular = set()
+    for f in ast.walk(ast.parse(metin)):
+        for c in (ast.walk(f) if isinstance(f, ast.FunctionDef) else ()):
+            if isinstance(c, ast.Call) and getattr(c.func, 'attr', '') in ALT_SUREC_CAGRILARI:
+                kw = {k.arg: getattr(k.value, 'value', None) for k in c.keywords}
+                if kw.keys() & {'text', 'universal_newlines', 'encoding', 'errors'} and not (
+                        kw.get('encoding') == 'utf-8' and kw.get('errors') not in (None, 'strict')):
+                    bulgular.add(f.name)
+    return bulgular
+
+
 def altin_kume():
     """Bilerek bozuk ve temiz girdilerle her kapının ısırdığını ölçer. Dönüş: (gecti, satırlar)."""
     vakalar = []  # sır örnekleri join ile parçalı: derleyici sabitleri birleştirmesin, tarayıcı kendini ısırmasın
@@ -164,6 +218,14 @@ def altin_kume():
     vakalar.append(('bozuk_yapim_nabiz', nabiz_hukmu('yapim', 30, 7) == 'FAIL', True, 'D nabız YAPIM 30 gün'))
     vakalar.append(('kesif_nabiz_yakmaz', nabiz_hukmu('kesif', 30, 7) == 'FAIL', False, 'D KEŞİF yanlış-pozitif'))
     vakalar.append(('kesif_atlandi', nabiz_hukmu('kesif', 30, 7) == 'ATLANDI', True, 'D KEŞİF: ATLANDI, PASS değil'))
+    komut, sade, kok = _utf8_basan_komut(), _utf8_basan_komut(gecersiz=False), os.path.dirname(os.path.abspath(__file__))
+    vakalar.append(('bozuk_cp1254_okuma', _cp1254_altinda(lambda: _eski_okuyucu(sade, kok)) is None, True, 'W cp1254 okuma'))
+    okuma = _cp1254_altinda(lambda: kapi_komut('cp1254', komut, kok))
+    vakalar.append(('temiz_cp1254_okuma', okuma != ('cp1254', 'PASS', 'çıkış 0 · tamam çıktı'), False, 'W yanlış-pozitif'))
+    kendi = kodlamasiz_alt_surec(metin_oku(os.path.abspath(__file__)).lstrip('\ufeff')) - {'_eski_okuyucu'}  # bilerek bozuk örnek: yalnız _eski_okuyucu
+    bozuk = all(kodlamasiz_alt_surec(f'def f(x):\n    {o}\n') for o in KODSUZ_ORNEKLER)
+    vakalar.append(('bozuk_kodlamasiz', bozuk, True, 'W kodlamasız çağrı'))
+    vakalar.append(('temiz_kodlamali', bool(kendi | kodlamasiz_alt_surec(f'def f(x):\n    {KODLU_ORNEK}\n')), False, 'W yanlış-pozitif'))
     satirlar, gecti = [], True
     for ad, sonuc, beklenen, etiket in vakalar:
         ok = sonuc == beklenen
@@ -177,10 +239,12 @@ def kapi_komut(ad, komut, kok):
     if not komut:
         return (ad, 'ATLANDI', 'proje.toml’da boş')
     try:
-        p = subprocess.run(komut, shell=True, cwd=kok, capture_output=True, text=True, timeout=1800)
+        p = subprocess.run(komut, shell=True, cwd=kok, capture_output=True, text=True,
+                           encoding='utf-8', errors='replace', timeout=1800)
     except subprocess.TimeoutExpired:
         return (ad, 'FAIL', '30 dk zaman aşımı')
-    son = [s for s in (p.stdout + p.stderr).splitlines() if s.strip() and set(s.strip()) != {'═'}][-1:] or ['']
+    cikti = (p.stdout or '') + (p.stderr or '')  # yerel kodlamayla çözme düşerse stdout None kalırdı (Türkçe Windows)
+    son = [s for s in cikti.splitlines() if s.strip() and set(s.strip()) != {'═'}][-1:] or ['']
     return (ad, 'PASS' if p.returncode == 0 else 'FAIL', f'çıkış {p.returncode} · {son[0][:80]}')
 
 
@@ -243,7 +307,7 @@ def kapi_nabiz(kok, urun, cfg, asama='yapim'):
         return ('ürün nabzı', 'ATLANDI', 'KEŞİF aşaması: süre tavanı yok (proje.toml [proje] asama)')
     try:
         log = subprocess.run(['git', 'log', '--pretty=format:%ct', '--name-only'], cwd=kok,
-                             capture_output=True, text=True, check=True).stdout
+                             capture_output=True, text=True, encoding='utf-8', errors='replace', check=True).stdout
     except (subprocess.CalledProcessError, FileNotFoundError):
         return ('ürün nabzı', 'ÖLÇÜLEMEDİ', 'git yok ya da commit yok')
     gun = nabiz_gun(log, urun.get('desen', []), time.time())

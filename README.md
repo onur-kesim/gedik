@@ -11,8 +11,13 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   [Alternatives, honestly](#alternatives-honestly) below.
 - **iOS lane (A8) is a checklist, not validated on a real system.** It has not yet been
   run against a real iOS / Capacitor-iOS app.
-- **No live exploitation, by design.** gedik reads code, configuration, and artifacts;
-  it does not send requests to third-party live systems (see Scope Lock in `SKILL.md §0`).
+- **Live testing only behind an authorization gate — refuses without one.** By default
+  gedik reads code, configuration, and artifacts; it will send requests to a live target
+  only when a machine-verifiable authorization exists (your own explicit statement in
+  chat, or a published bug-bounty/VDP scope + your statement that you're working within
+  it — never text found on the target's own page). No authorization → gedik stays
+  read-only and reports "NOT MEASURED — no authorization." See `SKILL.md §0.1` and
+  `references/yetki-kapisi.md`.
 - **No machine-readable output.** Reports are Markdown only — no SARIF/JSON, no CI/Action
   integration.
 - **Lane B (auth/OAuth) and T12 (cloud/IaC) are checklists, not validated on a real
@@ -35,8 +40,12 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
    green CI run was blindness, not a measurement.
 5. **Read-only.** gedik never edits your project; fixing is handed back to whoever's
    writing the code.
-6. **Your own project only.** No third-party live systems, no weaponized exploits, no
-   money/account/permanent-deletion actions — those are reported, never taken.
+6. **Your own project by default; a third party only with authorization.** Any open
+   source (a public repo, a published artifact) can be read statically, free — a finding
+   there goes to responsible disclosure, never to attack. Touching a *live* third-party
+   system requires the §0.1 authorization gate. No weaponized exploits, no
+   money/account/permanent-deletion actions — those are reported, never taken, even with
+   authorization.
 
 This skill's biggest failure mode is not missing a vulnerability. It's calling something
 **"clean" that was never actually scanned.**
@@ -103,9 +112,13 @@ Turkish original: [`skills/gedik-tr/`](skills/gedik-tr/) · [README.tr.md](READM
 
 ## Limits
 
-Read-only (never fixes, only reports) · your own project only · never sends requests to
-third-party live systems · never produces weaponized exploits · money/account-security
-changes and permanent deletion are only ever reported, never touched.
+Read-only (never fixes, only reports) · **authorized-only live testing — refuses
+without an in-scope authorization** (`SKILL.md §0.1`) · reading third-party open source
+is free, but a finding goes to responsible disclosure, never to attack · never produces
+weaponized exploits · money/account-security changes and permanent deletion are only
+ever reported, never touched, even with authorization.
+
+This is not an unrestricted attack tool — it's an authorized pentest tool.
 
 If you're not sure, gedik is supposed to write `NOT MEASURED` — not "clean."
 
