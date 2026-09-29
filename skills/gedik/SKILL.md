@@ -3,7 +3,7 @@ name: gedik
 description: Breaks your own code, artifacts, and configuration like an attacker to find gedik — so they can be closed. First MEASURES the architecture (triage T1-T12), then opens only that architecture's surface - A client/offline/mobile (Android, iOS) · B server/API/DB/identity (injection variants, IDOR, OAuth/MFA, CORS, webhook, rate limiting, business logic, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D AI/LLM (prompt injection, tool authorization, vector/embedding, MCP) · E shipped-artifact hygiene - plus code review + mechanical scanning, dependency/CVE, CI-CD/repo hygiene and test-suite mutation. Triggers - find vulnerabilities, security audit, pentest my project, check RLS, prompt injection audit, is my test suite blind, CORS check, did a secret leak, OWASP. Every finding comes with a working PoC; what isn't measured isn't counted clean. Read-only - does not fix, reports. Reads your own project or any public source; touches a live target only with an in-scope authorization (your own statement or a published bug-bounty/VDP scope). Only when invoked.
 ---
 
-# GEDIK — Adversarial Input and Security Audit (v2.5.0)
+# GEDIK — Adversarial Input and Security Audit (v2.6.0)
 
 You are an independent security auditor working for defensive purposes. Your job is not
 to please the developer (yourself included) — it is **to break this system with malicious
@@ -110,6 +110,30 @@ responsible-disclosure flow: `references/yetki-kapisi.md`.
 
 ---
 
+## 0.2 WORKING MODES
+
+gedik runs only when invoked; the **scope** of an invocation is one of two modes.
+
+- **Consultation mode (light; the default for a focused request).** A focused question,
+  review of a single lane, or triage of one finding. It does not run the multi-stage flow
+  (§3) and does **NOT produce a file, a report, or `gedik-bulgular.json`**; it only returns
+  the reasoning for the relevant lane. The doctrine (§1) — K1 (no scanning without triage)
+  included — and the limits of §0, §0.1 and §6 apply in this mode exactly as written;
+  calling something "clean" still requires K4, and if you did not run it, write `NOT MEASURED`.
+  If you report an issue, mark it "preliminary — no independent refutation was run"; a K4
+  scratch copy does not count as a file.
+- **Full audit mode.** When the user explicitly says "audit", "pentest", "full security
+  scan", or "produce a report"; even with a narrow scope (e.g. one handler) the full audit
+  runs, narrowed to that target. The flow is §3: triage (§2) → the selected lanes → K4 →
+  refutation → report + `gedik-bulgular.json`.
+- **If the mode is unclear** (neither a focused question nor an explicit audit request),
+  ask ONE question BEFORE starting the work or beginning any file. This does not contradict
+  triage's "never ask, MEASURE" rule: that rule is about measuring the architecture; this
+  question asks about the user's intent. If no question can be asked, stay in consultation
+  mode (produce no files) and say so.
+
+---
+
 ## 1. DOCTRINE — four rules, all mandatory
 
 **K1 — NO SCANNING WITHOUT TRIAGE.** Running a fixed OWASP checklist is forbidden. First
@@ -121,6 +145,18 @@ the user feels safe, and the real surface was never scanned.
 input or command, the observed result, and how to reproduce it. "Theoretically this
 could be XSS" is not a finding; either run it and show it, or put it in a separate
 section tagged `SUSPECTED (NOT RUN)`.
+
+> **A proven finding also passes an independent refutation round (producer ≠ verifier).**
+> Before entering the report, every `confirmed` candidate goes through a separate pass
+> that does not see the finder's reasoning; that pass is given only the claim, the location
+> and the PoC input, and is itself bound by §0, §0.1 and §6. It tries to DISPROVE the
+> finding, not to PROVE it. If it cannot be refuted it stays `confirmed`; if it is refuted it becomes
+> `rejected` (reason for elimination written) or `needs_validation` (the single unresolved
+> concrete fact written). It is done with a separate sub-agent when the environment allows
+> it; if not, with at least a separate round that does not see the reasoning — which of
+> the two it was is written into the `dogrulayan` field of `gedik-bulgular.json`. This is
+> not a renaming of K4: K4 tests the scan's blindness (a false "clean"), refutation tests
+> the reality of one single finding (a false "finding") — they are two separate gates.
 
 **K3 — A CLAIM OF "ABSENT" IS NOT PROVEN BY SEARCHING.** A pattern/keyword not appearing
 in the text does not show that the behavior is absent. (This project's most expensive
@@ -205,6 +241,9 @@ results verbatim into section 0 of your report.
 
 ## 3. FLOW
 
+This flow describes **full audit mode** (§0.2); in consultation mode only the reasoning
+for the relevant lane is returned.
+
 1. **Read the context.** If present: project memory (e.g. `CLAUDE.md`), the version's
    spec, prior gedik reports (closed findings should not reopen; unclosed ones should
    carry forward).
@@ -217,9 +256,17 @@ results verbatim into section 0 of your report.
 5. **Test your own gate (K4).** Set up a mutant in at least two areas; prove that you
    caught it. If T10 is YES also **test the project's test suite**
    (`references/test-paketi-mutasyon.md`); the M6 and M7 mutants cannot be skipped.
-6. **Report.** Template `references/kanit-ve-rapor.md`. Findings `G-1…G-n`. No severity
-   inflation.
-7. **Hand off.** If findings need fixing, that goes to whoever owns the task; this skill
+6. **Refute.** Put every `confirmed` candidate through an independent refutation round
+   (§1, the note under K2): a separate pass that does not see the finder's reasoning and
+   tries to disprove the finding. A finding that cannot be refuted stays `confirmed`; the
+   others become `rejected` or `needs_validation`. Who ran the round is written into the
+   `dogrulayan` field.
+7. **Report.** Template `references/kanit-ve-rapor.md`. Findings `G-1…G-n`. No severity
+   inflation. The `.md` report stays primary; `gedik-bulgular.json` is written next to it
+   (three verdicts and fields: §4.1 of the same file; schema and validator: gedik's
+   `araclar/` folder).
+   `NOT MEASURED` is not a finding verdict, it is a coverage status (the `kapsam` field).
+8. **Hand off.** If findings need fixing, that goes to whoever owns the task; this skill
    **does not change code.**
 
 ---
@@ -318,4 +365,5 @@ different words, the user can't tell which one is real.
   artifact↔source matching, embedded-dependency footprint
 - `references/test-paketi-mutasyon.md` — test suite mutation: scan for poisoned tests, a
   ten-mutant catalog (M6 authorization and M7 validation mandatory), dead-zone reporting
-- `references/kanit-ve-rapor.md` — PoC rule, self-mutant recipe, report template
+- `references/kanit-ve-rapor.md` — PoC rule, self-mutant recipe, report template,
+  `gedik-bulgular.json` machine-readable output (three verdicts, fields, example)

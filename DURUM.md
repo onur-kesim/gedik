@@ -1,44 +1,37 @@
 # DURUM — gedik
 
-## DEVİR O2 · 2026-09-29 · yazan: Claude Code · N=—
-Aşama: YAPIM (proje.toml asama). Yerel zincir (hiçbiri push edilmedi): `5429b2d` (canlı kök) →
-KUR → Dilim 1+2 → Dilim 3 (v2.5) → kapilar.py v0.2.1+CI → DEVİR O1 → DÜZELT-2 → DEVİR O2.
-Dallar: main = KUR · dilim-1-2-repo-yayin = Dilim 1+2 · dilim-3-sinir-spec-v2.5 = tepe.
-Boş kutu: bağımsız denetimin TESLİME UYGUN hükmü (Cowork 2. denetimi DÜZELT verdi, aşağıdaki
-DÜZELT-2 bitti ama taze tur koşmadı).
-Son yapılan (Cowork 2. denetim, DILIM.md DÜZELT-2): (1) `_calisma/ic_adlar.txt` birleşik 31 desen;
-3 eşleşme + `d4d4ce1` commit MESAJI redakte edildi, önce yeni bundle (`..-b.bundle`), sonra 5 commit
-yeniden oynatıldı — `git grep` üç yerel dalda 0, yerel commit mesajlarında 0. (2) Sabit cümle
-kilidi (EK-1.4): `araclar/sabit_cumleler.json` 10 cümle × TR+EN, `ceviri_kapisi.py` koşuyor;
-pozitif kontrol EN'den "NOT" silme (yapı PASS, kilit KIRMIZI), gerçek koşu 3 diskte mutasyonla
-çıkış 1. (3) §0 madde 1-2 EK-1.1 drop-in birebir (TR+EN); description×2+plugin.json+
-marketplace.json EK-1.2 birebir. (4) DILIM DÜZELT kutuları gerçeğe göre düzeltildi.
-Yarım kalan: bağımsız denetim turu (DÜZELT-2 sonrası) koşmadı.
-Kendi hatalarım (2. denetimde ortaya çıktı, DILIM'de kayıtlı): `ic_adlar.txt`'yi okumadan yazıp
-Cowork'ün ilk listesini ezmiştim (geri getirilemedi; yalnız mesajda sayılan 14 eksik desen
-eklendi — ilk listede başka desen varsa bilemiyorum, Cowork teyit etsin) · EK-1'i dosya ADIYLA
-arayıp "erişilemedi" demiştim, oysa SINIR_SPEC dosyasının sonundaydı · "NOT" bulgusunu yanlış
-okuyup "doğrulanamadı" yazmıştım (bulgu kapının anlam-körlüğünü ölçen bir mutasyondu, geçerli).
-🔴 Açık/kritik: **`onur-kesim/gedik` `main` (origin) depo oluşturulduğundan beri (2026-09-28
-20:58 UTC) PUBLIC ve canlı; tek commit'i (`5429b2d`, şablon) hâlâ 2 iç-ad eşleşmesi taşıyor**
-(CHANGELOG.md + araclar/kapilar.py yorumu, bkz. `_calisma/ic_adlar.txt`). Yerel geçmiş temiz,
-uzak değil; düzeltme yalnız push/force-push ile olur — karar kullanıcıda ("push YOK" sürüyor).
-Sıradaki ilk iş: 1) bağımsız denetimi tazeden koştur (ayrı bağlam, salt-okunur) 2) Cowork
-`ic_adlar.txt` ilk listesini teyit etsin 3) TESLİME UYGUN ise kullanıcıdan (a) canlı `main`
-sızıntısı için karar (küçük düzeltme push'u / force-push / depoyu geçici private) ve (b) yerel
-commit'lerin push'u için "push et" iste.
-Açık karar / bloker: bağımsız denetim + canlı main kararı + push onayı kullanıcıda.
-Araç eksiği: `ceviri_kapisi.py` (sabit cümle kilidi dahil) ve `ic_ad_kapisi.py` CI'da KOŞMUYOR
-(proje.toml test = yalnız kapilar.py; ic_ad_kapisi `_calisma/`ya bağlı, CI'da ATLANDI verir) —
-D2: en geç sonraki teslimde CI'ya bağlanmalı, kullanıcı kararı bekliyor.
-Dosyalar: SKILL.md×2 (skills/gedik-tr, skills/gedik), araclar/ceviri_kapisi.py,
-araclar/sabit_cumleler.json, araclar/ic_ad_kapisi.py, .claude-plugin/*.json, DILIM.md, DURUM.md
-Uyarı: (1) `_calisma/gedik-yerel-yedek-2026-09-29.bundle` ve `..-b.bundle` ESKİ kirli geçmişleri
-taşır — yalnız yerel, gitignore'lu, asla push edilmeyecek. (2) PR gövdesine iş emri §5'teki
-"genelleştirme diff'i"ni YAPIŞTIRMA: ham diff silinen satırlarda iç adları içerir; özet
-(satır/dosya sayısı) yaz, ham diff yerelde (`_calisma/genellestirme_diff.txt`) kalsın;
-`_calisma/pr_body.md` taslağı bu yüzden olduğu gibi kullanılmamalı.
-Yeni oturumda yaz:  gedik · O3 · başla
+## DEVİR O3 · 2026-09-29 · yazan: Claude Code · N=544k (🟢)
+Aşama: YAPIM (proje.toml asama). Yerel zincir (hiçbiri push edilmedi): `5429b2d` (canlı kök) → KUR → Dilim 1+2 → Dilim 3 (v2.5) →
+kapilar.py v0.2.1+CI → DEVİR O1 → DÜZELT-2 → DEVİR O2 → Cowork 3. denetim kaydı (`26a8291`) → README rakip satırı (`6cec592`) →
+**Dilim 4 (v2.6) = bu DEVİR'in commit'i**. Dallar: main = KUR · dilim-1-2-repo-yayin = Dilim 1+2 · dilim-3-sinir-spec-v2.5 = v2.5 ·
+**dilim-4-makineokur-v2.6 = tepe**.
+Boş kutu: v2.5 — etiket/CHANGELOG(yazılı)/PR/push/insan · v2.6 — Cowork bağımsız denetimi, etiket, PR/push, insan, geri alma planı kutusu (plan DILIM'de yazılı).
+Son yapılan: v2.6 uygulandı (spec `_calisma/SINIR_SPEC_GEDIK_v2.6_2026-09-29.md`): `gedik-bulgular.json` + `araclar/bulgu-semasi.json` +
+`araclar/bulgu_kapisi.py` (kör kapı öz-testli, `kapilar.py` zincirinde), SKILL.md §0.2 iki mod, §1 çürütücü notu + §3 "Çürüt" adımı + rapor şablonu
+`Doğrulayan`, referans §4.1; sürüm 2.6.0 dört yerde; README×2 + CHANGELOG. İç doğrulama 2 tur, 10 ajan (ayrı bağlam, salt-okunur) — DILIM DENETİM.
+Yarım kalan: Cowork'ün v2.6 denetimi; TESLİM kutuları (dört sayı, etiket, PR, insan).
+Sıradaki ilk iş: 1) Cowork v2.6'yı denetlesin (DILIM DENETİM'e yazılır; DÜZELT gelirse DÜZELT-3) 2) kullanıcıdan: (a) canlı `main` sızıntısı için karar
+(küçük düzeltme push'u / force-push / depoyu geçici private) (b) "push et" — sıra: v2.5, sonra v2.6 3) etiketler `v2.5.0` → `v2.6.0` (CHANGELOG bölümleri yazılı),
+dört sayı DURUM'a.
+🔴 Açık/kritik: **`onur-kesim/gedik` `main` (origin) 2026-09-28 20:58 UTC'den beri PUBLIC ve canlı; tek commit'i (`5429b2d`) hâlâ 2 iç-ad eşleşmesi taşıyor**
+(CHANGELOG.md + araclar/kapilar.py yorumu; 2026-09-29 21:2x `git ls-remote` ile hâlâ `5429b2d`). Yerel geçmiş temiz; düzeltme yalnız push/force-push ile olur — karar kullanıcıda.
+Spec sahibine açık sorular (ölçüldü, kapatılmadı): (1) 'gedik ara / gedikleri bul / açıkları bul' description tetikleyicileri §0.2'de hiçbir moda açıkça bağlı değil →
+"mod belirsiz" tek sorusu tetiklenir (2) JSON'da KOŞULDU/STATİK ayrımı yok (şemada kanıt türü alanı yok) (3) `ayri-tur` öz-beyandır, kapı doğrulayamaz (4) v2.6'nın yeni
+cümleleri sabit cümle kilidinde YOK (spec kilidi değiştirmeyi yasakladı); önerilen 4 cümle: danışmada `ÜRETMEZ`, çürütücü "gerekçeyi görmeyen", JSON md raporun "yerine geçmez",
+"`ÖLÇÜLMEDİ` hüküm DEĞİLDİR" (5) v2.5 kilit alanında zararsız işaretleyici adı üç farklı (`__GEDIK_KANITI` TR SKILL, `__GEDIK_PROOF` EN SKILL, `__ZAFIYET_KANITI` referanslar +
+serit-A): biriyle enjekte edip ötekini ölçen ajan sahte "enjeksiyon yok" okur (6) referans §6 DEVİR ("kararı proje hafızasına yaz") ↔ SKILL §6 salt-okunur ↔ v2.6 §4.1 rapor konumu
+kuralı; §3 adım 1 "önceki gedik raporları" varsayılan scratch konumunda işlemez.
+Açık karar / bloker: canlı main sızıntısı · "push et" · yukarıdaki spec soruları.
+Araç eksiği: `ceviri_kapisi.py` (sabit cümle kilidi dahil) ve `ic_ad_kapisi.py` CI'da KOŞMUYOR (D2: en geç sonraki teslimde CI'ya bağlanmalı — kullanıcı kararı);
+`taban_dosya_ihlal = 2` bugün 0 ihlalle geçiyor, 0'a çekilebilir (dondurulmuş taban, karar sende).
+Dosyalar: araclar/bulgu_kapisi.py, araclar/bulgu-semasi.json, araclar/kapilar.py, skills/gedik-tr + skills/gedik (SKILL.md, references/kanit-ve-rapor.md),
+.claude-plugin/*.json, README.md, README.tr.md, CHANGELOG.md, proje.toml, CLAUDE.md, DILIM.md, DURUM.md
+Uyarı: (1) `_calisma/gedik-yerel-yedek-2026-09-29.bundle` ve `..-b.bundle` ESKİ kirli geçmişleri taşır — yalnız yerel, gitignore'lu, asla push edilmeyecek.
+(2) PR gövdesine iş emri §5'teki ham "genelleştirme diff'i"ni YAPIŞTIRMA (silinen satırlarda iç ad var); `_calisma/pr_body.md` taslağı olduğu gibi kullanılmamalı.
+(3) `araclar/kapilar.py` şablon v0.2.1'den 10 satır sapıyor: şablonun sonraki sürümü elle birleştirilmeli. (4) Bu oturumda geçici dosyalar oturum scratchpad'ine yazıldı
+(sistem yönergesi) — proje kuralı 1 ("yalnız `_calisma\`") ile çelişti; bundan sonra `_calisma\`. Scratchpad'de kamuya açık üçüncü taraf metni (Cloudflare dosyaları) ve denetçi
+betikleri var, sır yok. (5) Çalışma ağacında autocrlf uyarısı (LF→CRLF): commit'te normalize olur.
+Yeni oturumda yaz:  gedik · O4 · başla
 
 ## DÖRT SAYI (her TESLİM'de bir satır — K8; KEŞİF'te nabız sütununa "KEŞİF" yazılır)
 | tarih | ürün nabzı (gün) | açık dilim yaşı (gün) | kapı kırmızı | sayaç |
@@ -63,3 +56,7 @@ Yeni oturumda yaz:  gedik · O3 · başla
 - 2026-09-29 — **GERİ ÇEKİLDİ (B2): "EN §0.1'de NOT silinmiş iddiası doğrulanamadı" satırım yanlıştı.** Cowork'ün bulgusu dosyada NOT eksik olduğunu söylemiyordu; kapının anlamı ölçmediğini gösteren bir mutasyon ölçümüydü (NOT silinince ceviri_kapisi PASS). Bulgu geçerliydi; sabit cümle kilidi (`araclar/sabit_cumleler.json`, EK-1.4) ile kapatıldı: EN'den NOT silme → yapı kapısı PASS, kilit KIRMIZI.
 - 2026-09-29 — **Cowork 2. denetim: DÜZELT, push YOK → DÜZELT-2 kapandı.** (1) `_calisma/ic_adlar.txt` Cowork'ün ilk listesiyle birleştirilecekken ben o dosyayı okumadan yazıp ezmiştim; ezilen liste geri getirilemedi, birleşik liste = benim 17 + Cowork'ün mesajda saydığı 14 eksik desen (31). Bu listeyle 3 dosya eşleşmesi (gh ikinci hesap adı, DURUM, DILIM) ve `d4d4ce1` commit MESAJI (git grep mesajlara bakmaz) redakte edildi; yeni bundle sonrası 5 commit yeniden oynatıldı; `git grep` üç yerel dalda 0, commit mesajları 0. Kök commit `5429b2d` (zaten canlı, uzakta) 2 eşleşme taşıyor, yeniden yazılamaz. (2) Sabit cümle kilidi EK-1.4. (3) §0 madde 1-2 EK-1.1, description'lar EK-1.2. (4) DILIM DÜZELT 1. tur kutuları (madde 1 ve 4) gerçeğe göre düzeltildi.
 - 2026-09-29 — **Cowork 3. denetim: TESLİME UYGUN (koşullu).** İç ad (20 desen) 7 commit 0 · kapilar 7 PASS/0 FAIL · çeviri 12/12 · sabit cümle kilidi 3 anlam mutasyonunun 2'sini yakaladı (3.sü kilitli asıl cümleyle korunuyor) · §0 m.1 EK-1.1 uyumlu · rastgele beyan (kilit pozitif kontrolü) tuttu. Koşul: README'ye "kapı metin düzeyinde doğrulandı, davranışı canlı ajan koşusunda denenmedi" notu (EN+TR) — yapıldı. NE ÖLÇÜLEMEDİ: §0.1 davranışsal kör kapı (canlı ajan koşumu), CI (push sonrası), `/plugin install`. Push YOK sürüyor; canlı `main` sızıntısı kararı ve "push et" kullanıcıda. (DEVİR O2 başlığı bu satırla bayat: "bağımsız denetim koşmadı" artık geçersiz — bir sonraki DEVİR'de düzelir.)
+
+- 2026-09-29 — **v2.6 (makine-okur çıktı + iki mod + bağımsız çürütücü) YAPILDI, yerelde**; dal `dilim-4-makineokur-v2.6` (v2.5'in üstünde); spec dondurulmuş (yerel, Cowork; karar sahibi: proje sahibi). Yerleştirme/yorum kararları (Cowork teyit etsin): (1) spec "6.5 Çürüt" dedi → §3'te adım 6, Raporla 7, Devret 8 (rapor çürütülmüş hükümleri taşımalı); (2) spec'in adlandırmadığı alanlar `cozulmemis_olgu`, `eleme_nedeni`; üst düzey `sema` sabiti; ASCII enum değerleri; `serit` enum'u A–E, TEST, KOD, CICD; (3) `needs_validation` yalnız `cozulmemis_olgu`, `rejected` yalnız `eleme_nedeni` zorunlu (spec-harfiyen; ilk halim daha katıydı, öz-test yakaladı), `dogrulayan` yalnız `confirmed`'de zorunlu; (4) rapor şablonunda `Z-n`→`G-n`, eski skill adı → `<gedik-sürümü>`, 2.1/2.2 bölümleri eklendi; (5) `araclar/sabit_cumleler.json` DEĞİŞMEDİ; (6) `araclar/kapilar.py` +10 satır (şablon v0.2.1'den sapma); (7) README/CHANGELOG/lint komutu güncellendi; (8) doğrulama sırasında eklenen kurallar: kanıt türü ↔ hüküm (`KOŞULDU`/`STATİK`→`confirmed`, `ÖLÇÜLMEDİ` etiketli aday→`needs_validation`), rapor konumu (çıktı klasörü; hedef kaynak ağacına yazılmaz), "denetle"+odaklı kapsam→tam denetim, danışmada ön-bulgu işareti.
+- 2026-09-29 — **v2.6 iç doğrulama (ayrı bağlam, salt-okunur, 2 tur, 10 ajan)**: 1. tur 6 ajan — çeviri eşitliği TESLİME UYGUN, spec/kapı-kırma/entegrasyon DÜZELT (1 YÜKSEK, 13 ORTA; hepsi kapatıldı: açık `--dosya` yolu, `G-1\n` deliği, öz-test kapsamı 59→0 gerçek hayatta mutant, belge çelişkileri); 2. tur 4 ajan — eşitlik TESLİME UYGUN, regresyon DÜZELT (kendi eklediğim STATİK→needs_validation eşlemesi SS1/SS5/şablon/serit-E ile çelişiyordu; mevcut belgelerle uyumlu eşlemeye çevrildi). Yalnız skill belgelerini okuyan ajanlar (TR+EN, 2 tur) şemaya bakmadan geçerli gedik-bulgular.json yazdı (4/4 PASS). Bu, Cowork'ün resmî denetimi değildir; kutu DILIM'de boş.
+- 2026-09-29 — Ortam/uyum notu: oturum sistem yönergesi geçici dosyayı scratchpad'e yazdırırken proje kuralı 1 yalnız `_calisma\`'ya izin veriyor; ikisi çelişti, scratchpad'e yazıldı (sır yok) ve DEVİR'e uyarı olarak geçti. Sonraki oturumlar `_calisma\` kullanır.

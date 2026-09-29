@@ -92,7 +92,7 @@ Dosya adı: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 
 ```markdown
 # ZAFİYET RAPORU — <proje> <sürüm>
-> Tarih: <YYYY-AA-GG> · Denetleyen: zafiyet-avcisi v1.0 · Kapsam: kullanıcının kendi
+> Tarih: <YYYY-AA-GG> · Denetleyen: gedik <gedik-sürümü> · Kapsam: kullanıcının kendi
 > kod tabanı/artefaktı · Salt-okunur (düzeltme yapılmadı)
 
 ## 0. TRİYAJ (ölçülen mimari)
@@ -115,13 +115,20 @@ Dosya adı: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 | # | Sink | Konum | Beslendiği veri | Güvenilmeyen mi | Kaçış |
 
 ## 2. BULGULAR
-### Z-1 · [ŞİDDET] <tek cümlelik başlık>
+### G-1 · [ŞİDDET] <tek cümlelik başlık>
 - **Nerede:** dosya:satır
 - **Tekrar üretim:** <birebir girdi/komut>
 - **Gözlenen:** <ölçülen sonuç>
 - **Etki:** <mimarinin izin verdiği tavana göre, şişirmesiz>
 - **Yama:** <somut, uygulanabilir düzeltme>
 - **Kanıt türü:** KOŞULDU / STATİK / ÖLÇÜLMEDİ
+- **Doğrulayan:** alt-ajan / ayrı tur — bağımsız çürütme turunu yapan (JSON: `dogrulayan`)
+
+### 2.1 ŞÜPHE (ÇALIŞTIRILMADI) — `needs_validation`, şiddet YOK
+- **G-n · <başlık>** — çözülmemiş tek somut olgu: <...>
+
+### 2.2 ÇÜRÜTÜLEN ADAYLAR — `rejected`
+- **G-n · <başlık>** — elenme nedeni: <...> · doğrulayan: alt-ajan / ayrı tur
 
 ## 3. TEMİZ ÇIKANLAR (her biri neyle ölçüldü)
 | Başlık | Sonuç | Ölçüm yöntemi |
@@ -135,10 +142,91 @@ Dosya adı: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 ## 6. KARAR
 **GÜVENLİK AÇISINDAN YETERLİ** (kritik/yüksek bulgu yok, ölçülmeyen kritik başlık yok)
 — veya —
-**DÜZELT:** [Z-1, Z-3, ...] · **ÖNCE ÖLÇ:** [ölçülmeyen kritik başlıklar]
+**DÜZELT:** [G-1, G-3, ...] · **ÖNCE ÖLÇ:** [ölçülmeyen kritik başlıklar]
 
 ## 7. SONRAKİ TURA DEVREDİLENLER
 - ...
+```
+
+### 4.1 `gedik-bulgular.json` — makine-okur çıktı (tam denetim modu)
+
+`.md` rapor birincil ve insan içindir; JSON onun **yerine geçmez**, yanına (aynı klasöre)
+yazılır. Rapor dosyaları kullanıcının belirttiği çıktı klasörüne (yoksa oturumun çıktı/scratch
+klasörüne) yazılır; hedef projenin kaynak ağacına yazılmaz (SKILL.md §6). Şema ve doğrulayıcı
+eklentinin kökündeki `araclar/` klasöründedir (`<eklenti-kökü>/araclar/`; skill klasörünün iki
+üst dizini): şema `bulgu-semasi.json`, doğrulayıcı kapı `bulgu_kapisi.py`
+(`python <araclar-yolu>/bulgu_kapisi.py --dosya gedik-bulgular.json`). Şemaya uymayan dosya
+teslim edilmez. Araç ya da Python ulaşılamıyorsa alan sözlüğünü elle uygula ve teslim
+mesajına "JSON şema doğrulamasından geçirilemedi (ÖLÇÜLMEDİ)" yaz. SARIF ya da CI/Action
+çıktısı YOKTUR; bu yalnız gedik'in kendi JSON'udur.
+
+**Üç hüküm** — gedik'in kendi kavramlarının karşılığıdır, yeni kavram değildir:
+
+| `hukum` | Anlamı | Zorunlu alanlar | Yasak alanlar |
+|---|---|---|---|
+| `confirmed` | K2 sağlanmış bulgu (PoC'li), çürütmeden geçmiş | `siddet`, `etkilenen`, `poc_girdi`, `gozlenen`, `tekrar_uretim`, `yama`, `dogrulayan` | `cozulmemis_olgu`, `eleme_nedeni` |
+| `needs_validation` | `ŞÜPHE (ÇALIŞTIRILMADI)`: kesin olmayan hipotez | `cozulmemis_olgu` (çözülmemiş tek somut olgu) | `siddet`, `eleme_nedeni` |
+| `rejected` | elenen aday (çürütüldü) | `eleme_nedeni` | `siddet`, `cozulmemis_olgu` |
+
+Her kayıtta `bulgu_id`, `serit` ve `hukum` zorunludur. Tabloda ne zorunlu ne yasak yazılan alan
+o hükümde isteğe bağlıdır (ör. `needs_validation` kaydında `etkilenen`, `rejected` kaydında
+`dogrulayan`); bilinmeyen alan reddedilir.
+
+**Kanıt türü ↔ hüküm:** `KOŞULDU` ve `STATİK` → `confirmed` (`STATİK` ise `poc_girdi` tetikleyecek
+birebir girdiyi, `gozlenen` koddan türetilen sonucu, `tekrar_uretim` mantık zincirini taşır).
+Kanıt türü `ÖLÇÜLMEDİ` olan aday → `needs_validation` (`cozulmemis_olgu`: neden ölçülemedi).
+`ÖLÇÜLMEDİ` bir hüküm değildir; yüzey hiç ölçülemediyse ayrıca `kapsam` satırı yazılır.
+
+**Şiddet yalnız `confirmed` kayıtta bulunur.** Değerler (SKILL.md §4 ölçütü): `KRITIK`,
+`YUKSEK`, `ORTA`, `DUSUK`, `BILGI` — JSON'da her zaman bu ASCII biçimi.
+
+Alan sözlüğü (alan adları TR ve EN akışında aynıdır):
+- `sema`: sabit `gedik-bulgular/1`. `bulgular`: kayıt listesi (bulgu yoksa boş). `kapsam`: en az bir satır.
+- `bulgu_id`: `G-n`, tekil (üç hükümde ortak numaralama). `serit`: `A`, `B`, `C`, `D`, `E`, `TEST`
+  (test paketi mutasyonu), `KOD` (kod incelemesi), `CICD` (CI/CD ve depo).
+- `etkilenen`: etkilenen kaynak (dosya:satır, tablo, uç nokta, kullanıcı/rol). `poc_girdi`: birebir
+  girdi ya da komut. `gozlenen`: ölçülen sonuç. `tekrar_uretim`: tek metin; adımlar `1) 2) 3)`
+  diye numaralanır. `yama`: önerilen en dar yama.
+- `dogrulayan`: bağımsız çürütme turunu kimin yaptığı — `alt-ajan` (ayrı alt-ajan) ya da
+  `ayri-tur` (ortam alt-ajana elvermedi; ayrı, gerekçe-görmeyen bir tur). `ayri-tur` daha zayıf
+  bir bağımsızlıktır.
+- `kapsam`: yüzey başına en fazla bir `{yuzey, durum, sebep}` satırı; `yuzey`: `serit` ile aynı
+  değer kümesi; `durum`: `olculdu` | `olculmedi` (`sebep` zorunlu) | `mimari-yok` (`sebep`
+  isteğe bağlı). Kısmen ölçülen yüzey `olculmedi` yazılır; `sebep` neyin ölçülüp neyin
+  ölçülmediğini söyler. **`ÖLÇÜLMEDİ` bir bulgu hükmü DEĞİLDİR, kapsam durumudur** — `hukum`
+  alanına yazılmaz.
+- Başkasının gerçek verisi hiçbir alana girmez (SKILL.md §0): satır sayısı + alan adı + HTTP kodu.
+
+```json
+{
+  "sema": "gedik-bulgular/1",
+  "bulgular": [
+    {
+      "bulgu_id": "G-1", "serit": "B", "hukum": "confirmed", "siddet": "KRITIK",
+      "etkilenen": "api/orders.js:42 (no ownership check)",
+      "poc_girdi": "GET /orders/1002 (session: user A)",
+      "gozlenen": "HTTP 200, 1 row, fields: id, owner_id, total",
+      "tekrar_uretim": "1) sign in as A 2) GET /orders/1002 3) response belongs to B",
+      "yama": "add owner_id = :uid to the query",
+      "dogrulayan": "alt-ajan"
+    },
+    {
+      "bulgu_id": "G-2", "serit": "C", "hukum": "needs_validation",
+      "etkilenen": "supabase/migrations/0003.sql",
+      "cozulmemis_olgu": "is RLS enabled on the live project? only the migration was read"
+    },
+    {
+      "bulgu_id": "G-3", "serit": "A", "hukum": "rejected", "dogrulayan": "ayri-tur",
+      "eleme_nedeni": "sink is fed only by a constant template (origin traced)"
+    }
+  ],
+  "kapsam": [
+    { "yuzey": "A", "durum": "olculdu" },
+    { "yuzey": "B", "durum": "olculdu" },
+    { "yuzey": "C", "durum": "olculmedi", "sebep": "no live authorization" },
+    { "yuzey": "D", "durum": "mimari-yok" }
+  ]
+}
 ```
 
 ---

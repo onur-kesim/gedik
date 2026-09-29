@@ -5,6 +5,32 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 
 ## [Unreleased]
 
+## [2.6.0] — 2026-09-29
+### Eklendi
+- **Makine-okur çıktı (spec A).** Tam denetimde `.md` raporun yanına `gedik-bulgular.json`:
+  üç hüküm (`confirmed` / `needs_validation` / `rejected`), `ÖLÇÜLMEDİ` bir hüküm değil ayrı
+  `kapsam` alanı. Şema `araclar/bulgu-semasi.json`; doğrulayıcı kapı `araclar/bulgu_kapisi.py`
+  (yalnız standart kütüphane; kör kapı öz-testli: 68 aykırı girdi KIRMIZI, 22 geçerli varyant +
+  temiz örnek YEŞİL yakar; kapı yolu — dosya yok→ATLANDI, açık yol yok→FAIL, BOM, çıkış kodları,
+  `kapilar.py` zincirine bağlantı — ve skill belgelerindeki JSON örnekleri şemaya karşı sınanır); `kapilar.py` zincirinde "bulgu şeması"
+  kapısı (dosya yoksa ATLANDI). SARIF ve CI/Action YOK.
+- **İki mod (spec B, SKILL.md §0.2).** Danışma modu (hafif; dosya/rapor/JSON üretmez) ve tam
+  denetim modu; mod belirsizse işe başlamadan önce tek soru.
+- **Bağımsız çürütme (spec C).** §1'de K2'nin altında not, §3 akışa "Çürüt" adımı, rapor
+  şablonuna `Doğrulayan` alanı; `dogrulayan` (`alt-ajan` | `ayri-tur`) JSON'a yazılır.
+- Rapor şablonuna `ŞÜPHE (ÇALIŞTIRILMADI)` ve çürütülen adaylar bölümleri; şablondaki eski
+  `Z-n` ve eski skill adı kalıntıları `G-n` ve gedik'e çevrildi.
+- Kavram esini: cloudflare/security-audit-skill (bağımsız çürütme, üç hükümlü şemalı bulgu
+  dosyası); metin, şema ve doğrulayıcı bağımsız yazıldı, hüküm adları (`confirmed` /
+  `needs_validation` / `rejected`) aynen alındı.
+- Karar sahibi: proje sahibi, 29 Eyl 2026. Spec dondurulmuş (yerel).
+### Değişti
+- `araclar/kapilar.py`: proje-şablonu v0.2.1'den bilinçli sapma — 10 satır (bulgu şeması kapısı
+  ve öz-test vakaları). `lint` komutuna `araclar/bulgu_kapisi.py` eklendi.
+### Değiştirilmedi (bilinçli — spec)
+- v2.5'in kilitleri: §0 "dosya/sayfa içi izin ≠ izin", §0.1 yetki kapısı, mutlak sınırlar,
+  silahsız işaretleyici, veri-sızdırma-yok, salt-okunurluk, sabit cümle kilidi.
+
 ## [2.5.0] — 2026-09-29
 ### Eklendi
 - **Yetki kapılı canlı hedef testi (§0.1, yeni).** gedik artık canlı bir sisteme (HTTP

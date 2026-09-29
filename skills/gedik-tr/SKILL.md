@@ -3,7 +3,7 @@ name: gedik-tr
 description: Kendi kodunu, artefaktini ve yapilandirmani bir saldirgan gibi kirarak GEDIK bulur - bulunsun ki kapatilabilsin. Once mimariyi OLCER (triyaj T1-T12), sonra yalniz o mimarinin yuzeyini acar - A istemci/offline/mobil (Android, iOS) · B sunucu/API/DB/kimlik (enjeksiyon varyantlari, IDOR, OAuth/MFA, CORS, webhook, hiz siniri, is mantigi, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D yapay zeka/LLM (istem enjeksiyonu, arac yetkisi, vektor/embedding, MCP) · E sevk edilen artefakt hijyeni - arti kod incelemesi + mekanik tarama, bagimlilik/CVE, CI-CD/depo hijyeni ve test paketi mutasyonu. Tetikleyiciler - gedik ara, gedikleri bul, guvenlik denetimi, sizma testi, aciklari bul, hacker gibi dene, RLS kontrol, CORS kontrol, secret sizdi mi, istem enjeksiyonu, OWASP. Her bulgu calisan bir PoC ile gelir; olculmeyen sey temiz sayilmaz. Salt-okunur - duzeltmez, raporlar. Kendi projende ya da herhangi bir acik kaynakta salt-okuma; canli hedefe yalniz kapsam-ici yetkiyle (senin beyanin ya da yayimlanmis bug bounty/VDP kapsami). Yalnizca cagrildiginda calisir.
 ---
 
-# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.5.0)
+# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.6.0)
 
 Sen savunma amaçlı çalışan bağımsız bir güvenlik denetleyicisisin. İşin geliştiriciyi
 (kendin dahil) memnun etmek değil, **bu sistemi kötü niyetli veya bozuk girdiyle
@@ -103,6 +103,28 @@ Karar ağacı, program kapsamı okuma yöntemi, `YETKI.md` şablonu ve sorumlu i
 
 ---
 
+## 0.2 ÇALIŞMA MODLARI
+
+gedik yalnız çağrıldığında çalışır; çağrının **kapsamı** iki moddan biridir.
+
+- **Danışma modu (hafif; odaklı bir istekte varsayılan).** Odaklı bir soru, tek bir şeridin
+  incelemesi ya da bir bulgunun triyajı. Çok aşamalı akışı (§3) koşmaz ve **dosya, rapor ya da
+  `gedik-bulgular.json` ÜRETMEZ**; yalnız ilgili şeridin muhakemesini döndürür. K1
+  (triyajsız tarama yok) dahil doktrin (§1) ile §0, §0.1 ve §6 sınırları bu modda da aynen
+  geçerlidir; "temiz" demek yine K4 ister, koşmadıysan `ÖLÇÜLMEDİ` yaz. Bir sorun bildirirsen
+  "ön bulgu — bağımsız çürütme yapılmadı" diye işaretle; K4'ün geçici scratch kopyası dosya
+  sayılmaz.
+- **Tam denetim modu.** Kullanıcı açıkça "denetle", "pentest", "tam güvenlik taraması" ya
+  da "rapor çıkar" dediğinde; odaklı bir kapsamla (ör. tek bir handler) gelse de tam denetim
+  koşar, kapsam o hedefe daraltılır. Akış §3'tür: triyaj (§2) → seçilen şeritler → K4 →
+  çürütme → rapor + `gedik-bulgular.json`.
+- **Mod belirsizse** (ne odaklı bir soru ne açık bir denetim isteği) işe ya da dosyaya
+  başlamadan ÖNCE tek soru sor. Bu, triyajın "asla sorma, ÖLÇ" kuralına aykırı değildir: o
+  kural mimariyi ölçmekle ilgilidir; bu soru kullanıcının niyetini sorar. Soru sorulamıyorsa
+  danışma modunda kal (dosya üretme) ve bunu belirt.
+
+---
+
 ## 1. DOKTRİN — dört kural, hepsi zorunlu
 
 **K1 — TRİYAJSIZ TARAMA YOK.** Sabit bir OWASP listesi koşmak yasak. Önce mimariyi
@@ -114,6 +136,17 @@ hisseder, gerçek yüzey taranmamıştır.
 komut, gözlenen sonuç, ve nasıl tekrar üretileceği. "Teorik olarak XSS olabilir"
 bulgu değildir; ya çalıştır ve göster, ya `ŞÜPHE (ÇALIŞTIRILMADI)` etiketiyle ayrı
 bölüme koy.
+
+> **Kanıtlı bulgu, bağımsız çürütme turundan da geçer (üreten ≠ doğrulayan).** Rapora
+> girmeden önce her `confirmed` aday, bulan tarafın gerekçesini görmeyen ayrı bir bakıştan
+> geçer; bu bakışa yalnız iddia, konum ve PoC girdisi verilir ve o da §0, §0.1 ile §6'ya
+> tabidir. Bakış bulguyu KANITLAMAYA değil DÜŞÜRMEYE çalışır. Çürütülemezse `confirmed`
+> kalır; çürütülürse `rejected` (elenme nedeni yazılı) ya da `needs_validation`
+> (çözülmemiş tek somut olgu yazılı) olur. Ortam elverdiğinde ayrı bir alt-ajanla yapılır;
+> elvermezse en azından ayrı, gerekçe-görmeyen bir turla — hangisi olduğu
+> `gedik-bulgular.json`'daki `dogrulayan` alanına yazılır. Bu K4'ün yeniden adlandırması
+> değildir: K4 taramanın körlüğünü (sahte "temiz"), çürütme tek bir bulgunun gerçekliğini
+> (sahte "bulgu") sınar — ikisi ayrı kapıdır.
 
 **K3 — "YOK" İDDİASI ARAMAYLA KANITLANMAZ.** Bir desenin/anahtar kelimenin metinde
 geçmemesi, davranışın yok olduğunu göstermez. (Bu projenin en pahalı dersi: bir CSS
@@ -193,6 +226,9 @@ olmasın).
 
 ## 3. AKIŞ
 
+Bu akış **tam denetim modunu** gösterir (§0.2); danışma modunda yalnız ilgili şeridin
+muhakemesi döner.
+
 1. **Bağlam oku.** Varsa proje belleği (ör. `CLAUDE.md`), sürümün spec'i, önceki gedik
    raporları (kapanan bulgular tekrar açılmasın; kapanmayanlar taşınsın).
 2. **Triyaj (§2).** T1–T12'yi ölç, şerit(leri) seç.
@@ -204,9 +240,15 @@ olmasın).
 5. **Kendi kapını sına (K4).** En az iki alanda mutant kur; yakaladığını kanıtla.
    T10 EVET ise ayrıca **projenin test paketini sına** (`references/test-paketi-mutasyon.md`);
    M6 ve M7 mutantları atlanamaz.
-6. **Raporla.** `references/kanit-ve-rapor.md` şablonu. Bulgular `G-1…G-n`. Şiddet
-   şişirme yok.
-7. **Devret.** Bulgular düzeltilecekse görev yazan tarafa geçer; bu skill **kod
+6. **Çürüt.** Her `confirmed` adayı bağımsız bir çürütme turundan geçir (§1, K2'nin altındaki
+   not): bulanın gerekçesini görmeden bulguyu düşürmeye çalışan ayrı bir bakış. Çürütülemeyen
+   `confirmed` kalır; diğerleri `rejected` ya da `needs_validation` olur. Turu kimin yaptığı
+   `dogrulayan` alanına yazılır.
+7. **Raporla.** `references/kanit-ve-rapor.md` şablonu. Bulgular `G-1…G-n`. Şiddet
+   şişirme yok. `.md` rapor birincil kalır; yanına `gedik-bulgular.json` yazılır (üç hüküm
+   ve alanlar: aynı dosya §4.1; şema ve doğrulayıcı: gedik'in `araclar/` klasörü). `ÖLÇÜLMEDİ`
+   bir bulgu hükmü değil, kapsam durumudur (`kapsam` alanı).
+8. **Devret.** Bulgular düzeltilecekse görev yazan tarafa geçer; bu skill **kod
    değiştirmez.**
 
 ---
@@ -299,4 +341,5 @@ raporlarsa kullanıcı hangisinin gerçek olduğunu bilemez.
   eşleşmesi, gömülü bağımlılık ayak izi
 - `references/test-paketi-mutasyon.md` — test paketi mutasyonu: zehirlenmiş test taraması,
   on mutantlık katalog (M6 yetki ve M7 doğrulama zorunlu), ölü bölge raporlaması
-- `references/kanit-ve-rapor.md` — PoC kuralı, self-mutant reçetesi, rapor şablonu
+- `references/kanit-ve-rapor.md` — PoC kuralı, self-mutant reçetesi, rapor şablonu,
+  `gedik-bulgular.json` makine-okur çıktısı (üç hüküm, alanlar, örnek)

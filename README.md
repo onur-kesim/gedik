@@ -20,8 +20,15 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   `references/yetki-kapisi.md`. The gate is verified at the text level (locked
   sentences + translation gate); its behavior has not yet been tested in a live agent
   run.
-- **No machine-readable output.** Reports are Markdown only — no SARIF/JSON, no CI/Action
-  integration.
+- **No SARIF and no CI/Action integration.** A full-audit run writes a Markdown report
+  plus gedik's own `gedik-bulgular.json` (v2.6; schema `araclar/bulgu-semasi.json`,
+  validator gate `araclar/bulgu_kapisi.py`), but there is no SARIF export and no
+  CI/Action wrapper. The JSON path is verified only against synthetic records (a
+  blind-gate self-test); no live audit has produced one yet.
+- **The independent-refutation step and the two modes (consultation / full audit) are
+  verified at the text level only** (translation-structure gate + one independent TR↔EN
+  reading; the v2.6 sentences are not in the locked-sentence gate); their behavior has not
+  yet been tested in a live agent run.
 - **Lane B (auth/OAuth) and T12 (cloud/IaC) are checklists, not validated on a real
   system.** They encode known attack patterns but have not yet been exercised against a
   live production stack.
@@ -42,7 +49,12 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
    green CI run was blindness, not a measurement.
 5. **Read-only.** gedik never edits your project; fixing is handed back to whoever's
    writing the code.
-6. **Your own project by default; a third party only with authorization.** Any open
+6. **Independent refutation before a finding is reported.** Every `confirmed` candidate
+   goes through a separate pass that does not see the finder's reasoning and tries to
+   knock it down; survivors stay `confirmed`, the rest become `rejected` or
+   `needs_validation`. Full-audit runs also write `gedik-bulgular.json` next to the
+   Markdown report (v2.6).
+7. **Your own project by default; a third party only with authorization.** Any open
    source (a public repo, a published artifact) can be read statically, free — a finding
    there goes to responsible disclosure, never to attack. Touching a *live* third-party
    system requires the §0.1 authorization gate. No weaponized exploits, no
@@ -57,6 +69,10 @@ This skill's biggest failure mode is not missing a vulnerability. It's calling s
 "find vulnerabilities" · "security audit" · "pentest my project" · "check RLS" ·
 "CORS check" · "did a secret leak" · "prompt injection audit" · "is my test suite blind"
 · "mutation testing"
+
+Two modes: a focused question gets **consultation mode** (light; no files, no report);
+say "audit" / "pentest" / "produce a report" for **full audit mode** (Markdown report +
+`gedik-bulgular.json`). If it's unclear which you meant, gedik asks one question first.
 
 Only on your own project, and only when invoked.
 
@@ -92,7 +108,10 @@ measured superiority — treat every "ahead" claim as a hypothesis, not a result
   doesn't have.
 - **K4 self-mutant, both directions** — poisons its own scan *and* the project's test
   suite to prove they bite. No other tool surveyed self-tests its own blindness this way.
-  cloudflare/security-audit-skill's independent refuters cut false positives; K4 is a
+  cloudflare/security-audit-skill's independent refuters cut false positives. gedik v2.6
+  adopts the idea — a refutation step and three-verdict machine-readable findings — with
+  text, schema and validator written independently (the verdict names `confirmed` /
+  `needs_validation` / `rejected` are taken over as they are; text-level, unmeasured); K4 is a
   different mechanism — mutation-testing the scan and the project's tests for blindness.
 - **Lane C (BaaS/RLS — Supabase, Firebase) as a first-class column** — only Strix has
   something similar.
@@ -104,8 +123,10 @@ measured superiority — treat every "ahead" claim as a hypothesis, not a result
   tools ship `evals/`; Shannon and PentestGPT report numbers. This is the biggest gap.
 - **No live exploitation, by design** — blind to classes that only manifest at runtime
   against a live target.
-- **No machine-readable output** (SARIF/JSON), no CI/Action integration —
-  cloudflare/security-audit-skill ships a schema'd `findings.json` with tested validators.
+- **Machine-readable output is new and unproven; no SARIF, no CI/Action integration.**
+  gedik's own `gedik-bulgular.json` + schema + validator gate exist since v2.6 but no live
+  audit has produced one; cloudflare/security-audit-skill ships a schema'd `findings.json`
+  with tested validators.
 - **Narrower scope** than cloudflare/security-audit-skill (9 core attack-class prompts +
   10 target-type class files there).
 - Anthropic's own **official** `claude-security` plugin covers similar ground for free,

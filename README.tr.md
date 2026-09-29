@@ -19,8 +19,14 @@ ve yama önerisiyle gelir.
   kalır, "ÖLÇÜLMEDİ — yetki yok" yazar. Bkz. `SKILL.md §0.1` ve `references/yetki-kapisi.md`.
   Kapı metin düzeyinde doğrulandı (kilitli cümleler + çeviri kapısı); davranışı henüz
   canlı bir ajan koşusunda denenmedi.
-- **Makine-okur çıktı yok.** Rapor yalnız Markdown — SARIF/JSON yok, CI/Action
-  entegrasyonu yok.
+- **SARIF yok, CI/Action entegrasyonu yok.** Tam denetim koşusu bir Markdown rapor ve
+  gedik'in kendi `gedik-bulgular.json` dosyasını yazar (v2.6; şema
+  `araclar/bulgu-semasi.json`, doğrulayıcı kapı `araclar/bulgu_kapisi.py`), ama SARIF
+  çıktısı ve CI/Action sarmalayıcısı yok. JSON yolu yalnız sentetik kayıtlarla doğrulandı
+  (kör kapı öz-testi); henüz hiçbir canlı denetim bir tane üretmedi.
+- **Bağımsız çürütme adımı ve iki mod (danışma / tam denetim) yalnız metin düzeyinde
+  doğrulandı** (çeviri-yapı kapısı + bağımsız bir TR↔EN okuma; v2.6 cümleleri sabit cümle
+  kilidinde yok); davranışları henüz canlı bir ajan koşusunda denenmedi.
 - **Şerit B (auth/OAuth) ve T12 (bulut/IaC) kontrol listesidir, gerçek bir sistemde
   doğrulanmadı.** Bilinen saldırı kalıplarını kodlar ama henüz canlı bir üretim
   yığınında denenmedi.
@@ -42,7 +48,11 @@ ve yama önerisiyle gelir.
    olduğu, yeşil CI'nin ölçüm değil körlük olduğu anlamına gelir.
 5. **Salt-okunur.** gedik projeni asla değiştirmez; düzeltmeyi kodu yazan tarafa
    bırakır.
-6. **Varsayılan olarak kendi projen; üçüncü taraf yalnız yetkiyle.** Herhangi bir açık
+6. **Bulgu raporlanmadan önce bağımsız çürütme.** Her `confirmed` aday, bulanın
+   gerekçesini görmeyen ayrı bir turdan geçer ve o tur adayı düşürmeye çalışır; ayakta
+   kalan `confirmed` kalır, kalanlar `rejected` ya da `needs_validation` olur. Tam denetim
+   koşusu Markdown raporun yanına `gedik-bulgular.json` da yazar (v2.6).
+7. **Varsayılan olarak kendi projen; üçüncü taraf yalnız yetkiyle.** Herhangi bir açık
    kaynak (public repo, yayımlanmış artefakt) ücretsiz salt-okuma incelenebilir — bulgu
    sorumlu ifşaya gider, saldırıya değil. Üçüncü tarafın *canlı* sistemine dokunmak §0.1
    yetki kapısını gerektirir. Silahlandırılmış exploit yok, para/hesap/kalıcı-silme eylemi
@@ -56,6 +66,10 @@ Bu skill'in en büyük başarısızlığı bir açığı kaçırmak değildir. *
 "gedik ara" · "gedikleri bul" · "güvenlik denetimi" · "sızma testi" · "açıkları bul" ·
 "hacker gibi dene" · "RLS kontrol" · "CORS kontrol" · "secret sızdı mı" ·
 "artefaktta sır var mı" · "test paketi kör mü" · "mutasyon testi"
+
+İki mod: odaklı bir soru **danışma modu** alır (hafif; dosya yok, rapor yok); "denetle" /
+"pentest" / "rapor çıkar" dersen **tam denetim modu** koşar (Markdown rapor +
+`gedik-bulgular.json`). Hangisini kastettiğin belli değilse gedik önce tek soru sorar.
 
 Yalnız kendi projende, yalnız çağrıldığında.
 
@@ -91,8 +105,10 @@ değil — her "önde" iddiasını hipotez say, sonuç değil.
 - **K4 kendi-mutant'ı, iki yöne birden** — hem kendi taramasını hem projenin test
   paketini kirletip ısırdığını kanıtlar. İncelenen araçlardan hiçbiri kendi körlüğünü
   böyle öz-test etmiyor. cloudflare/security-audit-skill'in bağımsız çürütücüleri yanlış
-  pozitifi keser; K4 farklı bir mekanizma — taramanın ve projenin testlerinin körlüğünü
-  mutasyonla ölçer.
+  pozitifi keser. gedik v2.6 bu fikri — çürütme adımı ve üç hükümlü makine-okur bulgu —
+  metin, şema ve doğrulayıcı bağımsız yazılarak benimsedi (hüküm adları `confirmed` /
+  `needs_validation` / `rejected` aynen alındı; metin düzeyinde, ölçülmedi);
+  K4 farklı bir mekanizma — taramanın ve projenin testlerinin körlüğünü mutasyonla ölçer.
 - **Şerit C (BaaS/RLS — Supabase, Firebase) birinci sınıf bir kolon** — yalnız Strix'te
   benzeri var.
 - **Türkçe orijinal** — kanonik metin Türkçe (`skills/gedik-tr/`); İngilizce sürüm,
@@ -104,9 +120,10 @@ değil — her "önde" iddiasını hipotez say, sonuç değil.
   `evals/` var; Shannon ve PentestGPT sayı veriyor. En büyük açık bu.
 - **Tasarım gereği canlı exploit yok** — yalnız canlı bir hedefte çalışma zamanında
   ortaya çıkan sınıflara kördür.
-- **Makine-okur çıktı yok** (SARIF/JSON), CI/Action entegrasyonu yok —
-  cloudflare/security-audit-skill şemalı bir `findings.json`'u testli doğrulayıcılarla
-  birlikte sunuyor.
+- **Makine-okur çıktı yeni ve kanıtsız; SARIF yok, CI/Action entegrasyonu yok.**
+  gedik'in kendi `gedik-bulgular.json` + şema + doğrulayıcı kapısı v2.6'dan beri var ama
+  henüz hiçbir canlı denetim bir tane üretmedi; cloudflare/security-audit-skill şemalı bir
+  `findings.json`'u testli doğrulayıcılarla birlikte sunuyor.
 - **Daha dar kapsam:** cloudflare/security-audit-skill'e kıyasla (orada 9 çekirdek
   saldırı-sınıfı istemi + 10 hedef-türü sınıf dosyası var).
 - Anthropic'in kendi **resmî** `claude-security` plugin'i platform sahibinden ücretsiz

@@ -18,6 +18,8 @@ import subprocess
 import sys
 import time
 
+import bulgu_kapisi  # gedik v2.6: şablon kapilar.py'den bilinçli sapma — bulgu şeması kapısı (bkz. DURUM karar günlüğü)
+
 KOD_UZANTI = {'.py', '.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.dart', '.kt', '.kts', '.java',
               '.go', '.rs', '.swift', '.cs', '.rb', '.php', '.c', '.cc', '.cpp', '.h', '.hpp',
               '.vue', '.svelte'}
@@ -226,6 +228,7 @@ def altin_kume():
     bozuk = all(kodlamasiz_alt_surec(f'def f(x):\n    {o}\n') for o in KODSUZ_ORNEKLER)
     vakalar.append(('bozuk_kodlamasiz', bozuk, True, 'W kodlamasız çağrı'))
     vakalar.append(('temiz_kodlamali', bool(kendi | kodlamasiz_alt_surec(f'def f(x):\n    {KODLU_ORNEK}\n')), False, 'W yanlış-pozitif'))
+    vakalar.extend(bulgu_kapisi.oz_test_vakalari())
     satirlar, gecti = [], True
     for ad, sonuc, beklenen, etiket in vakalar:
         ok = sonuc == beklenen
@@ -322,6 +325,12 @@ def kapi_kanit(izlenen, urun):
     return ('kanıt < ürün', 'FAIL' if kanit and len(kanit) >= urun_sayisi else 'PASS', f'{len(kanit)} kanıt / {urun_sayisi} ürün dosyası')
 
 
+def kapi_bulgu(kok):
+    """gedik-bulgular.json şema kapısı; dosya yoksa ATLANDI (sessiz değil)."""
+    sonuc, kanit = bulgu_kapisi.kapi(kok)
+    return ('bulgu şeması', sonuc, kanit)
+
+
 def kapilari_kos(kok, cfg):
     izlenen = dosyalar(kok)
     urun = cfg.get('urun', {})
@@ -335,6 +344,7 @@ def kapilari_kos(kok, cfg):
     sonuclar.append(kapi_oran(kok, izlenen, urun, k))
     sonuclar.append(kapi_nabiz(kok, urun, k, asama))
     sonuclar.append(kapi_kanit(izlenen, urun))
+    sonuclar.append(kapi_bulgu(kok))
     return sonuclar
 
 

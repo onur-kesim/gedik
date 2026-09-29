@@ -70,7 +70,7 @@ olarak (İngilizce ana + Türkçe orijinal, MIT) yayımlar.
 AŞAMA: YAPIM
 MOD: NORMAL
 ## KOMUTLAR (proje.toml ile aynı)
-kur: — · çalıştır: — (skill, çalıştırılabilir uygulama değil) · test: `python araclar/kapilar.py --pozitif-kontrol` · lint: `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py` · build: —
+kur: — · çalıştır: — (skill, çalıştırılabilir uygulama değil) · test: `python araclar/kapilar.py --pozitif-kontrol` · lint: `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py` · build: —
 ## ORTAM MAYINLARI (≤10, yalnız ölçülmüş)
 - `git status` normalde mount'ta bayat `.git/index.lock` bırakabilir → `--no-optional-locks` kullan (anayasa §3.3), bu oturumda henüz ısırmadı, önlem olarak yazıldı.
 - `gh auth status` bu makinede birden çok hesap listeleyebiliyor — repo işlemlerinde aktif hesabı `gh api user --jq .login` ile teyit et (beklenen: `onur-kesim`).

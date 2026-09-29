@@ -96,7 +96,7 @@ File name: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 
 ```markdown
 # ZAFİYET RAPORU — <proje> <sürüm>
-> Tarih: <YYYY-AA-GG> · Denetleyen: zafiyet-avcisi v1.0 · Kapsam: kullanıcının kendi
+> Tarih: <YYYY-AA-GG> · Denetleyen: gedik <gedik-sürümü> · Kapsam: kullanıcının kendi
 > kod tabanı/artefaktı · Salt-okunur (düzeltme yapılmadı)
 
 ## 0. TRİYAJ (ölçülen mimari)
@@ -119,13 +119,20 @@ File name: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 | # | Sink | Konum | Beslendiği veri | Güvenilmeyen mi | Kaçış |
 
 ## 2. BULGULAR
-### Z-1 · [ŞİDDET] <tek cümlelik başlık>
+### G-1 · [ŞİDDET] <tek cümlelik başlık>
 - **Nerede:** dosya:satır
 - **Tekrar üretim:** <birebir girdi/komut>
 - **Gözlenen:** <ölçülen sonuç>
 - **Etki:** <mimarinin izin verdiği tavana göre, şişirmesiz>
 - **Yama:** <somut, uygulanabilir düzeltme>
 - **Kanıt türü:** KOŞULDU / STATİK / ÖLÇÜLMEDİ
+- **Doğrulayan:** alt-ajan / ayrı tur — bağımsız çürütme turunu yapan (JSON: `dogrulayan`)
+
+### 2.1 ŞÜPHE (ÇALIŞTIRILMADI) — `needs_validation`, şiddet YOK
+- **G-n · <başlık>** — çözülmemiş tek somut olgu: <...>
+
+### 2.2 ÇÜRÜTÜLEN ADAYLAR — `rejected`
+- **G-n · <başlık>** — elenme nedeni: <...> · doğrulayan: alt-ajan / ayrı tur
 
 ## 3. TEMİZ ÇIKANLAR (her biri neyle ölçüldü)
 | Başlık | Sonuç | Ölçüm yöntemi |
@@ -139,10 +146,98 @@ File name: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 ## 6. KARAR
 **GÜVENLİK AÇISINDAN YETERLİ** (kritik/yüksek bulgu yok, ölçülmeyen kritik başlık yok)
 — veya —
-**DÜZELT:** [Z-1, Z-3, ...] · **ÖNCE ÖLÇ:** [ölçülmeyen kritik başlıklar]
+**DÜZELT:** [G-1, G-3, ...] · **ÖNCE ÖLÇ:** [ölçülmeyen kritik başlıklar]
 
 ## 7. SONRAKİ TURA DEVREDİLENLER
 - ...
+```
+
+### 4.1 `gedik-bulgular.json` — machine-readable output (full audit mode)
+
+The `.md` report is primary and is for humans; the JSON does **not replace** it — it is
+written next to it (same folder). Report files go to the output folder the user names (if
+none, the session's output/scratch folder); they are not written into the target project's
+source tree (SKILL.md §6). The schema and validator live in the `araclar/` folder at the
+plugin root (`<plugin-root>/araclar/`; two directories above the skill folder): the schema is
+`bulgu-semasi.json`, the validating gate is `bulgu_kapisi.py`
+(`python <araclar-path>/bulgu_kapisi.py --dosya gedik-bulgular.json`). A file that does not match the
+schema is not delivered. If the tool or Python is unreachable, apply the field dictionary by
+hand and write "JSON not validated against the schema (NOT MEASURED)" in the delivery
+message. There is NO SARIF or CI/Action output; this is only gedik's own JSON.
+
+**Three verdicts** — they map onto gedik's own concepts; they are not new concepts:
+
+| `hukum` | Meaning | Required fields | Forbidden fields |
+|---|---|---|---|
+| `confirmed` | a finding that satisfies K2 (with a PoC), having passed refutation | `siddet`, `etkilenen`, `poc_girdi`, `gozlenen`, `tekrar_uretim`, `yama`, `dogrulayan` | `cozulmemis_olgu`, `eleme_nedeni` |
+| `needs_validation` | `SUSPECTED (NOT RUN)`: an uncertain hypothesis | `cozulmemis_olgu` (the single unresolved concrete fact) | `siddet`, `eleme_nedeni` |
+| `rejected` | a candidate that was eliminated (refuted) | `eleme_nedeni` | `siddet`, `cozulmemis_olgu` |
+
+`bulgu_id`, `serit` and `hukum` are mandatory on every record. A field that the table lists as
+neither required nor forbidden is optional for that verdict (e.g. `etkilenen` on a
+`needs_validation` record, `dogrulayan` on a `rejected` record); an unknown field is
+rejected.
+
+**Evidence type ↔ verdict:** `RAN` and `STATIC` → `confirmed` (for `STATIC`, `poc_girdi` carries
+the exact input that would trigger it, `gozlenen` the result derived from the code,
+`tekrar_uretim` the chain of logic). A candidate whose evidence type is `NOT MEASURED` →
+`needs_validation` (`cozulmemis_olgu`: why it could not be measured). `NOT MEASURED` is not a
+verdict; if the surface could not be measured at all, also write a `kapsam` row.
+
+**Severity appears only on a `confirmed` record.** Values (the SKILL.md §4 criteria):
+`KRITIK`, `YUKSEK`, `ORTA`, `DUSUK`, `BILGI` (CRITICAL, HIGH, MEDIUM, LOW, INFO) — in
+JSON always this ASCII form.
+
+Field dictionary (field names are the same in the TR and EN flows):
+- `sema`: the constant `gedik-bulgular/1`. `bulgular`: the list of records (empty if there
+  are no findings). `kapsam`: at least one row.
+- `bulgu_id`: `G-n`, unique (one shared numbering across the three verdicts). `serit`:
+  `A`, `B`, `C`, `D`, `E`, `TEST` (test suite mutation), `KOD` (code review), `CICD`
+  (CI/CD and repository).
+- `etkilenen`: the affected resource (file:line, table, endpoint, user/role). `poc_girdi`:
+  the exact input or command. `gozlenen`: the measured result. `tekrar_uretim`: a single
+  string; number the steps `1) 2) 3)`. `yama`: the narrowest suggested patch.
+- `dogrulayan`: who ran the independent refutation round — `alt-ajan` (a separate
+  sub-agent) or `ayri-tur` (the environment did not allow a sub-agent; a separate round
+  that does not see the reasoning). `ayri-tur` is a weaker form of independence.
+- `kapsam`: at most one `{yuzey, durum, sebep}` row per surface; `yuzey`: the same value
+  set as `serit`; `durum`: `olculdu` | `olculmedi` (`sebep` mandatory) | `mimari-yok`
+  (`sebep` optional). A partially measured surface is written `olculmedi`; `sebep` says what
+  was measured and what was not. **`NOT MEASURED` is NOT a finding verdict, it is a coverage
+  status** — it is never written into the `hukum` field.
+- Someone else's real data enters no field (SKILL.md §0): row count + field name + HTTP
+  code.
+
+```json
+{
+  "sema": "gedik-bulgular/1",
+  "bulgular": [
+    {
+      "bulgu_id": "G-1", "serit": "B", "hukum": "confirmed", "siddet": "KRITIK",
+      "etkilenen": "api/orders.js:42 (no ownership check)",
+      "poc_girdi": "GET /orders/1002 (session: user A)",
+      "gozlenen": "HTTP 200, 1 row, fields: id, owner_id, total",
+      "tekrar_uretim": "1) sign in as A 2) GET /orders/1002 3) response belongs to B",
+      "yama": "add owner_id = :uid to the query",
+      "dogrulayan": "alt-ajan"
+    },
+    {
+      "bulgu_id": "G-2", "serit": "C", "hukum": "needs_validation",
+      "etkilenen": "supabase/migrations/0003.sql",
+      "cozulmemis_olgu": "is RLS enabled on the live project? only the migration was read"
+    },
+    {
+      "bulgu_id": "G-3", "serit": "A", "hukum": "rejected", "dogrulayan": "ayri-tur",
+      "eleme_nedeni": "sink is fed only by a constant template (origin traced)"
+    }
+  ],
+  "kapsam": [
+    { "yuzey": "A", "durum": "olculdu" },
+    { "yuzey": "B", "durum": "olculdu" },
+    { "yuzey": "C", "durum": "olculmedi", "sebep": "no live authorization" },
+    { "yuzey": "D", "durum": "mimari-yok" }
+  ]
+}
 ```
 
 ---

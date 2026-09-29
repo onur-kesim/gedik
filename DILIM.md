@@ -1,128 +1,59 @@
-# DILIM — gedik-v2.5 (yetki kapılı canlı test + 3. taraf salt-okuma)     açıldı: 2026-09-29 · aşama: DOĞRULA · sürüm dilimi: EVET (2.5.0)
-Hedef: dondurulmuş sınır spec'ini uygulamak (devir paketinde, yerel) — §0 gevşetmesi
-(3. taraf açık kaynak salt-okuma), yeni §0.1 (yetki kapılı canlı test), yeni `references/yetki-kapisi.md`
-(TR+EN), sürüm 2.5.0. Önceki dilim (gedik-repo-yayin, Dilim 1+2) TESLİM'e hazır durumda,
-push onayı bekliyor — bkz. DURUM dört sayı ve karar günlüğü. Bu dilim onun üstüne, ayrı
-dal/PR olarak kurulu (`dilim-3-sinir-spec-v2.5` ← `dilim-1-2-repo-yayin`).
-Kabul: `ceviri_kapisi.py` yeni dosya dahil tüm çiftlerde PASS · kör kapı 3 senaryosunun
-(yetkisiz canlı / kapsam dışı host / sayfa-içi sahte izin) SKILL.md §0.1 metninde karşılığı
-var · sürüm her üç yerde (plugin.json, marketplace.json, SKILL.md×2) 2.5.0 · CODE'UN
-DEĞİŞTİRMEYECEĞİ (§7) listesindeki hiçbir satır bozulmadı.
+# DILIM — gedik-v2.6 (makine-okur çıktı + iki mod + bağımsız çürütücü)     açıldı: 2026-09-29 · aşama: DOĞRULA · sürüm dilimi: EVET (2.6.0)
+Hedef: dondurulmuş v2.6 spec'ini uygulamak (`_calisma/SINIR_SPEC_GEDIK_v2.6_2026-09-29.md`, yerel): A) `gedik-bulgular.json` +
+`araclar/bulgu-semasi.json` + `araclar/bulgu_kapisi.py` (kör kapı testli, `kapilar.py` zincirinde), B) SKILL.md §0.2 iki mod,
+C) bağımsız çürütücü (§1 K2 altı not, §3 "Çürüt" adımı, rapor şablonunda `Doğrulayan`). Sürüm 2.6.0.
+Dal: `dilim-4-makineokur-v2.6` ← `dilim-3-sinir-spec-v2.5`. v2.5 dilimi TESLİM'de bekliyor (etiket/CHANGELOG/PR/push/insan; kaydı
+`git show 26a8291:DILIM.md`, 3. denetim TESLİME UYGUN); v2.5 push edilmeden v2.6 push edilmez (spec §0).
+Kabul (spec KABUL): kapı şemayı doğruluyor, iki aykırı kayıtta KIRMIZI · üç mevcut kapı yeşil, JSON kapısı `kapilar.py` özetinde ·
+§0.2 + §1 notu + §3 adımı TR+EN, çeviri kapısı + sabit cümle kilidi PASS · sürüm 2.6.0 dört yerde · iç ad kapısı 0, Cloudflare
+metni kopyalanmadı, "better than" yok · v2.5 kilitlerine dokunulmadı.
 
 ## YAP
-- [x] başka açık dilim yok (önceki dilim TESLİM'e hazır, push bekliyor — WIP fiilen 1)
-- [x] kabul ölçütü yazıldı ve ölçülebilir
-- [x] sürüm 2.5.0: `.claude-plugin/plugin.json`, `marketplace.json`, SKILL.md×2 (TR+EN)
-- [x] §0 sonuna 3. taraf salt-okuma bloğu eklendi (TR birebir drop-in + EN çeviri)
-- [x] yeni §0.1 eklendi (TR birebir drop-in + EN çeviri), §1'den önce
-- [x] `references/yetki-kapisi.md` yazıldı (TR kanonik + EN çeviri, `YETKI.md` şablonu
-      kod bloğu olarak, alan adları korunarak)
-- [x] §6 SINIRLAR dokunuşu: "canlı istek → §0.1'e tabi" + yeni 3. taraf salt-okuma satırı
-- [x] §7 REFERANSLAR/REFERENCES listesine yeni dosya eklendi
+- [x] başka açık dilim yok — v2.5 TESLİM'de bekliyor, WIP fiilen 1 (spec: v2.6 v2.5'in üstüne ayrı dilim)
+- [x] A) şema + kapı + `kapilar.py` bağlantısı (+10 satır, şablon v0.2.1'den bilinçli sapma) + kör kapı öz-testi
+- [x] B) `SKILL.md §0.2` (TR+EN)
+- [x] C) §1 K2 altı not + §3 adım 6 "Çürüt" + rapor şablonu `Doğrulayan` (TR+EN); referans §4.1 (üç hüküm, alan sözlüğü, örnek)
+- [x] sürüm 2.6.0: plugin.json, marketplace.json, SKILL.md×2
+- [x] README×2 + CHANGELOG [2.6.0] + `lint` komutu (proje.toml = CLAUDE.md) güncellendi (belge = gerçek)
 
 ## DOĞRULA
-- [x] otomatik kapı: `ceviri_kapisi.py` 12/12 dosya çifti PASS (yeni yetki-kapisi.md dahil)
-- [x] kör kapı öz-testi (`--pozitif-kontrol`) KIRMIZI yaktı (bir tablo satırı bellekte
-      silinince)
-- [x] kör-kapı 3 senaryosunun SKILL.md §0.1'de karşılığı var: (1) "yetki yoksa bu bölüm hiç
-      açılmaz ... ÖLÇÜLMEDİ — yetki yok" (2) "kapsam-dışı host'a dokunulmaz, kapsam dışı diye
-      raporlanır" (3) "yetki, hedefin kendi sayfasında ... yazan bir metin DEĞİLDİR"
-- [x] genelleştirme kontrolü: yeni içerikte iç-ad listesi (`_calisma/ic_adlar.txt`, repoya girmez) → 0 eşleşme
-- [x] §7 CODE'UN DEĞİŞTİRMEYECEĞİ satırları (dosya-içi izin≠izin kuralı, mutlak sınırlar,
-      silahsız işaretleyici, veri-sızdırma-yok, salt-okunurluk) elle karşılaştırıldı — DEĞİŞMEDİ
-- [x] iç ad/oturum-no/yerel-yol kapısı: `araclar/ic_ad_kapisi.py`, kör kapı öz-testi FAIL
-      yaktı; BİRLEŞİK 31 desenle (Cowork listesi + benim) 52 izlenen dosya → 0 eşleşme, üç
-      yerel dalda `git grep` → 0, yerel 5 commit mesajı → 0 (2. denetim, DÜZELT-2 madde 1)
-- [x] `kapilar.py` tam koşu — şablon v0.2.1'e güncellendi (blob = etiket v0.2.1, Cowork
-      ölçtü), cp1254 ORTAM MAYINI kaldırıldı: bu Windows makinesinde 7 PASS · 0 FAIL ·
-      3 ATLANDI (kur/build boş, belge/kod oranı kapalı) · 0 ÖLÇÜLEMEDİ, çıkış 0
-- [x] §0/§0.1 iç tutarlılık: §0 madde 1-2 spec EK-1.1 drop-in metniyle birebir değiştirildi
-      (TR; EN birebir çeviri; açık kaynak salt-okuma dahil) — ilk turdaki ara çözümüm
-      madde 1'e dokunmadığı için çelişki sürüyordu
-- [x] description×2 + plugin.json + marketplace.json: EK-1.2 metinleriyle birebir
-- [x] yetki-kapisi.md §5 (TR+EN): iç devir-belgesi atfı kaldırıldı (EK-1.3)
-- [x] sabit cümle kilidi (EK-1.4): `araclar/sabit_cumleler.json` 10 cümle × TR+EN;
-      `ceviri_kapisi.py` bunu da koşar; pozitif kontrol B = EN'den "NOT" silme → yapı kapısı
-      PASS, kilit KIRMIZI; gerçek koşu diskte 3 mutasyonla (EN NOT, TR DEĞİLDİR, EN STOP) çıkış 1
-- [x] bağımsız denetim (ayrı bağlam, salt-okunur) — 3. denetim (Cowork, 2026-09-29):
-      TESLİME UYGUN (koşullu: README'ye "davranış canlı ajan koşusunda denenmedi" notu — yapıldı)
+- [x] `kapilar.py` tam: 7 PASS · 0 FAIL · 4 ATLANDI · 0 ÖLÇÜLEMEDİ (bulgu şeması: ATLANDI — depoda gedik-bulgular.json yok), altın küme 21/21, `kapilar.py` 393 satır
+- [x] `ceviri_kapisi.py` 12/12 + sabit cümle kilidi 10/10 PASS; `--pozitif-kontrol` iki mutasyon KIRMIZI · `ic_ad_kapisi.py` 54 dosya/31 desen 0 eşleşme
+- [x] kör kapı (spec A): needs_validation+siddet ve confirmed−poc_girdi KIRMIZI; öz-test 68 aykırı girdi KIRMIZI + 22 geçerli varyant + temiz örnek YEŞİL
+      + kapı yolu (dosya yok→ATLANDI, açık yol yok→FAIL, BOM, çıkış kodları, `kapilar.py` zincirine bağlantı) + belge örnekleri (TR+EN) şemaya karşı
+- [x] öz-testin gücü: 218 tek-noktalı mutant (152 şema + 66 kod/zincir) → 205 yakalandı; hayatta 13 = 8 eşdeğer (`if.required`, `hukum`/`durum` zaten zorunlu),
+      2 eşdeğer (tür koruması), 3 koşum artığı (`--pozitif-kontrol` dalı, `__main__`); 1. turda denetçinin 159'luk kümesinde 59 hayatta (42 gerçek zayıflama) vardı; bu kümede gerçek zayıflama 0
+- [x] zincir deneyi (repo dışı kopya): zayıflatılmış şema → öz-test KIRMIZI, çıkış 2 · bozuk gedik-bulgular.json → FAIL, çıkış 1 · temiz → PASS
+- [x] Cloudflare metni: eklenen satırlar × 21 dosya, 5 kelimelik ortak dizi 0 (2026-09-29)
+- [x] v2.5 kilitleri (SKILL §0/§0.1/§6, `sabit_cumleler.json`, `yetki-kapisi.md`) HEAD ile aynı (2. tur denetçisi de teyit etti)
+- [x] belge → JSON: yalnız skill belgelerini okuyan ajanlar (TR ve EN, 2 tur, 4 koşu) şemaya bakmadan gedik-bulgular.json yazdı; 4/4 kapıdan PASS
+- [ ] bağımsız denetim (Cowork, ayrı bağlam, salt-okunur) — v2.6 için henüz koşmadı
 - [x] NE ÖLÇÜLEMEDİ yazıldı (aşağıda)
 
 ## TESLİM
-- [ ] README (v2.5 konumlandırması: "authorized-only live testing — refuses without an
-      in-scope authorization") ve DURUM güncel
-- [ ] git etiketi (`v2.5.0`) + CHANGELOG satırı
+- [ ] README (v2.6 konumlandırması) ve DURUM dört sayı güncel — README yazıldı; dört sayı TESLİM'de
+- [ ] git etiketi (`v2.6.0`) — v2.5.0'dan sonra
 - [ ] PR açıldı, kullanıcı onayıyla push edildi — anayasa §8 "push et"
 - [ ] bir insana gösterildi / alıcı aldı: `<kim, ne zaman>`
 
 ## SÜRÜM (sürüm dilimi — profil yazilim §6 SÜRÜM kapıları)
-- [x] sürüm artefaktı hijyeni: yeni dosyalarda sır/debug bayrağı yok (rg + kapilar.py'nin
-      kendi gizli-anahtar kapısı: 48 dosya, 0 eşleşme) · iç ad/yerel yol yok (`ic_ad_kapisi.py`)
-- [ ] geri alma planı: `git revert` bu dilimin commit'i — §0.1/yetki-kapisi.md kaldırılır,
-      v2.4.0 davranışına döner (dosya bazlı, tek commit'te izole)
+- [x] sürüm artefaktı hijyeni: gizli anahtar taraması 54 dosya 0; iç ad kapısı 0; debug bayrağı/test ucu yok
+- [ ] geri alma planı: `git revert` bu dilimin commit'i → v2.5.0 davranışı (JSON çıktısı, §0.2, çürütme adımı kalkar; `kapilar.py` +10 satır geri gider)
 
-## DENETİM — denetleyen: ayrı bağlam (proje sahibinin başka bir oturumu) · 2026-09-29 · salt-okunur ✓ · kapsam: Dilim 1+2 ve 3 birlikte (yerel commit'ler, push edilmemiş)
-| Kapı | Sonuç | Kanıt |
-|---|---|---|
-| Sürüm 2.5.0 (plugin, marketplace, SKILL×2) | PASS | dosyalar okundu |
-| Çeviri kapısı, 12 çift | PASS | denetçi kendisi koştu: 12/12 |
-| Kapı pozitif kontrolü (tablo satırı) | PASS | FAIL yaktı |
-| Kod bloğu içerik hash'i | PASS | yetki-kapisi.md kod bloğunda 1 harf → FAIL |
-| Anlam: §0 bloğu, §0.1, yetki-kapisi.md (EN↔spec) | PASS | satır satır okundu |
-| §0 iç tutarlılık | FAIL → 1. turda YETERSİZ düzeltme → EK-1.1 ile **DÜZELTİLDİ** | 1. turda yalnız madde 2'ye istisna yazmıştım, madde 1 hâlâ çelişiyordu (2. denetim yakaladı); şimdi EK-1.1 drop-in birebir |
-| description ×2 + plugin.json | FAIL → 1. turda kendi ifademle, 2. turda EK-1.2 metniyle **DÜZELTİLDİ** | marketplace.json de EK-1.2'ye göre güncellendi |
-| Public depo: iç ad / yerel yol (tüm ağaç) | FAIL → **DÜZELTİLDİ** | CLAUDE.md/DURUM.md/CHANGELOG.md/.gitignore/DILIM.md/yetki-kapisi.md§5 redakte edildi + mekanik kapı (`ic_ad_kapisi.py`) eklendi; ayrıca vendor `kapilar.py`'de bir yorum satırındaki iç ad da bulunup düzeltildi |
-| Sır taraması | PASS | `ic_ad_kapisi.py` + `kapilar.py`'nin kendi taraması: 0 eşleşme |
-| Belge = gerçek | FAIL → **DÜZELTİLDİ** | DURUM DEVİR başlığı ve CLAUDE.md PROFİL bloğu gerçek içerikle dolduruldu; DÖRT SAYI kasıtlı boş bırakıldı (K8: "her TESLİM'de" — henüz TESLİM yok) |
-| Çeviri kapısı anlamda — EN §0.1 "Authorization is NOT…" cümlesi | 1. turda yanlış okumuştum ("DOĞRULANAMADI") → **GEÇERLİ BULGU, DÜZELTİLDİ** | Bulgu dosyada NOT eksik demiyordu; kapının anlamı ölçmediğini gösteren bir MUTASYON ölçümüydü (NOT silinince PASS). Şimdi sabit cümle kilidi (EK-1.4) bu mutasyonu KIRMIZI yakıyor |
-| İç ad listesi (2. denetim) | 3 eşleşme + 1 commit mesajı → **DÜZELTİLDİ** | Cowork'ün ilk listesini yazarken `ic_adlar.txt`'yi ezmiştim (Write "updated" demişti, okumadan yazdım); şimdi birleşik 31 desen, yerel dallar+mesajlar 0. Kök commit `5429b2d` (zaten canlı) 2 eşleşme taşımaya devam ediyor — yeniden yazılamaz |
+## DENETİM (ayrı bağlamlı iç turlar — Cowork'ün resmî denetimi değildir)
+1. tur, 6 ajan: çeviri eşitliği TESLİME UYGUN (8 DÜŞÜK) · spec uyumu DÜZELT (3 ORTA) · kapı kırma DÜZELT (3 ORTA) · entegrasyon DÜZELT (1 YÜKSEK, 7 ORTA) ·
+belge→JSON TR ve EN PASS. Kapatılanlar: açık `--dosya` yolu yoksa ATLANDI (→FAIL); `bulgu_id` `G-1\n` deliği; `if` içinde yutulan şema hatası;
+RecursionError; öz-test kapsamı (59→0 gerçek hayatta mutant); `needs_validation`/`rejected` zorunlu alanları spec-harfiyen; "varsayılan" ↔ "mod belirsizse sor" çelişkisi;
+rapor/doğrulayıcı konumu; kanıt türü ↔ hüküm eşlemesi; örnek G-1 şiddeti (§4 → KRİTİK); README/CHANGELOG atıf ve sayılar; lint komutu.
+2. tur, 4 ajan: TR↔EN eşitliği TESLİME UYGUN (1 DÜŞÜK: EN "touching any file" → düzeltildi) · regresyon DÜZELT (1 YÜKSEK, 4 ORTA, 5 DÜŞÜK) · belge→JSON TR ve EN PASS.
+Regresyonun YÜKSEK/ORTA'ları kapatıldı: kanıt türü eşlemesi mevcut belgelerle (SS1, SS5, şablon, serit-E E6) çeliştiği için `KOŞULDU`/`STATİK`→`confirmed`,
+`ÖLÇÜLMEDİ` etiketli aday→`needs_validation` olarak yeniden yazıldı; danışma modu sınırları ve "denetle" + odaklı kapsam tie-break'i eklendi; öz-teste BOM,
+belge-örneği pozitif kontrolü ve `kapilar.py` zincirine bağlantı eklendi. Bilerek AÇIK bırakılanlar: DEVİR'de.
 
-NE ÖLÇÜLEMEDİ: §0.1'in davranışsal kör kapısı (3 senaryo) gedik'in kendisi bir ajan olarak
-canlı koşturulup ölçülmedi — SKILL.md metninin spec'e uyumu doğrulandı, çalışma zamanı
-davranışı değil (gedik yürütülebilir kod değil, talimat dosyasıdır) · marketplace
-`"source": "."` gerçek bir `/plugin install` ile denenmedi.
-Hüküm (bu turun): **DÜZELT tamamlandı, yeniden bağımsız denetim gerekiyor** — 🔴 o denetim
-TESLİME UYGUN demeden push YOK.
-
-### 3. denetim — denetleyen: Cowork · 2026-09-29 · hüküm: **TESLİME UYGUN (koşullu)**
-| Kapı | Sonuç | Kanıt |
-|---|---|---|
-| İç ad (Cowork özgün 20 desen), 7 commit | PASS | 0 eşleşme |
-| `kapilar.py` tam koşu | PASS | 7 PASS · 0 FAIL |
-| Çeviri kapısı | PASS | 12/12 |
-| Sabit cümle kilidi, 3 anlam mutasyonu | PASS (2/3 kilit yakaladı) | 3. mutasyon (kalın başlık) kilitli asıl cümleyle korunuyor |
-| §0 madde 1 ↔ EK-1.1 | PASS | uyumlu |
-| Rastgele beyan: kilit pozitif kontrolü | TUTTU | denetçi bağımsız doğruladı (D5) |
-
-Koşul: README "What's not delivered yet" altındaki canlı test maddesine "kapı metin
-düzeyinde doğrulandı, davranışı canlı ajan koşusunda denenmedi" notu → EN + TR eklendi.
-NE ÖLÇÜLEMEDİ (3. denetim): §0.1 davranışsal kör kapı (canlı ajan koşumu) · CI (push
-sonrası) · `/plugin install`.
-Hüküm: TESLİME UYGUN. Push hâlâ YOK — yalnız kullanıcının "push et" demesiyle.
-
-### DÜZELT (1. tur, 2026-09-29) — kutular 2. denetimde gerçeğe göre düzeltildi
-- [x] 1. İç ad temizliği — **1. turda "bitti" işaretlemiştim, eksikti**: kendi 17 desenimle
-      taramıştım; Cowork listesi eksikti (ezmiştim). Gerçek kapanış DÜZELT-2 madde 1'de.
-- [x] 2. Geçmiş: `git bundle` yedeği alındı, commit'ler yeniden yazıldı (force-push YOK).
-- [x] 3. İç ad kapısı: `araclar/ic_ad_kapisi.py` (D1 kör kapı öz-testli).
-- [x] 4. EK-1 maddeleri — **1. turda "bitti" işaretlemiştim, yanlıştı**: "EK erişilemedi"
-      demiştim ama EK-1, SINIR_SPEC dosyasının sonundaydı (ilk aramamda yalnız dosya ADINA
-      baktım, içeriğe bakmadım); kendi ara çözümümü yazdım, sabit cümle kilidini "iki ısırık
-      kuralı" gerekçesiyle kurmadım — bu gerekçe de yanlıştı (spec kilidi açıkça istiyordu).
-      Gerçek kapanış DÜZELT-2 madde 2-3'te.
-- [x] 5. Belge = gerçek: DURUM DEVİR başlığı ve CLAUDE.md PROFİL bloğu dolduruldu.
-
-### DÜZELT-2 (Cowork 2. denetim — DÜZELT, push YOK; bitti 2026-09-29)
-- [x] 1. `ic_adlar.txt` birleşik (31 desen, ezdiğim ilk liste geri getirilemedi — yalnız
-      mesajda sayılan 14 eksik desen eklendi, ilk listede başka desen varsa bilemiyorum →
-      Cowork teyit etsin). 3 eşleşme (CLAUDE.md gh hesap adı, DURUM, DILIM) + `d4d4ce1` commit
-      MESAJI redakte edildi; bundle (`..-b.bundle`) sonrası 5 commit yeniden oynatıldı.
-      Kabul: `git grep` üç yerel dalda 0; `git log` mesajları 0.
-- [x] 2. Sabit cümle kilidi (EK-1.4): bkz. DOĞRULA.
-- [x] 3. §0 madde 1-2 EK-1.1 drop-in metniyle birebir (TR) + EN çeviri: bkz. DOĞRULA.
-- [x] 4. Bu kutular gerçeğe göre düzeltildi (yukarıdaki DÜZELT 1. tur satırları) + DEVİR yazıldı.
+NE ÖLÇÜLEMEDİ: çürütücünün ve iki modun canlı ajanda davranışı (skill talimat dosyası; yalnız metin düzeyi + 4 sentetik belge→JSON koşusu) · gerçek bir denetimin
+ürettiği gedik-bulgular.json · `bulgu-semasi.json`'un gerçek bir draft-07 doğrulayıcısıyla (jsonschema/ajv) eşitliği (kurulu değil; `\Z`/ECMA farkı elle giderildi) ·
+`/plugin install` sonrası `<eklenti-kökü>/araclar/` yolunun kurulu eklentide çözülmesi · CI (ubuntu-24.04 + windows-latest; push sonrası) · SARIF/CI çıktısı (spec: kapsam dışı) ·
+`ayri-tur` değerinin gerçekten "gerekçe-görmeyen" olduğu (öz-beyan; kapı doğrulayamaz) · v2.6'nın yeni cümleleri için mekanik anlam kilidi (sabit cümle kilidine eklenmedi).
 
 ## Sonuç
-DÜZELT-2 kapandı. 3. bağımsız denetim (Cowork, 2026-09-29) TESLİME UYGUN (koşullu, koşul
-yerine getirildi). Push hâlâ YOK — bu dilim ve önceki dilim (Dilim 1+2) yalnız kullanıcının
-"push et" demesiyle gider; canlı `main` sızıntısı kararı da kullanıcıda (DURUM DEVİR).
+Uygulama + iç doğrulama bitti; Cowork'ün bağımsız denetimi bekliyor (kutu boş). Push YOK — v2.5 ve v2.6 yalnız kullanıcının "push et" demesiyle, v2.5 önce.

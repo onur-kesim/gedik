@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "gedik-bulgular.json semasi (gedik v2.6). Standart JSON Schema (draft-07) alt kumesi: araclar/bulgu_kapisi.py bunu YALNIZ standart kutuphane ile dogrular; kapinin tanimadigi bir anahtar eklenirse kapi KIRMIZI yakar (sessizce gecmez). Alan adlari SKILL.md / kanit-ve-rapor.md ile birebirdir; TR ve EN akisinda ayni kalir.",
+  "title": "gedik-bulgular.json",
+  "type": "object",
+  "required": ["sema", "bulgular", "kapsam"],
+  "additionalProperties": false,
+  "properties": {
+    "sema": { "const": "gedik-bulgular/1" },
+    "bulgular": { "type": "array", "items": { "$ref": "#/definitions/bulgu" } },
+    "kapsam": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/kapsam" } }
+  },
+  "definitions": {
+    "metin": { "type": "string", "pattern": "\\S" },
+    "yuzey": { "enum": ["A", "B", "C", "D", "E", "TEST", "KOD", "CICD"] },
+    "bulgu": {
+      "type": "object",
+      "required": ["bulgu_id", "serit", "hukum"],
+      "additionalProperties": false,
+      "properties": {
+        "bulgu_id": { "type": "string", "pattern": "^G-[1-9][0-9]*$" },
+        "serit": { "$ref": "#/definitions/yuzey" },
+        "hukum": { "enum": ["confirmed", "needs_validation", "rejected"] },
+        "siddet": { "enum": ["KRITIK", "YUKSEK", "ORTA", "DUSUK", "BILGI"] },
+        "etkilenen": { "$ref": "#/definitions/metin" },
+        "poc_girdi": { "$ref": "#/definitions/metin" },
+        "gozlenen": { "$ref": "#/definitions/metin" },
+        "tekrar_uretim": { "$ref": "#/definitions/metin" },
+        "yama": { "$ref": "#/definitions/metin" },
+        "dogrulayan": { "enum": ["alt-ajan", "ayri-tur"] },
+        "cozulmemis_olgu": { "$ref": "#/definitions/metin" },
+        "eleme_nedeni": { "$ref": "#/definitions/metin" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "hukum": { "const": "confirmed" } }, "required": ["hukum"] },
+          "then": {
+            "required": ["siddet", "etkilenen", "poc_girdi", "gozlenen", "tekrar_uretim", "yama", "dogrulayan"],
+            "properties": { "cozulmemis_olgu": false, "eleme_nedeni": false }
+          }
+        },
+        {
+          "if": { "properties": { "hukum": { "const": "needs_validation" } }, "required": ["hukum"] },
+          "then": {
+            "required": ["cozulmemis_olgu"],
+            "properties": { "siddet": false, "eleme_nedeni": false }
+          }
+        },
+        {
+          "if": { "properties": { "hukum": { "const": "rejected" } }, "required": ["hukum"] },
+          "then": {
+            "required": ["eleme_nedeni"],
+            "properties": { "siddet": false, "cozulmemis_olgu": false }
+          }
+        }
+      ]
+    },
+    "kapsam": {
+      "type": "object",
+      "required": ["yuzey", "durum"],
+      "additionalProperties": false,
+      "properties": {
+        "yuzey": { "$ref": "#/definitions/yuzey" },
+        "durum": { "enum": ["olculdu", "olculmedi", "mimari-yok"] },
+        "sebep": { "$ref": "#/definitions/metin" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "durum": { "const": "olculmedi" } }, "required": ["durum"] },
+          "then": { "required": ["sebep"] }
+        }
+      ]
+    }
+  }
+}
