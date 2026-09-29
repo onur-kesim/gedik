@@ -2,8 +2,8 @@
 Hedef: dondurulmuş v2.6 spec'ini uygulamak (`_calisma/SINIR_SPEC_GEDIK_v2.6_2026-09-29.md`, yerel): A) `gedik-bulgular.json` +
 `araclar/bulgu-semasi.json` + `araclar/bulgu_kapisi.py` (kör kapı testli, `kapilar.py` zincirinde), B) SKILL.md §0.2 iki mod,
 C) bağımsız çürütücü (§1 K2 altı not, §3 "Çürüt" adımı, rapor şablonunda `Doğrulayan`). Sürüm 2.6.0.
-Dal: `dilim-4-makineokur-v2.6` ← `dilim-3-sinir-spec-v2.5`. v2.5 dilimi TESLİM'de bekliyor (etiket/CHANGELOG/PR/push/insan; kaydı
-`git show 26a8291:DILIM.md`, 3. denetim TESLİME UYGUN); v2.5 push edilmeden v2.6 push edilmez (spec §0).
+Dal: `dilim-4-makineokur-v2.6` ← `dilim-3-sinir-spec-v2.5` (21:56 TRT'de yerel `main`e fast-forward). v2.5 dilimi (kaydı `git show 26a8291:DILIM.md`, 3. denetim TESLİME UYGUN)
+v2.6 ile birlikte yayımlandı; ayrı `v2.5.0` etiketi yok (spec §0 sırası korundu: v2.5 içeriği aynı push'ta, altta).
 Kabul (spec KABUL): kapı şemayı doğruluyor, iki aykırı kayıtta KIRMIZI · üç mevcut kapı yeşil, JSON kapısı `kapilar.py` özetinde ·
 §0.2 + §1 notu + §3 adımı TR+EN, çeviri kapısı + sabit cümle kilidi PASS · sürüm 2.6.0 dört yerde · iç ad kapısı 0, Cloudflare
 metni kopyalanmadı, "better than" yok · v2.5 kilitlerine dokunulmadı.
@@ -37,8 +37,8 @@ metni kopyalanmadı, "better than" yok · v2.5 kilitlerine dokunulmadı.
 
 ## TESLİM
 - [ ] README (v2.6 konumlandırması) ve DURUM dört sayı güncel — README yazıldı; dört sayı TESLİM'de
-- [ ] git etiketi (`v2.6.0`) — v2.5.0'dan sonra
-- [ ] PR açıldı, kullanıcı onayıyla push edildi — anayasa §8 "push et"
+- [x] git etiketi `v2.6.0` → `6f149ee` + GitHub Release (elle, 19:07Z); `v2.5.0` etiketi yok
+- [x] push edildi (kullanıcı, `main`, 18:56Z; anayasa §8) — PR açılmadı (0 PR); CI `kapilar` ubuntu + windows + kor-kapi 3/3 success; `surum` iş akışı kırmızı (Release zaten vardı, DURUM)
 - [ ] bir insana gösterildi / alıcı aldı: `<kim, ne zaman>`
 
 ## SÜRÜM (sürüm dilimi — profil yazilim §6 SÜRÜM kapıları)
@@ -61,9 +61,8 @@ belge-örneği pozitif kontrolü ve `kapilar.py` zincirine bağlantı eklendi. B
 
 NE ÖLÇÜLEMEDİ: çürütücünün ve iki modun canlı ajanda davranışı (skill talimat dosyası; yalnız metin düzeyi + 4 sentetik belge→JSON koşusu) · gerçek bir denetimin
 ürettiği gedik-bulgular.json · `bulgu-semasi.json`'un gerçek bir draft-07 doğrulayıcısıyla (jsonschema/ajv) eşitliği (kurulu değil; `\Z`/ECMA farkı elle giderildi) ·
-`/plugin install` sonrası `<eklenti-kökü>/araclar/` yolunun kurulu eklentide çözülmesi · CI (ubuntu-24.04 + windows-latest; push sonrası) · SARIF/CI çıktısı (spec: kapsam dışı) ·
+ajanın skill'i yüklerken kurulu eklentinin `araclar/` yolunu gerçekten bulması (kurulum, yol düzeni ve araçların kurulu kopyadan çalışması ÖLÇÜLDÜ, DURUM; modelli başsız koşu yetkilendirme hatasıyla düştü) · SARIF/CI çıktısı (spec: kapsam dışı) ·
 `ayri-tur` değerinin gerçekten "gerekçe-görmeyen" olduğu (öz-beyan; kapı doğrulayamaz) · v2.6 cümlelerinin kilit DIŞINDA kalanları (yalnız 15 kritik cümle kilitli; gerisi elle okundu).
 
 ## Sonuç
-Uygulama + iç doğrulama + Cowork 4. denetimi (TESLİME UYGUN) tamam; kilit eksiği kapandı. Kalan TESLİM kutuları (dört sayı, etiket, PR, insan) push'a bağlı.
-Push YOK — v2.5 ve v2.6 yalnız kullanıcının "push et" demesiyle, v2.5 önce.
+Uygulama + iç doğrulama + Cowork 4. denetimi (TESLİME UYGUN) tamam; kilit eksiği kapandı. Push YAPILDI (kullanıcı, 18:56Z; tag `v2.6.0` + Release). Kalan: dört sayı, insan gösterimi, geri alma planı kutusu; kök commit sızıntısı ve `surum` iş akışı kırmızısı kullanıcı kararı (DURUM).
