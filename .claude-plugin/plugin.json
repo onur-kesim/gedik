@@ -1,0 +1,28 @@
+{
+  "name": "gedik",
+  "version": "2.4.0",
+  "description": "Finds breaches (GEDIK) by breaking your own code, artifacts, and configuration like an attacker. First measures the architecture (triage T1-T12), then opens only that surface: A client/mobile · B server/API/DB/identity · C BaaS-RLS · D AI/LLM · E shipped artifact; plus code review, mechanical scanning, dependency/CVE, CI-CD and test-suite mutation. Every finding ships with a working PoC; what isn't measured isn't assumed clean. Read-only; your own project only.",
+  "author": {
+    "name": "Onur Kesim"
+  },
+  "homepage": "https://github.com/onur-kesim/gedik",
+  "repository": "https://github.com/onur-kesim/gedik",
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "penetration-testing",
+    "red-team",
+    "owasp",
+    "rls",
+    "supabase",
+    "cors",
+    "llm",
+    "prompt-injection",
+    "code-review",
+    "cicd",
+    "pentest",
+    "artifact-hygiene",
+    "mutation-testing",
+    "test-coverage"
+  ]
+}
