@@ -55,3 +55,7 @@ Thumbs.db
 desktop.ini
 .idea/
 .vscode/
+
+# --- gedik projesine özgü: devir paketi ve geçici iş repoya girmez ---
+_devir*/
+_calisma/

@@ -36,33 +36,67 @@ G1 Sırlar depoya girmez: `.env` + `.gitignore` + `.env.example`; CI'da gizli-an
 Proje türünün profili `profiller/<ad>.md`'den KUR'da bu bloğun altına kopyalanır (`<!-- PROFİL: <ad> -->`). Profil sekiz başlık taşır, ≤2.000 bayt, yalnız daraltır; iki profilde sert olan kazanır; yenisi `_SABLON.md`'den açılır.
 <!-- GENEL ESASLAR v2.1 BİTİR -->
 
-<!-- PROFİL: (KUR'da profiller/<ad>.md buraya kopyalanır) -->
+<!-- PROFİL: yazilim v1.0 -->
+# PROFİL — YAZILIM / WEB / MOBİL
+## 1. NE
+Uygulama, web sitesi, araç, kütüphane — kod yazılan her proje.
+## 2. ÜRÜN DESENİ
+Kod: `src/*`, `app/*`, `lib/*` (proje.toml). Build çıktısı, kanıt, belge ürün değildir.
+## 3. SAYAÇ
+Kullanıcı/indirme/ziyaret (mağaza konsolu, analitik, sunucu logu); kaynağı İŞLEYİŞ'te.
+## 4. KOMUTLAR ŞABLONU
+kur (`npm ci` / `pip install -r requirements.txt` / `flutter pub get`) · çalıştır · test · lint · build — README ve CI'da aynı komut.
+## 5. KUR EKLERİ
+- [ ] LICENSE · `.gitignore` · `.env.example` · kilit dosyası commit'te
+- [ ] biçimlendirici + lint yapılandırması depoda
+- [ ] CI ilk push'ta yeşil, `kor-kapi` geçti
+- [ ] dal koruması açık (araclar/dal-korumasi.json)
+- [ ] kod sağlığı tabanı donduruldu (`taban_dosya_ihlal`)
+## 6. KAPI EKLERİ
+YAP: bir dilim = bir PR, ≤ ~400 satır; gövde-temelli, bitmemiş özellik bayrak arkasında · DOĞRULA: CI yeşil; kod sağlığı (dosya ≤400 satır, karmaşıklık ≤15, taban aşılmaz); güvenlik taraması; belge/kod ≤1,0 · TESLİM: `vX.Y.Z` etiketi + CHANGELOG · SÜRÜM: sürüm artefaktı hijyeni (sır, debug bayrağı, source map, test uç noktası, geniş izin YOK); sürüm QA (mobil: izin diff'i, paket boyutu; web: erişilebilirlik + performans bütçesi); yayın metni; **geri alma planı**.
+## 7. DIŞARI ÇIKTI
+Etiket + CHANGELOG satırı; sürüm diliminde mağaza/yayın; bir insan = kurup deneyen kişi.
+## 8. EK KURALLAR
+1. Yeni bağımlılık = lisans + bilinen açık + kilit dosyası; kaynağı belirsiz paket alınmaz.
+2. Dört DORA sayısı DURUM'a: teslim sıklığı · dilim süresi · kırmızı oranı · kırmızıdan yeşile süre.
+3. Yabancı depoya katkı: fork → dal → PR; ölçüt: açılmış PR + bir yabancı yorum; gönderim insanın elinden.
+4. Test paketi mutasyonu: ürün kodunda bilerek bozulan bir satır paketi kırmızıya döndürmüyorsa test ölüdür.
 
 # PROJE-ÖZEL
 ## NE
-`<3 satır: ne yapıyor, kime, tek cümlelik değer>`
-AŞAMA: `<KEŞİF | YAPIM>`   <!-- KEŞİF = fikir/araştırma/danışma/tasarım, süre ve nabız yok · YAPIM = dilimler; geçiş insanın "başla" sözüyle, tarih karar günlüğüne; proje.toml [proje] asama ile aynı -->
-MOD: NORMAL   <!-- KRİTİK = para/hukuk/güvenlik → yalnız TESLİM'de denetim turu 2; KUR ve altyapı değişikliğinde tek tur, D1 pozitif kontrol yeter, mutant kampanyası ürün kapılarına -->
+gedik — kendi kodunu/artefaktını/yapılandırmanı bir saldırgan gibi kırıp GEDİK bulan,
+PoC zorunlu, salt-okuma bir Claude Code güvenlik skill'i. Bu depo onu açık kaynak ürün
+olarak (İngilizce ana + Türkçe orijinal, MIT) yayımlar.
+AŞAMA: YAPIM
+MOD: NORMAL
 ## KOMUTLAR (proje.toml ile aynı)
-kur: · çalıştır: · test: · lint: · build:
-## ORTAM MAYINLARI (≤10, yalnız ölçülmüş — bu ortamda gerçekten ısırmış şeyler; tahmin yazılmaz)
-- 
+kur: — · çalıştır: — (skill, çalıştırılabilir uygulama değil) · test: `python araclar/kapilar.py --pozitif-kontrol` · lint: `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py` · build: —
+## ORTAM MAYINLARI (≤10, yalnız ölçülmüş)
+- `git status` normalde mount'ta bayat `.git/index.lock` bırakabilir → `--no-optional-locks` kullan (anayasa §3.3), bu oturumda henüz ısırmadı, önlem olarak yazıldı.
+- `gh auth status` bu makinede birden çok hesap listeleyebiliyor — repo işlemlerinde aktif hesabı `gh api user --jq .login` ile teyit et (beklenen: `onur-kesim`).
+- **`python -B araclar/kapilar.py` (tam kapı, `kur/test/lint/build` zinciri) bu Windows makinesinde çöküyor**: `test` komutu iç içe `subprocess` çalıştırırken (kendi kendini `--pozitif-kontrol` ile çağırıyor) konsol `cp1254` kod sayfası UTF-8 baytı çözemiyor (`UnicodeDecodeError`), ardından `p.stdout`/`p.stderr` `None` kalıyor (`TypeError`). Ölçüldü: 2026-09-29, bu oturumda. Altın küme öz-testi (`--pozitif-kontrol`, üst seviyeden çağrılan) TEK BAŞINA çalışıyor (geçti) — kırılan yalnız İÇ İÇE çağrı. CHANGELOG [0.2.0] bir cp1254 `UnicodeEncodeError`'ı zaten düzelttiğini yazıyor (başka bir kurulumda ölçülmüş) — bu FARKLI/kalıntı bir hata (Decode, iç içe subprocess'te); proje-sablonu'nun kendi bilinen Windows sınırının (README "NE TESLİM EDİLMEDİ") devamı, gedik'in hatası değil, burada düzeltilmedi (vendor kod). **Tam kapı doğrulaması CI'da (ubuntu-24.04) yapılacak**, bu makinede ÖLÇÜLEMEDİ. Şablon bakımcısına (kullanıcının kendi projesi) bildirilmeye değer.
 ## PROJE KURALLARI (≤5, tek cümle, yalnız daraltır)
-1. 
+1. Tüm iş ve dosyalar yalnız `<proje klasörü>` içinde; geçici iş `_calisma\` (gitignore'da), başka hiçbir konuma dosya yazılmaz.
+2. `git config` yalnız `--local` yazılır; `--global` hiçbir komutla değiştirilmez.
+3. Push ve PR açma yalnız kullanıcının "push et" dediği anda yapılır (anayasa §8); repo oluşturma iş emrinde ayrıca onaylı.
+4. `skills/gedik-tr/` kanonik TR; `skills/gedik/` (EN) birebir çeviridir ve `araclar/ceviri_kapisi.py` kapısına tabidir.
+5. Kaynak, devir paketindeki (yerel, `.gitignore`'lu, repoya girmez) SHA256 ile doğrulanmış bir taslaktır; devir paketi kendisi asla temel içerik olarak commit edilmez.
 ## İŞLEYİŞ
-Depo/hesap: <`gh api user --jq .login` ile ölçüldü, tarih> · Uzak depo: var (private) / yok (sebep)
-Sayaç: `<ne, nerede okunur>`
+Depo/hesap: `gh api user --jq .login` ile ölçüldü = `onur-kesim`, 2026-09-28 · Uzak depo: var (**public** — bilinçli sapma, bkz. DURUM karar günlüğü)
+Sayaç: GitHub yıldız/fork sayısı (`gh api repos/onur-kesim/gedik --jq '{stars:.stargazers_count,forks:.forks_count}'`) — marketplace yayınından sonra anlamlı, KUR anında 0/0
 ### KUR LİSTESİ (bir kez, ≤ 1 gün; doldukça kapanır; bitmeyen kutu `ATLANDI: dilim 1'e`)
-- [ ] şablon kuruldu, dört dosya yerinde
-- [ ] hesap/org ölçüldü ve yazıldı · uzak depo kararı verildi
-- [ ] AŞAMA (KEŞİF / YAPIM) ve MOD yazıldı — proje.toml ile aynı
-- [ ] KOMUTLAR yazıldı (proje.toml + README aynı)
-- [ ] ürün deseni ve sayaç yazıldı
-- [ ] profil seçildi, bloğu eklendi; profilin KUR ekleri kapandı
-- [ ] araç haritası çıkarıldı (keşif) · ileride gerekecek eksikler bildirildi
-- [ ] README iskeleti: NE TESLİM EDİLMEDİ ilk başlık
-### ARAÇ HARİTASI (çıkarıldı: `<tarih>` · kurulu/değil burada yazılmaz, aşamaya girince ölçülür)
+- [x] şablon kuruldu, dört dosya yerinde
+- [x] hesap/org ölçüldü ve yazıldı · uzak depo kararı verildi (public)
+- [x] AŞAMA (YAPIM) ve MOD (NORMAL) yazıldı — proje.toml ile aynı
+- [x] KOMUTLAR yazıldı (proje.toml + README aynı)
+- [x] ürün deseni ve sayaç yazıldı
+- [x] profil seçildi (yazilim), bloğu eklendi; profilin KUR ekleri Dilim 1/2 PR'ında kapanacak
+- [x] araç haritası çıkarıldı
+- [ ] README iskeleti: NE TESLİM EDİLMEDİ ilk başlık — Dilim 1+2 tamamlanınca (İş emri §3)
+### ARAÇ HARİTASI (çıkarıldı: 2026-09-29 · kurulu/değil burada yazılmaz, aşamaya girince ölçülür)
 | Aşama | İhtiyaç | Araç | Yoksa |
 |---|---|---|---|
-| KEŞİF | | | BEKLE / ARAÇSIZ YAP |
-| YAP | | | BEKLE / ARAÇSIZ YAP |
+| YAP | GitHub repo/PR/dal-koruması işlemleri | `gh` CLI | BEKLE |
+| YAP | TR→EN mekanik çeviri kapısı | `araclar/ceviri_kapisi.py` (bu depoda yazıldı) | ARAÇSIZ YAP |
+| YAP | ilk push öncesi sır taraması | `gitleaks` | ARAÇSIZ YAP — bu makinede kurulu değil, `rg` deseniyle yapıldı |
+| DOĞRULA | kapı öz-testi (altın küme) | `python araclar/kapilar.py` | BEKLE |

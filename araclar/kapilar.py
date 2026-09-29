@@ -287,7 +287,7 @@ def yazdir_rapor(sonuclar, guvenilir):
 
 
 def main(argv):
-    for akis in (sys.stdout, sys.stderr):  # Windows konsolu (cp1254) '✓' basamaz; 26 Eyl Quadrans KUR'da ölçüldü
+    for akis in (sys.stdout, sys.stderr):  # Windows konsolu (cp1254) '✓' basamaz; başka bir kurulumda ölçüldü, 26 Eyl
         try:
             akis.reconfigure(encoding='utf-8', errors='replace')
         except (AttributeError, ValueError):
