@@ -1,19 +1,39 @@
 # DURUM — gedik
 
-## DEVİR — henüz yazılmadı (bu bir oturum devri değil, aktif oturum içi durum)
-Aşama: YAPIM (proje.toml asama) — KUR kapandı, Dilim 1+2 ve Dilim 3 (v2.5) yerelde
-tamamlandı ve doğrulandı; git geçmişi (3 commit) temiz içerikle yeniden yazıldı.
-Son yapılan: DILIM.md'deki bağımsız denetimin DÜZELT listesi (5 madde) kapatıldı; iç ad/
-oturum no/yerel yol kapısı (`araclar/ic_ad_kapisi.py`) yazıldı ve 0 eşleşme verdi;
-`kapilar.py`'nin bu makinede çöken tam koşusu ayrı bir oturumda düzeltildi, şimdi 7 PASS.
-Yarım kalan: DÜZELT'ten sonraki bağımsız denetim turu henüz koşmadı.
-Sıradaki ilk iş: bağımsız denetimi tazeden koştur (ayrı bağlam, salt-okunur) → TESLİME UYGUN
-çıkarsa kullanıcıdan "push et" onayı iste.
-Açık karar / bloker: bağımsız denetim + push onayı kullanıcıda.
+## DEVİR O1 · 2026-09-29 · yazan: Claude Code · N=—
+Aşama: YAPIM (proje.toml asama) — KUR kapandı. Dilim 1+2 ve Dilim 3 (v2.5) yerelde
+tamamlandı, DÜZELT listesi (5/5) kapandı, git geçmişi (4 commit: KUR · Dilim1+2 · Dilim3 ·
+kapilar.py şablon v0.2.1+CI) iki turda temiz içerikle yeniden yazıldı. Boş kutu: bağımsız
+denetimin TESLİME UYGUN hükmü henüz yok (bir önceki tur DÜZELT verdi, düzeltmeler bu
+commit'lerde; taze bir tur koşmadı).
+Son yapılan: (1) DÜZELT'in 5 maddesi kapatıldı — §0/§0.1 tutarlılığı, description×2+
+plugin.json, yetki-kapisi.md §5, iç ad/oturum-no/yerel-yol redaksiyonu + yeni mekanik kapı
+(`araclar/ic_ad_kapisi.py`), DURUM/CLAUDE.md belge=gerçek düzeltmesi. (2) `araclar/kapilar.py`
+proje-sablonu v0.2.1'e güncellendi (blob = etiket v0.2.1, Cowork ölçtü); Windows cp1254
+ortam mayını kalktı, tam kapı artık 7 PASS · 0 FAIL · 3 ATLANDI. (3) `.github/workflows/ci.yml`
+v0.2.1'den birebir alındı (windows-latest bacağı eklendi, ubuntu iş adı "kapilar" sabit).
+(4) İç ad kapısı `git grep -i -F -f _calisma/ic_adlar.txt` üç yerel dalda da (main,
+dilim-1-2-repo-yayin, dilim-3-sinir-spec-v2.5) 0 eşleşme verdi.
+Yarım kalan: bağımsız denetim turu (DÜZELT sonrası) henüz koşmadı.
+🔴 Açık/kritik: **`onur-kesim/gedik` deposunun `main` dalı, oluşturma anından beri (2026-09-28
+20:58 UTC) PUBLIC ve CANLI** — şablonun ilk commit'i (`5429b2d`) `gh repo create --template`
+ile otomatik push edildi ve o commit'in CHANGELOG.md'sinde hâlâ bir iç proje adı (bkz.
+`_calisma/ic_adlar.txt`) var. Bu, yereldeki 4 commit'ten AYRI bir sorun: yerel geçmiş temizlendi ama uzaktaki (origin)
+`main` hâlâ eski/kirli `5429b2d`'de duruyor ve düzeltme oraya hiç push edilmedi ("push YOK"
+talimatına uyuldu). Düşük risk (depo yeni, içerik yalnız çıplak şablon, henüz duyurulmadı)
+ama gerçek ve ölçülmüş bir açık — sıradaki oturumda kullanıcıya ayrıca sorulmalı.
+Sıradaki ilk iş: 1) bağımsız denetimi tazeden koştur (ayrı bağlam, salt-okunur) 2) TESLİME
+UYGUN çıkarsa kullanıcıdan hem yerel 4 commit'in push'u hem de yukarıdaki canlı `main`
+sızıntısı için ayrı onay iste (ikisi de "push et" kapsamında ama sızıntı düzeltmesi farklı
+bir aciliyet taşıyabilir, kullanıcıya söylenmeli).
+Açık karar / bloker: bağımsız denetim + push onayı (yerel commit'ler VE canlı main düzeltmesi
+için) kullanıcıda.
 Araç eksiği: —
-Dosyalar: CLAUDE.md, proje.toml, DILIM.md, araclar/ceviri_kapisi.py, araclar/ic_ad_kapisi.py
-Uyarı: gerçek bir DEVİR (oturum sayacı artışı) burada YAPILMADI; bu blok yalnız
-DURUM'un B4 gereği güncel tutulması içindir.
+Dosyalar: CLAUDE.md, proje.toml, DILIM.md, araclar/ceviri_kapisi.py, araclar/ic_ad_kapisi.py,
+araclar/kapilar.py, .github/workflows/ci.yml
+Uyarı: `_calisma/gedik-yerel-yedek-2026-09-29.bundle` iki eski (kirli) geçmiş sürümünü de
+taşıyor — yalnız yerel, gitignore'lu, hiçbir zaman commit/push edilmeyecek.
+Yeni oturumda yaz: gedik · O2 · başla
 
 ## DÖRT SAYI (her TESLİM'de bir satır — K8; KEŞİF'te nabız sütununa "KEŞİF" yazılır)
 | tarih | ürün nabzı (gün) | açık dilim yaşı (gün) | kapı kırmızı | sayaç |
@@ -32,3 +52,5 @@ DURUM'un B4 gereği güncel tutulması içindir.
 - 2026-09-29 — **DÜZELT kapandı (5/5).** İç ad kapısı (`araclar/ic_ad_kapisi.py`, D1 kör kapı öz-testli) yazıldı, 48 izlenen dosyada 0 eşleşme (vendor `araclar/kapilar.py`'deki bir yorumda da aynı iç ad bulunup düzeltildi). §0 madde 1-2 ve description×2+plugin.json §0.1 istisnasıyla uyumlu hâle getirildi (dondurulmuş spec'in EK'i bu oturumda erişilebilir değildi; minimal-diff çözüm elle türetildi). yetki-kapisi.md §5'teki iç-belge atfı kaldırıldı. DURUM DEVİR başlığı ve CLAUDE.md PROFİL bloğu gerçek içerikle dolduruldu. Git geçmişi (KUR/Dilim1+2/Dilim3, 3 commit) `git bundle` yedeğinden sonra temiz içerikle yeniden yazıldı — hiçbiri push edilmemişti, force-push değil.
 - 2026-09-29 — araclar/kapilar.py şablon v0.2.1'e güncellendi (blob = etiket v0.2.1); Windows'ta tam kapı 7 PASS · 0 FAIL · 3 ATLANDI (Cowork ölçtü); cp1254 ortam mayını kaldırıldı. (Bir istisna: v0.2.1 blobundaki bir yorum satırı iç proje adı taşıyordu, public depo kuralı gereği o tek kelime redakte edildi — ayrıntı ilgili commit'te.) Önceden açılan görev önerisi bu yüzden geri çekildi.
 - 2026-09-29 — Çeviri kapısının anlam-körlüğüne dair bir denetim iddiası ("EN §0.1'de bir NOT silinmiş") bu dilimi yazan taraf tarafından elle yeniden okunarak doğrulanamadı — TR/EN'de ilgili cümlede olumsuzluk ("DEĞİLDİR"/"is NOT") mevcut bulundu. Düzeltme yapılmadı; sonraki bağımsız denetim turunda yeniden bakılması istendi (D5 usulü).
+- 2026-09-29 — **İkinci yeniden yazım:** ilk yeniden yazımda `CHANGELOG.md`'nin kök commit'ten (`5429b2d`, şablonun kendi [0.2.0] bölümü) miras kalan bir iç proje adı satırı atlanmıştı — `main` ve `dilim-1-2-repo-yayin` dalları hâlâ bu satırı taşıyordu. Düzeltme kök commit'in hemen üstündeki KUR commit'ine taşındı, 4 commit (KUR·Dilim1+2·Dilim3·kapilar.py v0.2.1+CI) yeniden yazıldı. `git grep -i -F -f _calisma/ic_adlar.txt` üç yerel dalda da (main, dilim-1-2-repo-yayin, dilim-3-sinir-spec-v2.5) **0 eşleşme**.
+- 2026-09-29 — 🔴 **Ayrıca ölçüldü (yereldeki commit'lerden bağımsız): `onur-kesim/gedik` deposunun uzaktaki (origin) `main` dalı depo oluşturulduğundan beri (2026-09-28 20:58 UTC) public ve canlı, ve o dalın tek commit'i (`5429b2d`, şablon kontrolü) hâlâ aynı iç proje adını (bkz. `_calisma/ic_adlar.txt`) taşıyor.** Bu bir "yerel geçmiş" sorunu değil — gerçek zamanlı bir kamuya açıklık. Düzeltme yerelde hazır ama "push YOK" talimatı gereği origin'e gönderilmedi; kullanıcıya ayrıca bildirilecek (bkz. DEVİR).
