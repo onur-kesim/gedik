@@ -1,6 +1,6 @@
 ---
 name: gedik-tr
-description: Kendi kodunu, artefaktini ve yapilandirmani bir saldirgan gibi kirarak GEDIK bulur - bulunsun ki kapatilabilsin. Once mimariyi OLCER (triyaj T1-T12), sonra yalniz o mimarinin yuzeyini acar - A istemci/offline/mobil (Android, iOS) · B sunucu/API/DB/kimlik (enjeksiyon varyantlari, IDOR, OAuth/MFA, CORS, webhook, hiz siniri, is mantigi, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D yapay zeka/LLM (istem enjeksiyonu, arac yetkisi, vektor/embedding, MCP) · E sevk edilen artefakt hijyeni - arti kod incelemesi + mekanik tarama, bagimlilik/CVE, CI-CD/depo hijyeni ve test paketi mutasyonu. Tetikleyiciler - gedik ara, gedikleri bul, guvenlik denetimi, sizma testi, aciklari bul, hacker gibi dene, RLS kontrol, CORS kontrol, secret sizdi mi, istem enjeksiyonu, OWASP. Her bulgu calisan bir PoC ile gelir; olculmeyen sey temiz sayilmaz. Salt-okunur - duzeltmez, raporlar. Yalnizca cagrildiginda calisir; varsayilan hedef KENDI projendir, ucuncu tarafin canli sistemine dokunma yalniz §0.1'deki yetki kapisiyla acilir (v2.5).
+description: Kendi kodunu, artefaktini ve yapilandirmani bir saldirgan gibi kirarak GEDIK bulur - bulunsun ki kapatilabilsin. Once mimariyi OLCER (triyaj T1-T12), sonra yalniz o mimarinin yuzeyini acar - A istemci/offline/mobil (Android, iOS) · B sunucu/API/DB/kimlik (enjeksiyon varyantlari, IDOR, OAuth/MFA, CORS, webhook, hiz siniri, is mantigi, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D yapay zeka/LLM (istem enjeksiyonu, arac yetkisi, vektor/embedding, MCP) · E sevk edilen artefakt hijyeni - arti kod incelemesi + mekanik tarama, bagimlilik/CVE, CI-CD/depo hijyeni ve test paketi mutasyonu. Tetikleyiciler - gedik ara, gedikleri bul, guvenlik denetimi, sizma testi, aciklari bul, hacker gibi dene, RLS kontrol, CORS kontrol, secret sizdi mi, istem enjeksiyonu, OWASP. Her bulgu calisan bir PoC ile gelir; olculmeyen sey temiz sayilmaz. Salt-okunur - duzeltmez, raporlar. Kendi projende ya da herhangi bir acik kaynakta salt-okuma; canli hedefe yalniz kapsam-ici yetkiyle (senin beyanin ya da yayimlanmis bug bounty/VDP kapsami). Yalnizca cagrildiginda calisir.
 ---
 
 # GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.5.0)
@@ -24,12 +24,11 @@ etmek.
 Bu skill yalnızca şu koşullarda çalışır:
 
 - Hedef, **kullanıcının kendi sahibi olduğu** kod tabanı, artefakt (APK/AAB/build),
-  yapılandırma, BaaS projesi ya da yerel test örneğidir.
-- Hedef **üçüncü tarafa ait canlı bir sistem DEĞİLDİR** — istisnası yalnız §0.1'in
-  yetki kapısıdır. Canlı bir siteye/servise istek atarak tarama YAPILMAZ — sahibi olsa
-  bile — **§0.1'de tanımlanan makinece doğrulanabilir bir yetki dışında.** Bu skill
-  varsayılan olarak **kodu, yapılandırmayı ve artefaktı** okur; denemesini kullanıcının
-  kendi projesinde/örneğinde ya da (§0.1 yetkisiyle) kapsam-içi bir canlı hedefte yapar.
+  yapılandırma, BaaS projesi ya da yerel test örneğidir — **ya da herhangi bir açık
+  kaynaktır; açık kaynak yalnız salt-okuma incelenir** (aşağıdaki v2.5 bloğu).
+- Canlı bir siteye/servise **istek atılmaz — sahibi olsa bile — §0.1'deki yetki kapısı
+  açılmadıkça.** Bu skill varsayılan olarak **kodu, yapılandırmayı ve artefaktı** okur;
+  denemesini kullanıcının kendi projesinde/örneğinde yapar.
 - Üretilen kanıt girdileri **silahlandırılmış exploit değildir**: amaç tekrar
   üretilebilirliktir. Zararlı yük (gerçek veri sızdıran/çalıştıran payload) yazılmaz;
   zararsız işaretleyici (ör. `window.__GEDIK_KANITI = 1`) kullanılır.

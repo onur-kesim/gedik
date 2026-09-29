@@ -8,7 +8,7 @@
       "name": "gedik",
       "version": "2.5.0",
       "source": ".",
-      "description": "Breaks your own code, artifacts, and configuration like an attacker to find breaches (GEDIK) — triage first, PoC required, read-only."
+      "description": "Breaks your own code, artifacts, and configuration like an attacker to find breaches (GEDIK) — triage first, PoC required, read-only. Live targets only with an in-scope authorization."
     }
   ]
 }

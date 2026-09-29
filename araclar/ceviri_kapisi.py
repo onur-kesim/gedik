@@ -7,22 +7,40 @@ Her dosya ciftinde dort sey esit olmali:
   3) kod blogu sayisi (``` ile acilip kapanan bloklar)
   4) her kod blogunun ICERIGI - TR ve EN'de sirayla ayni hash (sha256)
 
+Bu dort olcum YAPIYI olcer, ANLAMI olcmez (bir cumleden "NOT" silinince yine PASS verir).
+Bu yuzden bir de SABIT CUMLE KILIDI (araclar/sabit_cumleler.json, spec EK-1.4):
+  5) guvenlik-kritik cumleler icin (TR ifade, EN ifade) cifti; ikisi de ilgili dosyada
+     birebir (bosluk/satir sonu farki yok sayilir) bulunmali. En az 5 cumle.
+
 Kullanim:
-  python araclar/ceviri_kapisi.py                 # gercek dosya ciftlerini denetler
-  python araclar/ceviri_kapisi.py --pozitif-kontrol  # kor kapi oz-testi (D1): EN kopyadan
-                                                      # bir tablo satiri silinince kapi
-                                                      # KIRMIZI yanmali; yanmiyorsa kapi kordur.
+  python araclar/ceviri_kapisi.py                 # gercek dosya ciftlerini + kilidi denetler
+  python araclar/ceviri_kapisi.py --pozitif-kontrol  # kor kapi oz-testi (D1), iki mutasyon:
+      A) EN kopyadan bir tablo satiri silinir  -> yapi kapisi KIRMIZI olmali
+      B) EN §0.1'deki "Authorization is NOT text..." cumlesinden "NOT" silinir
+         -> yapi kapisi PASS verir (dar kapi), SABIT CUMLE KILIDI KIRMIZI olmali
+      Biri yanmiyorsa kapi kordur; cikis 1.
 
 Yalniz standart kutuphane. Disk uzerinde hicbir dosyayi degistirmez.
 """
 import hashlib
+import json
 import re
 import sys
 from pathlib import Path
 
+# Windows konsolu (cp1254) UTF-8 disi kod sayfasinda cokmesin (bkz. CLAUDE.md).
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
 REPO = Path(__file__).resolve().parent.parent
 TR_ROOT = REPO / "skills" / "gedik-tr"
 EN_ROOT = REPO / "skills" / "gedik"
+KILIT_YOLU = REPO / "araclar" / "sabit_cumleler.json"
+KILIT_ASGARI = 5
+MUTASYON_ID = "yetki-ne-sayfa"
 
 HEADER_RE = re.compile(r"^#{1,6}\s")
 FENCE_RE = re.compile(r"^```")
@@ -106,6 +124,38 @@ def compare(tr_text, en_text):
     return ("PASS" if not reasons else "FAIL"), reasons
 
 
+def norm(metin):
+    return re.sub(r"\s+", " ", metin).strip()
+
+
+def kilit_yukle():
+    """Kilit listesini dondurur; dosya yoksa None (v2.5 oncesi)."""
+    if not KILIT_YOLU.exists():
+        return None
+    return json.loads(KILIT_YOLU.read_text(encoding="utf-8"))["cumleler"]
+
+
+def dosya_oku(kok):
+    def oku(rel):
+        yol = kok / rel
+        return yol.read_text(encoding="utf-8") if yol.exists() else None
+    return oku
+
+
+def kilit_kontrol(cumleler, oku_tr, oku_en):
+    """Her (TR, EN) cumlesi ilgili dosyada birebir (bosluk normalize) bulunmali.
+    Donus: [(id, taraf, sebep)]."""
+    hatalar = []
+    for c in cumleler:
+        for taraf, oku, anahtar in (("TR", oku_tr, "tr"), ("EN", oku_en, "en")):
+            metin = oku(c["dosya"])
+            if metin is None:
+                hatalar.append((c["id"], taraf, f"dosya yok: {c['dosya']}"))
+            elif norm(c[anahtar]) not in norm(metin):
+                hatalar.append((c["id"], taraf, "cumle bulunamadi"))
+    return hatalar
+
+
 def find_pairs():
     if not TR_ROOT.is_dir() or not EN_ROOT.is_dir():
         return []
@@ -140,15 +190,31 @@ def run_real():
             for r in reasons:
                 print(f"   - {r}")
 
+    cumleler = kilit_yukle()
+    if cumleler is None:
+        print(f"ATLANDI sabit cumle kilidi — {KILIT_YOLU.name} yok (v2.5 oncesi).")
+    elif len(cumleler) < KILIT_ASGARI:
+        print(f"FAIL sabit cumle kilidi — {len(cumleler)} cumle, en az {KILIT_ASGARI} gerekir")
+        all_pass = False
+    else:
+        hatalar = kilit_kontrol(cumleler, dosya_oku(TR_ROOT), dosya_oku(EN_ROOT))
+        if hatalar:
+            all_pass = False
+            print(f"FAIL sabit cumle kilidi — {len(hatalar)} eksik:")
+            for cid, taraf, sebep in hatalar:
+                print(f"   - {cid} [{taraf}]: {sebep}")
+        else:
+            print(f"PASS sabit cumle kilidi — {len(cumleler)} cumle x TR+EN birebir")
+
     print()
     print("SONUC: TESLIME UYGUN" if all_pass else "SONUC: DUZELT")
     return 0 if all_pass else 1
 
 
-def run_pozitif_kontrol():
-    """Kor kapi oz-testi (D1). Gercek bir TR/EN ciftini bul, EN kopyasindan bilerek
-    bir tablo satiri sil, kapi KIRMIZI yaniyor mu dogrula. Diskteki hicbir dosyayi
-    degistirmez — yalniz bellekte calisir."""
+def pozitif_a_tablo_satiri():
+    """Mutasyon A (D1). Gercek bir TR/EN ciftini bul, EN kopyasindan bilerek
+    bir tablo satiri sil, yapi kapisi KIRMIZI yaniyor mu dogrula. Diskteki hicbir
+    dosyayi degistirmez — yalniz bellekte calisir."""
     pairs = find_pairs()
     target = None
     for rel, tr_path, en_path in pairs:
@@ -183,21 +249,68 @@ def run_pozitif_kontrol():
 
     verdict, reasons = compare(tr_text, corrupted_text)
 
-    print(f"POZITIF KONTROL — hedef: {rel}")
+    print(f"POZITIF KONTROL A (tablo satiri) — hedef: {rel}")
     print(f"  silinen satir: {en_lines[victim_idx]!r}")
-    print(f"  kapi sonucu (bozuk EN'e karsi): {verdict}")
+    print(f"  yapi kapisi sonucu (bozuk EN'e karsi): {verdict}")
     for r in reasons:
         print(f"   - {r}")
 
     if verdict == "FAIL":
-        print("\nSONUC: KAPI GORUYOR (kirmizi yanmali yerde yandi) — kor kapi degil.")
+        print("  A: KAPI GORUYOR (kirmizi yanmali yerde yandi).")
         return 0
-    else:
-        print(
-            "\nSONUC: KAPI KOR — bir tablo satiri silindiginde bile PASS verdi. "
-            "Olcum reddedilir."
-        )
+    print("  A: KAPI KOR — bir tablo satiri silindiginde bile PASS verdi.")
+    return 1
+
+
+def pozitif_b_not_mutasyonu():
+    """Mutasyon B (spec EK-1.4). EN §0.1'deki "Authorization is NOT text..." cumlesinden
+    "NOT" bellekte silinir. Yapi kapisi bunu GORMEZ (PASS — dar kapi); sabit cumle kilidi
+    KIRMIZI yanmali. Yanmiyorsa kilit kordur."""
+    cumleler = kilit_yukle()
+    if cumleler is None:
+        print("POZITIF KONTROL B — ATLANDI: sabit cumle kilidi yok (v2.5 oncesi).")
+        return 0
+    hedef = next((c for c in cumleler if c["id"] == MUTASYON_ID), None)
+    if hedef is None:
+        print(f"POZITIF KONTROL B — KILIT KOR: '{MUTASYON_ID}' kilit listesinde yok.")
         return 1
+
+    oku_tr, oku_en = dosya_oku(TR_ROOT), dosya_oku(EN_ROOT)
+    tr_metin, en_metin = oku_tr(hedef["dosya"]), oku_en(hedef["dosya"])
+    if tr_metin is None or en_metin is None or hedef["en"] not in en_metin or "NOT" not in hedef["en"]:
+        print("POZITIF KONTROL B — mutasyon uygulanamadi (hedef cumle EN dosyasinda tek satirda yok).")
+        return 1
+
+    mutant_cumle = hedef["en"].replace("NOT ", "", 1)
+    mutant_en = en_metin.replace(hedef["en"], mutant_cumle, 1)
+    yapi, _ = compare(tr_metin, mutant_en)
+    hatalar = kilit_kontrol(
+        cumleler, oku_tr, lambda rel: mutant_en if rel == hedef["dosya"] else oku_en(rel)
+    )
+    yakalandi = any(cid == MUTASYON_ID and taraf == "EN" for cid, taraf, _ in hatalar)
+
+    print(f"POZITIF KONTROL B (NOT silme) — hedef: {hedef['dosya']} [{MUTASYON_ID}]")
+    print(f"  onceki: {hedef['en']!r}")
+    print(f"  sonraki: {mutant_cumle!r}")
+    print(f"  yapi kapisi (dar kapi, PASS beklenir): {yapi}")
+    print(f"  sabit cumle kilidi: {'FAIL (yakaladi)' if yakalandi else 'PASS (KACIRDI)'}")
+    if yakalandi:
+        print("  B: KILIT GORUYOR (anlam mutasyonu kirmizi yakti).")
+        return 0
+    print("  B: KILIT KOR — 'NOT' silindiginde bile PASS verdi.")
+    return 1
+
+
+def run_pozitif_kontrol():
+    rc_a = pozitif_a_tablo_satiri()
+    print()
+    rc_b = pozitif_b_not_mutasyonu()
+    print()
+    if rc_a == 0 and rc_b == 0:
+        print("SONUC: KAPI GORUYOR — iki mutasyon da kirmizi yakti, kor kapi degil.")
+        return 0
+    print("SONUC: KAPI KOR — olcum reddedilir.")
+    return 1
 
 
 def main():

@@ -1,7 +1,7 @@
 {
   "name": "gedik",
   "version": "2.5.0",
-  "description": "Finds breaches (GEDIK) by breaking your own code, artifacts, and configuration like an attacker. First measures the architecture (triage T1-T12), then opens only that surface: A client/mobile · B server/API/DB/identity · C BaaS-RLS · D AI/LLM · E shipped artifact; plus code review, mechanical scanning, dependency/CVE, CI-CD and test-suite mutation. Every finding ships with a working PoC; what isn't measured isn't assumed clean. Read-only; the default target is your own project, with third-party live testing only behind an in-scope authorization (v2.5, section 0.1).",
+  "description": "Finds breaches (GEDIK) by breaking your own code, artifacts, and configuration like an attacker. First measures the architecture (triage T1-T12), then opens only that surface: A client/mobile · B server/API/DB/identity · C BaaS-RLS · D AI/LLM · E shipped artifact; plus code review, mechanical scanning, dependency/CVE, CI-CD and test-suite mutation. Every finding ships with a working PoC; what isn't measured isn't assumed clean. Read-only on your own project or any public source; live targets only with an in-scope authorization.",
   "author": {
     "name": "Onur Kesim"
   },

@@ -1,6 +1,6 @@
 ---
 name: gedik
-description: Breaks your own code, artifacts, and configuration like an attacker to find gedik — so they can be closed. First MEASURES the architecture (triage T1-T12), then opens only that architecture's surface - A client/offline/mobile (Android, iOS) · B server/API/DB/identity (injection variants, IDOR, OAuth/MFA, CORS, webhook, rate limiting, business logic, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D AI/LLM (prompt injection, tool authorization, vector/embedding, MCP) · E shipped-artifact hygiene - plus code review + mechanical scanning, dependency/CVE, CI-CD/repo hygiene and test-suite mutation. Triggers - find vulnerabilities, security audit, pentest my project, check RLS, prompt injection audit, is my test suite blind, CORS check, did a secret leak, OWASP. Every finding comes with a working PoC; what isn't measured isn't counted clean. Read-only - does not fix, reports. Only when invoked; the default target is your own project - touching a third party's live system opens only through the §0.1 authorization gate (v2.5).
+description: Breaks your own code, artifacts, and configuration like an attacker to find gedik — so they can be closed. First MEASURES the architecture (triage T1-T12), then opens only that architecture's surface - A client/offline/mobile (Android, iOS) · B server/API/DB/identity (injection variants, IDOR, OAuth/MFA, CORS, webhook, rate limiting, business logic, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D AI/LLM (prompt injection, tool authorization, vector/embedding, MCP) · E shipped-artifact hygiene - plus code review + mechanical scanning, dependency/CVE, CI-CD/repo hygiene and test-suite mutation. Triggers - find vulnerabilities, security audit, pentest my project, check RLS, prompt injection audit, is my test suite blind, CORS check, did a secret leak, OWASP. Every finding comes with a working PoC; what isn't measured isn't counted clean. Read-only - does not fix, reports. Reads your own project or any public source; touches a live target only with an in-scope authorization (your own statement or a published bug-bounty/VDP scope). Only when invoked.
 ---
 
 # GEDIK — Adversarial Input and Security Audit (v2.5.0)
@@ -26,13 +26,12 @@ concrete patch.
 This skill runs only under the following conditions:
 
 - The target is a codebase, artifact (APK/AAB/build), configuration, BaaS project, or
-  local test instance **that the user themselves owns**.
-- The target is **NOT a live system belonging to a third party** — the only exception is
-  §0.1's authorization gate. Scanning by sending requests to a live site/service is NOT
-  done — even if the user owns it — **except under a machine-verifiable authorization as
-  defined in §0.1.** By default this skill reads **the code, the configuration, and the
-  artifact**; it runs its tests against the user's own project/instance, or (with §0.1
-  authorization) an in-scope live target.
+  local test instance **that the user themselves owns** — **or any open source; open
+  source is inspected read-only only** (the v2.5 block below).
+- **No requests are sent** to a live site/service — even if the user owns it — **unless
+  the authorization gate in §0.1 has opened.** By default this skill reads **the code,
+  the configuration, and the artifact**; it runs its tests against the user's own
+  project/instance.
 - The evidence inputs produced are **not weaponized exploits**: the goal is
   reproducibility. No harmful payload (one that actually exfiltrates/executes real data)
   is written; a harmless marker (e.g. `window.__GEDIK_PROOF = 1`) is used instead.
