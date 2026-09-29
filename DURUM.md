@@ -1,5 +1,19 @@
 # DURUM — gedik
 
+## DEVİR — Cowork · 2026-09-29 gece · gedik v2.6.0 YAYINDA
+Durum: gedik açık kaynak YAYINLANDI. `onur-kesim/gedik` public, MIT, `main` korumalı (enforce_admins false → admin doğrudan push edebilir), v2.6.0 etiket + Release canlı, `/plugin install` kanıtlı (gedik:gedik + gedik-tr, araclar/ çözülüyor), CI yeşil. 4 dilim (v2.5 yetki kapısı · kapilar+CI · v2.6 makine-okur+iki mod+bağımsız çürütücü) + 4 bağımsız Cowork denetimi, hepsi TESLİME UYGUN.
+Son yapılan: push + v2.6.0 etiket/Release + dal koruması + release.yml idempotent + eski kırmızı `surum` koşusu silindi + KRITER.md KİLİTLENDİ (D1-D4 Cowork varsayılanları; koşumdan önce değiştirilebilir).
+Yarım kalan: teknik iş bitti — kod tarafında açık yok.
+Sıradaki ilk iş (yeni oturum · Onur kararı):
+  1) **ottosulin PR GÖNDER** — fork `onur-kesim/awesome-ai-security` hazır, eklenecek satır `_calisma/TANITIM_HAZIR.md`'de. Cowork'ün fork'a push'u + 3. taraf PR'ı classifier "public surface" ile engelledi → Onur elle (web) ya da Code ile gönderir.
+  2) **Benchmark** — `KRITER.md` kilitli. Hedef 2 (Supabase-RLS + LLM açık ekili küçük depo) kurulumu + 5 aracın koşumu Code'a devredilebilir; sonuç README'ye dürüstçe.
+  3) Anthropic dizini (Onur, ücretli plan + form) · hesreallyhim ≥13 Eki (yalnız insan, PR yasak).
+Açık karar/bloker: KRITER D1-D4 varsayılanları Onur onayına açık (koşumdan önce değişebilir; değişirse KRITER.md + karar günlüğü).
+Dosyalar: `KRITER.md` (kilitli, kökte), `_calisma/`: TANITIM_HAZIR.md · KRITER_TASLAK.md · SINIR_SPEC_GEDIK_v2.5/v2.6 · ottosulin-fork (klon) · ölçüm betikleri.
+Uyarı: liste/forum başvurularını Cowork gönderemez (classifier + yayın planı kilidi) — Onur'un işi. Push normalde Onur; "push et" ile Cowork push eder.
+Yeni oturumda yaz:  `gedik · O-sonraki · başla`
+
+
 ## DEVİR O3 · 2026-09-29 · yazan: Claude Code · N=544k (🟢)
 Aşama: YAPIM (proje.toml asama). Zincir (`main`e fast-forward + push 21:56 TRT'de EDİLDİ — bu oturumun dışında; `git reflog`/`gh api` ile ölçüldü): `5429b2d` (kök) → KUR → Dilim 1+2 → Dilim 3 (v2.5) →
 kapilar.py v0.2.1+CI → DEVİR O1 → DÜZELT-2 → DEVİR O2 → Cowork 3. denetim kaydı (`26a8291`) → README rakip satırı (`6cec592`) →
