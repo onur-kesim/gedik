@@ -83,6 +83,7 @@ measured superiority — treat every "ahead" claim as a hypothesis, not a result
 | [usestrix/strix](https://github.com/usestrix/strix) | 65k+ | Apache-2.0 | **Yes** | CLI + 9 skills + MCP; has its own Supabase-RLS skill |
 | [KeygraphHQ/shannon](https://github.com/KeygraphHQ/shannon) | 48k+ | AGPL-3.0 | **Yes** | CLI + CI + skill; "no exploit, no report" |
 | [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (`claude-security`) | 37k+ (repo) | Apache-2.0 | No | Anthropic's own official marketplace plugin; independent verifier agents; entered the directory 2026-09-25 |
+| [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) | 23k+ (2026-09-29) | MIT | No — live probing forbidden outright | Independent verifier agents try to refute every candidate (false-positive elimination); schema'd `findings.json` + tested validators; 9 core attack-class prompts + 10 target-type class files; created 2026-06-18 |
 | [trailofbits/skills](https://github.com/trailofbits/skills) | 7k+ | CC-BY-SA-4.0 | No | Marketplace, 44 plugins; **mutation testing is a separate skill** there |
 | [anthropics/claude-code-security-review](https://github.com/anthropics/claude-code-security-review) | 6k+ | MIT | No | GitHub Action + `/security-review`; FP filter + `evals/` |
 
@@ -91,14 +92,22 @@ measured superiority — treat every "ahead" claim as a hypothesis, not a result
   doesn't have.
 - **K4 self-mutant, both directions** — poisons its own scan *and* the project's test
   suite to prove they bite. No other tool surveyed self-tests its own blindness this way.
-- **Lane C (BaaS/RLS) as a first-class column** — only Strix has something similar.
+  cloudflare/security-audit-skill's independent refuters cut false positives; K4 is a
+  different mechanism — mutation-testing the scan and the project's tests for blindness.
+- **Lane C (BaaS/RLS — Supabase, Firebase) as a first-class column** — only Strix has
+  something similar.
+- **Turkish original** — the canonical text is Turkish (`skills/gedik-tr/`); the English
+  version is a translation held to a mechanical translation gate.
 
 **Where gedik is honestly behind (all real, all current gaps):**
 - **No scored benchmark.** Anthropic's and [agamm/claude-code-owasp](https://github.com/agamm/claude-code-owasp)'s
   tools ship `evals/`; Shannon and PentestGPT report numbers. This is the biggest gap.
 - **No live exploitation, by design** — blind to classes that only manifest at runtime
   against a live target.
-- **No machine-readable output** (SARIF/JSON), no CI/Action integration.
+- **No machine-readable output** (SARIF/JSON), no CI/Action integration —
+  cloudflare/security-audit-skill ships a schema'd `findings.json` with tested validators.
+- **Narrower scope** than cloudflare/security-audit-skill (9 core attack-class prompts +
+  10 target-type class files there).
 - Anthropic's own **official** `claude-security` plugin covers similar ground for free,
   from the platform owner. What gedik argues for over it is not breadth — it's the K4
   and triage discipline above.

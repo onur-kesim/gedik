@@ -82,6 +82,7 @@ değil — her "önde" iddiasını hipotez say, sonuç değil.
 | [usestrix/strix](https://github.com/usestrix/strix) | 65k+ | Apache-2.0 | **Evet** | CLI + 9 skill + MCP; kendi Supabase-RLS skill'i var |
 | [KeygraphHQ/shannon](https://github.com/KeygraphHQ/shannon) | 48k+ | AGPL-3.0 | **Evet** | CLI + CI + skill; "no exploit, no report" |
 | [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (`claude-security`) | 37k+ (depo) | Apache-2.0 | Hayır | Anthropic'in kendi resmî marketplace plugin'i; bağımsız doğrulayıcı ajanlar; 25 Eyl 2026'da dizine girdi |
+| [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) | 23k+ (29 Eyl 2026) | MIT | Hayır — canlı yoklama tamamen yasak | Bağımsız doğrulayıcı ajanlar her adayı çürütmeye çalışır (yanlış-pozitif eleme); şemalı `findings.json` + testli doğrulayıcılar; 9 çekirdek saldırı-sınıfı istemi + 10 hedef-türü sınıf dosyası; 18 Haz 2026'da oluşturuldu |
 | [trailofbits/skills](https://github.com/trailofbits/skills) | 7k+ | CC-BY-SA-4.0 | Hayır | Marketplace, 44 plugin; **mutasyon testi orada ayrı bir skill** |
 | [anthropics/claude-code-security-review](https://github.com/anthropics/claude-code-security-review) | 6k+ | MIT | Hayır | GitHub Action + `/security-review`; FP filtresi + `evals/` |
 
@@ -89,8 +90,13 @@ değil — her "önde" iddiasını hipotez say, sonuç değil.
 - **Taramadan önce triyaj (K1, T1–T12)** — mimarinin sahip olmadığı bir yüzeyi açmaz.
 - **K4 kendi-mutant'ı, iki yöne birden** — hem kendi taramasını hem projenin test
   paketini kirletip ısırdığını kanıtlar. İncelenen araçlardan hiçbiri kendi körlüğünü
-  böyle öz-test etmiyor.
-- **Şerit C (BaaS/RLS) birinci sınıf bir kolon** — yalnız Strix'te benzeri var.
+  böyle öz-test etmiyor. cloudflare/security-audit-skill'in bağımsız çürütücüleri yanlış
+  pozitifi keser; K4 farklı bir mekanizma — taramanın ve projenin testlerinin körlüğünü
+  mutasyonla ölçer.
+- **Şerit C (BaaS/RLS — Supabase, Firebase) birinci sınıf bir kolon** — yalnız Strix'te
+  benzeri var.
+- **Türkçe orijinal** — kanonik metin Türkçe (`skills/gedik-tr/`); İngilizce sürüm,
+  mekanik bir çeviri kapısına tabi çeviridir.
 
 **gedik'in dürüstçe geride olduğu yerler (hepsi gerçek, hepsi bugünkü açık):**
 - **Ölçülmüş bir skor yok.** Anthropic'in ve
@@ -98,7 +104,11 @@ değil — her "önde" iddiasını hipotez say, sonuç değil.
   `evals/` var; Shannon ve PentestGPT sayı veriyor. En büyük açık bu.
 - **Tasarım gereği canlı exploit yok** — yalnız canlı bir hedefte çalışma zamanında
   ortaya çıkan sınıflara kördür.
-- **Makine-okur çıktı yok** (SARIF/JSON), CI/Action entegrasyonu yok.
+- **Makine-okur çıktı yok** (SARIF/JSON), CI/Action entegrasyonu yok —
+  cloudflare/security-audit-skill şemalı bir `findings.json`'u testli doğrulayıcılarla
+  birlikte sunuyor.
+- **Daha dar kapsam:** cloudflare/security-audit-skill'e kıyasla (orada 9 çekirdek
+  saldırı-sınıfı istemi + 10 hedef-türü sınıf dosyası var).
 - Anthropic'in kendi **resmî** `claude-security` plugin'i platform sahibinden ücretsiz
   olarak benzer bir alanı kapsıyor. gedik'in ona karşı savunduğu şey genişlik değil —
   yukarıdaki K4 ve triyaj disiplini.
