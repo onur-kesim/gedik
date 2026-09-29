@@ -32,9 +32,9 @@ DEĞİŞTİRMEYECEĞİ (§7) listesindeki hiçbir satır bozulmadı.
       silahsız işaretleyici, veri-sızdırma-yok, salt-okunurluk) elle karşılaştırıldı — DEĞİŞMEDİ
 - [x] iç ad/oturum-no/yerel-yol kapısı: `araclar/ic_ad_kapisi.py` yazıldı, kör kapı
       öz-testi (`--pozitif-kontrol`) FAIL yaktı, gerçek koşu 48 dosya/17 desen → 0 eşleşme
-- [x] `kapilar.py` tam koşu — bu Windows makinesinde ÖLÇÜLDÜ (önceki ORTAM MAYINI ayrı bir
-      oturumda düzeltildi, bkz. karar günlüğü): 7 PASS · 0 FAIL · 3 ATLANDI (kur/build boş,
-      belge/kod oranı kapalı) · 0 ÖLÇÜLEMEDİ
+- [x] `kapilar.py` tam koşu — şablon v0.2.1'e güncellendi (blob = etiket v0.2.1, Cowork
+      ölçtü), cp1254 ORTAM MAYINI kaldırıldı: bu Windows makinesinde 7 PASS · 0 FAIL ·
+      3 ATLANDI (kur/build boş, belge/kod oranı kapalı) · 0 ÖLÇÜLEMEDİ, çıkış 0
 - [x] §0/§0.1 iç tutarlılık: §0 madde 1-2'ye §0.1'e işaret eden istisna cümlesi eklendi (TR+EN)
 - [x] description×2 (SKILL.md frontmatter TR+EN) + plugin.json: "yalnızca kendi projen"
       iddiası v2.5 istisnasıyla uyumlu hâle getirildi

@@ -1,6 +1,8 @@
 # Tek iş akışı, her yığın için aynı gövde: yığın bilgisi proje.toml'dan okunur,
 # yalnız o yığının çalışma zamanı kurulur (koşullu adımlar), sonra kapilar.py sabit sırayı koşar.
 # Yeni yığın = proje.toml'a dört satır + (gerekirse) buraya tek koşullu kurulum adımı.
+# İki işletim sistemi: yerel-kodlama (cp1254) hata sınıfı UTF-8 yerelli Linux'ta görünmez, Windows'ta çıkar.
+# Projenin kur/test/lint/build komutları POSIX'e özgüyse (./gradlew, sh betiği) Windows satırını KUR'da matristen sil.
 name: kapilar
 
 on:
@@ -9,8 +11,17 @@ on:
 
 jobs:
   kapilar:
-    name: kapilar
-    runs-on: ubuntu-24.04
+    name: ${{ matrix.ad }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false          # bir bacağın kırmızısı ötekinin sonucunu gizlemesin
+      matrix:
+        include:
+          - { os: ubuntu-24.04, ad: kapilar }            # iş adı "kapilar" = dal korumasındaki zorunlu kontrol; DEĞİŞTİRME
+          - { os: windows-latest, ad: kapilar-windows }  # zorunlu kontrol listesinde değil; sürüm etiketine sabitlenmedi
+    defaults:
+      run:
+        shell: bash             # Windows'ta da Git Bash: `>> "$GITHUB_OUTPUT"` iki sistemde aynı
     steps:
       - uses: actions/checkout@v7
         with:
