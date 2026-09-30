@@ -6,9 +6,11 @@ ve yama önerisiyle gelir.
 
 ## NE TESLİM EDİLMEDİ (bu sürümde HAYIR)
 
-- **Henüz benchmark yok.** gedik hiçbir zaman puanlanmış bir hedefe karşı ölçülmedi.
-  Bu depoda hiçbir yerde "X'ten daha iyi" iddiası yok — bkz.
-  [Rakipler, dürüstçe](#rakipler-dürüstçe).
+- **Benchmark: ölçüldü, ama zafer değil.** Artık ilk puanlı koşu var (bkz.
+  [Benchmark](#benchmark-ölçülmüş--2026-09-30)). gedik'in *tespiti* iki hedefte de
+  incelenen en iyi araç kadar ya da daha iyi çıktı, ama exploit-yoğun gerçek bir hedefte
+  raporu Claude'un gerçek-zamanlı siber önlemiyle 6 koşudan 4'ünde kesildi — teslim
+  güvenilirliği limiti, tespit zafiyeti değil. Genel "X'ten daha iyi" iddiası yok.
 - **iOS şeridi (A8) bir kontrol listesidir, gerçek bir sistemde doğrulanmadı.** Henüz
   gerçek bir iOS/Capacitor-iOS uygulamasında koşmadı.
 - **Canlı test yalnız yetki kapısı arkasında — yetkisiz reddeder.** Varsayılan olarak
@@ -86,16 +88,61 @@ Yalnız kendi projende, yalnız çağrıldığında.
 | **Kod incelemesi** | kaynak varsa | güvenlik etkili doğruluk hataları, bağımlılık/CVE, sırrın yanlış katmanda kullanımı |
 | **CI/CD + depo** | repo/CI varsa | git geçmişi sır taraması, `pull_request_target`, action sabitleme, **sızıntı sonrası kurtarma sırası** |
 
+## Benchmark (ölçülmüş — 2026-09-30)
+
+İlk puanlı koşu. **İki hedef de zayıf kanıt** ve sonuç genel bir "gedik daha iyi"
+iddiasını **desteklemiyor** — caveat'ları oku.
+
+Kurulum: dört araç — gedik v2.6.0, `cloudflare/security-audit-skill`, Anthropic
+`/security-review`, Semgrep (girişsiz ücretsiz kurallar, Pro değil) — aynı model
+(`claude-sonnet-5-5`), yalıtılmış koşular, cevap anahtarı tarayan ajana kapalı.
+`claude-security` dışarıda bırakıldı: eklenti lisansı rakip üründe kullanımı yasaklıyor.
+Tek anotatör (gedik'in yazarı) — bağımsız ikinci okuma yok.
+
+**Hedef 2 — ekili Supabase-RLS + LLM-araç deposu (gedik'in yazarı kurdu, gedik'in güçlü
+şeridine yanlı):**
+
+| 11 ekili | gedik | cloudflare | `/security-review` | Semgrep |
+|---|---|---|---|---|
+| bulundu | 11/11 | 11/11 (9 kesin) | 9/11 | 1/11 |
+| yanlış pozitif | 0 | 0 | 0 | 0 |
+
+K4'e yalnız gedik değindi — deponun kendi test paketinin yetki/doğrulama mutantlarına
+kör olduğunu gösterdi; diğerleri sessiz.
+
+**Hedef 1 — NodeGoat, gerçek üçüncü taraf (temizlenmiş kopya özgününden zayıf ve büyük
+olasılıkla modelin eğitim verisinde):**
+
+| 17 ekili | gedik | cloudflare | `/security-review` | Semgrep |
+|---|---|---|---|---|
+| tespit *(teslim edildiğinde)* | 16–17/17 | 16/17 | 5/17 | 6/17 |
+| rapor teslim | **6 koşudan 4'ü kesildi** | evet | evet | evet |
+
+gedik'in tespiti burada en güçlüsü — ama bu exploit-yoğun hedefte raporu, Claude'un
+**gerçek-zamanlı siber önlemi** (`[cyber]`) tarafından 6 koşudan 4'ünde akış ortasında
+kesildi; kullanıcıya yalnız hata ulaştı. Exploit yüklerini rapor gövdesinden çıkarmak
+bunu **çözmedi**. Bu bir **teslim güvenilirliği** limiti, tespit zafiyeti değil; çözüm
+kod değil, Anthropic'in **Cyber Verification Program**'ı.
+
+**Dürüst hüküm.** gedik iki hedefte de incelenen en iyi araç kadar ya da daha iyi tespit
+ediyor ve K4 / öz-çürütme'de tek başına — ama exploit-yoğun gerçek kodda tam raporu henüz
+güvenilir biçimde *teslim edemiyor*. Genel "daha iyi" iddia edilmiyor.
+
+**Caveat'lar.** Tek anotatör = gedik'in yazarı · Hedef 2 gedik'in şeridine ekili · Hedef
+1 temizlenmiş + ezber riski · Semgrep yalnız ücretsiz kurallar · araç×hedef başına tek
+koşu (gedik-Hedef 1'de altı) · tüm araçlar Windows'ta.
+
 ## Rakipler, dürüstçe
 
-gedik hiç benchmark'lanmadı. Aşağıdaki kıyas *tasarım farkıdır*, ölçülmüş üstünlük
-değil — her "önde" iddiasını hipotez say, sonuç değil.
+gedik'in artık bir puanlı benchmark'ı var (bkz.
+[Benchmark](#benchmark-ölçülmüş--2026-09-30)); genel bir "daha iyi" iddiasını
+**desteklemiyor**. Aşağıdaki kıyas *tasarım farkıdır*.
 
 | Araç | Yıldız | Lisans | Canlıya saldırır mı? | Not |
 |---|---|---|---|---|
 | [usestrix/strix](https://github.com/usestrix/strix) | 65k+ | Apache-2.0 | **Evet** | CLI + 9 skill + MCP; kendi Supabase-RLS skill'i var |
 | [KeygraphHQ/shannon](https://github.com/KeygraphHQ/shannon) | 48k+ | AGPL-3.0 | **Evet** | CLI + CI + skill; "no exploit, no report" |
-| [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (`claude-security`) | 37k+ (depo) | Apache-2.0 | Hayır | Anthropic'in kendi resmî marketplace plugin'i; bağımsız doğrulayıcı ajanlar; 25 Eyl 2026'da dizine girdi |
+| [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (`claude-security`) | 37k+ (depo) | Apache-2.0 (depo) · **eklenti: tescilli** | Hayır | Anthropic'in kendi resmî marketplace plugin'i; bağımsız doğrulayıcı ajanlar; 25 Eyl 2026'da dizine girdi. Not: `claude-security` eklentisinin kendi LICENSE'ı (Anthropic PBC, tüm hakları saklı) kullanımı Anthropic ürünleriyle sınırlar ve rakip üründe kullanımı yasaklar |
 | [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) | 23k+ (29 Eyl 2026) | MIT | Hayır — canlı yoklama tamamen yasak | Bağımsız doğrulayıcı ajanlar her adayı çürütmeye çalışır (yanlış-pozitif eleme); şemalı `findings.json` + testli doğrulayıcılar; 9 çekirdek saldırı-sınıfı istemi + 10 hedef-türü sınıf dosyası; 18 Haz 2026'da oluşturuldu |
 | [trailofbits/skills](https://github.com/trailofbits/skills) | 7k+ | CC-BY-SA-4.0 | Hayır | Marketplace, 44 plugin; **mutasyon testi orada ayrı bir skill** |
 | [anthropics/claude-code-security-review](https://github.com/anthropics/claude-code-security-review) | 6k+ | MIT | Hayır | GitHub Action + `/security-review`; FP filtresi + `evals/` |
@@ -115,9 +162,11 @@ değil — her "önde" iddiasını hipotez say, sonuç değil.
   mekanik bir çeviri kapısına tabi çeviridir.
 
 **gedik'in dürüstçe geride olduğu yerler (hepsi gerçek, hepsi bugünkü açık):**
-- **Ölçülmüş bir skor yok.** Anthropic'in ve
-  [agamm/claude-code-owasp](https://github.com/agamm/claude-code-owasp)'nin araçlarında
-  `evals/` var; Shannon ve PentestGPT sayı veriyor. En büyük açık bu.
+- **Asıl açık: exploit-yoğun hedeflerde teslim güvenilirliği.** İlk benchmark'ta gedik
+  en iyi araç kadar ya da daha iyi tespit etti (Hedef 1: 16–17/17), ama Claude'un
+  `[cyber]` önlemi tam raporu 6 koşudan 4'ünde kesti — çözüm kod değil, Cyber
+  Verification Program. İki benchmark hedefi de zayıf kanıt (bkz.
+  [Benchmark](#benchmark-ölçülmüş--2026-09-30)).
 - **Tasarım gereği canlı exploit yok** — yalnız canlı bir hedefte çalışma zamanında
   ortaya çıkan sınıflara kördür.
 - **Makine-okur çıktı yeni ve kanıtsız; SARIF yok, CI/Action entegrasyonu yok.**

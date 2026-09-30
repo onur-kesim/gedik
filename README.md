@@ -6,9 +6,11 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
 
 ## What's not delivered yet
 
-- **No benchmark numbers.** gedik has never been run against a scored target. No "better
-  than X" claim is made anywhere in this repo until one exists — see
-  [Alternatives, honestly](#alternatives-honestly) below.
+- **Benchmark: measured, not a win.** A first scored run now exists (see
+  [Benchmark](#benchmark-measured--2026-09-30)). gedik's *detection* was at or above the
+  best surveyed tool on both targets, but on an exploit-heavy real target its report was
+  cut by Claude's real-time cyber safeguard in four of six runs — a delivery-reliability
+  limit, not a detection one. No general "better than X" claim is made.
 - **iOS lane (A8) is a checklist, not validated on a real system.** It has not yet been
   run against a real iOS / Capacitor-iOS app.
 - **Live testing only behind an authorization gate — refuses without one.** By default
@@ -89,16 +91,61 @@ Only on your own project, and only when invoked.
 | **Code review** | source available | security-impact correctness bugs, dependency/CVE, secrets used in the wrong layer |
 | **CI/CD + repo** | repo/CI available | git-history secret scanning, `pull_request_target`, action pinning, **post-leak recovery sequence** |
 
+## Benchmark (measured — 2026-09-30)
+
+First scored run. **Both targets are weak evidence** and the result does **not** support a
+general "gedik is better" claim — read the caveats.
+
+Setup: four tools — gedik v2.6.0, `cloudflare/security-audit-skill`, Anthropic
+`/security-review`, Semgrep (free-registry rules, not Pro) — same model
+(`claude-sonnet-5-5`), isolated runs, answer key hidden from the scanning agent.
+`claude-security` was excluded because its plugin licence forbids use with a competing
+product. Single annotator (gedik's author) — no independent second reading.
+
+**Target 2 — seeded Supabase-RLS + LLM-tool repo (built by gedik's author, so biased
+toward gedik's strong lanes):**
+
+| 11 seeded | gedik | cloudflare | `/security-review` | Semgrep |
+|---|---|---|---|---|
+| found | 11/11 | 11/11 (9 confirmed) | 9/11 | 1/11 |
+| false positives | 0 | 0 | 0 | 0 |
+
+Only gedik addressed K4 — it showed the repo's own test suite is blind to
+authorization/validation mutants; the others were silent.
+
+**Target 1 — NodeGoat, real third-party (cleaned copy is weaker than upstream and is
+likely in the model's training data):**
+
+| 17 seeded | gedik | cloudflare | `/security-review` | Semgrep |
+|---|---|---|---|---|
+| detection *(when delivered)* | 16–17/17 | 16/17 | 5/17 | 6/17 |
+| report delivered | **4 of 6 runs cut** | yes | yes | yes |
+
+gedik's detection is the strongest here — but on this exploit-heavy target its report was
+cut mid-stream by Claude's **real-time cyber safeguard** (`[cyber]`) in four of six runs,
+so the user received only an error. Moving exploit payloads out of the report body did
+**not** fix it. This is a **delivery-reliability** limit, not a detection weakness; the
+fix is Anthropic's **Cyber Verification Program**, not a code change.
+
+**Honest verdict.** gedik detects at or above the best surveyed tool on both targets and
+stands alone on K4 / self-refutation — but it cannot yet reliably *deliver* a full report
+on exploit-heavy real code. No general "better" is claimed.
+
+**Caveats.** Single annotator = gedik's author · Target 2 seeded toward gedik's lanes ·
+Target 1 cleaned + memorization risk · Semgrep ran free-registry rules only · one run per
+tool×target (six for gedik on Target 1) · all tools on Windows.
+
 ## Alternatives, honestly
 
-gedik has never been benchmarked. The comparison below is *design differences*, not
-measured superiority — treat every "ahead" claim as a hypothesis, not a result.
+gedik now has one scored benchmark (see [Benchmark](#benchmark-measured--2026-09-30)); it
+does **not** support a general "better" claim. The comparison below is *design
+differences*.
 
 | Tool | Stars | License | Attacks live targets? | Note |
 |---|---|---|---|---|
 | [usestrix/strix](https://github.com/usestrix/strix) | 65k+ | Apache-2.0 | **Yes** | CLI + 9 skills + MCP; has its own Supabase-RLS skill |
 | [KeygraphHQ/shannon](https://github.com/KeygraphHQ/shannon) | 48k+ | AGPL-3.0 | **Yes** | CLI + CI + skill; "no exploit, no report" |
-| [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (`claude-security`) | 37k+ (repo) | Apache-2.0 | No | Anthropic's own official marketplace plugin; independent verifier agents; entered the directory 2026-09-25 |
+| [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (`claude-security`) | 37k+ (repo) | Apache-2.0 (repo) · **plugin: proprietary** | No | Anthropic's own official marketplace plugin; independent verifier agents; entered the directory 2026-09-25. Note: the `claude-security` plugin's own LICENSE (Anthropic PBC, all rights reserved) restricts use to Anthropic products and forbids use with any competing product |
 | [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) | 23k+ (2026-09-29) | MIT | No — live probing forbidden outright | Independent verifier agents try to refute every candidate (false-positive elimination); schema'd `findings.json` + tested validators; 9 core attack-class prompts + 10 target-type class files; created 2026-06-18 |
 | [trailofbits/skills](https://github.com/trailofbits/skills) | 7k+ | CC-BY-SA-4.0 | No | Marketplace, 44 plugins; **mutation testing is a separate skill** there |
 | [anthropics/claude-code-security-review](https://github.com/anthropics/claude-code-security-review) | 6k+ | MIT | No | GitHub Action + `/security-review`; FP filter + `evals/` |
@@ -119,8 +166,11 @@ measured superiority — treat every "ahead" claim as a hypothesis, not a result
   version is a translation held to a mechanical translation gate.
 
 **Where gedik is honestly behind (all real, all current gaps):**
-- **No scored benchmark.** Anthropic's and [agamm/claude-code-owasp](https://github.com/agamm/claude-code-owasp)'s
-  tools ship `evals/`; Shannon and PentestGPT report numbers. This is the biggest gap.
+- **Delivery reliability on exploit-heavy targets is the real gap.** In the first
+  benchmark gedik detected at or above the best tool (Target 1: 16–17/17), but Claude's
+  `[cyber]` safeguard cut its full report in 4 of 6 runs — fixable via the Cyber
+  Verification Program, not code. Both benchmark targets are weak evidence (see
+  [Benchmark](#benchmark-measured--2026-09-30)).
 - **No live exploitation, by design** — blind to classes that only manifest at runtime
   against a live target.
 - **Machine-readable output is new and unproven; no SARIF, no CI/Action integration.**
