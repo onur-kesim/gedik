@@ -189,6 +189,12 @@ differences*.
 /plugin install gedik@gedik
 ```
 
+**Heads-up on delivery.** On exploit-heavy real code, Claude's real-time cyber safeguard can
+cut gedik's report mid-stream (measured ~2 of 6 runs). For authorized security work,
+Anthropic's **Cyber Verification Program** lifts this per approved account (3/3 in our
+benchmark); without it gedik stays read-only and simply delivers less on such targets. See
+[Benchmark](#benchmark-measured--2026-09-30).
+
 Turkish original: [`skills/gedik-tr/`](skills/gedik-tr/) · [README.tr.md](README.tr.md)
 
 ## Limits

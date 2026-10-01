@@ -185,6 +185,12 @@ gedik'in artık bir puanlı benchmark'ı var (bkz.
 /plugin install gedik@gedik
 ```
 
+**Teslim uyarısı.** Exploit-yoğun gerçek kodda Claude'un gerçek-zamanlı siber önlemi gedik'in
+raporunu akış ortasında kesebilir (ölçülen ~6 koşudan 2'si). Yetkili güvenlik çalışmasında
+Anthropic'in **Cyber Verification Program**'ı bunu onaylı hesap başına kaldırır (benchmark'ta
+3/3); onsuz gedik salt-okunur kalır ve bu tür hedeflerde yalnızca daha az teslim eder. Bkz.
+[Benchmark](#benchmark-ölçülmüş--2026-09-30).
+
 İngilizce ana sürüm: [`skills/gedik/`](skills/gedik/) · [README.md](README.md)
 
 ## Sınırlar
