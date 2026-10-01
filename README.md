@@ -6,11 +6,13 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
 
 ## What's not delivered yet
 
-- **Benchmark: measured, not a win.** A first scored run now exists (see
-  [Benchmark](#benchmark-measured--2026-09-30)). gedik's *detection* was at or above the
-  best surveyed tool on both targets, but on an exploit-heavy real target its report was
-  cut by Claude's real-time cyber safeguard in four of six runs — a delivery-reliability
-  limit, not a detection one. No general "better than X" claim is made.
+- **Benchmark: measured — detection at or above the best tool.** A first scored run exists (see
+  [Benchmark](#benchmark-measured--2026-09-30)). gedik's *detection* was at or above the best
+  surveyed tool on both targets (Target 1 17/17, Target 2 11/11, 0 false positives). Its one
+  weakness — the report being cut by Claude's real-time cyber safeguard on exploit-heavy
+  targets — is now resolved **for Cyber-Verification-Program-approved accounts** (3/3 delivered
+  after approval; ~2/6 without). No general "better than X" claim is made: the detection edge
+  is real, the delivery edge is account-dependent.
 - **iOS lane (A8) is a checklist, not validated on a real system.** It has not yet been
   run against a real iOS / Capacitor-iOS app.
 - **Live testing only behind an authorization gate — refuses without one.** By default
@@ -118,22 +120,18 @@ likely in the model's training data):**
 
 | 17 seeded | gedik | cloudflare | `/security-review` | Semgrep |
 |---|---|---|---|---|
-| detection *(when delivered)* | 16–17/17 | 16/17 | 5/17 | 6/17 |
-| report delivered | **4 of 6 runs cut** | yes | yes | yes |
+| detection *(when delivered)* | 17/17 | 16/17 | 5/17 | 6/17 |
+| report delivered | **3/3 with CVP · 2/6 without** | yes | yes | yes |
 
-gedik's detection is the strongest here — but on this exploit-heavy target its report was
-cut mid-stream by Claude's **real-time cyber safeguard** (`[cyber]`) in four of six runs,
-so the user received only an error. Moving exploit payloads out of the report body did
-**not** fix it. This is a **delivery-reliability** limit, not a detection weakness; the
-fix is Anthropic's **Cyber Verification Program**, not a code change.
+gedik's detection is the strongest here — but on this exploit-heavy target, without a safeguard adjustment, its report was cut mid-stream by Claude's **real-time cyber safeguard** (`[cyber]`) in four of six runs, so the user received only an error. Moving exploit payloads out of the report body did **not** fix it.
 
-**Honest verdict.** gedik detects at or above the best surveyed tool on both targets and
-stands alone on K4 / self-refutation — but it cannot yet reliably *deliver* a full report
-on exploit-heavy real code. No general "better" is claimed.
+**Update (2026-10-01) — delivery, with Cyber Verification Program.** The author's account was approved into Anthropic's **Cyber Verification Program (CVP)**. Re-running gedik on Target 1 under the approved organization, with **stock v2.6.0** (the 2.6.1 delivery patch was reverted), the full report was delivered in **3 of 3** runs (`stop_reason: end_turn`, 0 errors), recall **17/17** each (one run: 16 confirmed + 1 suspected), **0 false positives**. The same condition before CVP delivered **2 of 6**. **This lifts the delivery limit only for CVP-approved accounts** — a user *without* CVP approval will still have the report cut on exploit-heavy targets (~2/6). Causality is **not proven**: n=3, Fisher p≈0.12, and the code fix was reverted — so the change is attributed to the account-level safeguard adjustment, not to gedik's code.
+
+**Honest verdict.** gedik detects at or above the best surveyed tool on both targets (Target 1 17/17, Target 2 11/11, 0 false positives) and stands alone on K4 / self-refutation. Report delivery on exploit-heavy real code is now reliable **for CVP-approved accounts** (3/3) but remains limited **without CVP** (2/6). No general "better" is claimed: the detection edge is real and measured; the delivery edge is account-dependent, and its cause is unproven.
 
 **Caveats.** Single annotator = gedik's author · Target 2 seeded toward gedik's lanes ·
 Target 1 cleaned + memorization risk · Semgrep ran free-registry rules only · one run per
-tool×target (six for gedik on Target 1) · all tools on Windows.
+tool×target (six for gedik on Target 1, three post-CVP) · all tools on Windows · CVP causality unproven (n=3, p≈0.12, code fix reverted) · delivery reliability depends on the account's CVP status · `gedik-bulgular.json` was not produced in the CVP runs (prose reports).
 
 ## Alternatives, honestly
 
@@ -166,10 +164,11 @@ differences*.
   version is a translation held to a mechanical translation gate.
 
 **Where gedik is honestly behind (all real, all current gaps):**
-- **Delivery reliability on exploit-heavy targets is the real gap.** In the first
-  benchmark gedik detected at or above the best tool (Target 1: 16–17/17), but Claude's
-  `[cyber]` safeguard cut its full report in 4 of 6 runs — fixable via the Cyber
-  Verification Program, not code. Both benchmark targets are weak evidence (see
+- **Delivery reliability on exploit-heavy targets depends on account status.** In the first
+  benchmark gedik detected at or above the best tool (Target 1: 17/17), but Claude's `[cyber]`
+  safeguard cut its full report in 4 of 6 runs. With the account in Anthropic's Cyber
+  Verification Program this becomes 3/3; without CVP it stays ~2/6 — so this is lifted per
+  approved account, not in gedik's code. Both benchmark targets are weak evidence (see
   [Benchmark](#benchmark-measured--2026-09-30)).
 - **No live exploitation, by design** — blind to classes that only manifest at runtime
   against a live target.

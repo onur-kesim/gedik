@@ -5,6 +5,9 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 
 ## [Unreleased]
 
+### Belgeler
+- **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Skill kodu değişmedi (2.6.0).
+
 ## [2.6.0] — 2026-09-29
 ### Eklendi
 - **Makine-okur çıktı (spec A).** Tam denetimde `.md` raporun yanına `gedik-bulgular.json`:

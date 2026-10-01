@@ -11,17 +11,19 @@ WIP: benchmark ÖLÇÜM dilimi bitti (TESLİME UYGUN, DURUM O7); README kıyası
 - [x] RE-KOSUM (n=3 tamamlanmadı: 1 teslim / 1 ret / 1 durdurulan): gedik NodeGoat-temiz (H1) uzerinde ust-duzey yeniden kosulur
 
 ## DOĞRULA
-- [ ] ASIL KABUL — SAĞLANMADI (kesilme sürdü): : H1 tam raporu KESILMEDEN teslim (stop_reason != refusal); recall olculebilir
+- [x] ASIL KABUL — SAĞLANDI (2026-10-01, CVP onaylı org + stok 2.6.0, n=3): 3/3 kesilmeden teslim (end_turn); recall 17/17·17/17·17/17, FP 0 — H1 tam raporu KESILMEDEN teslim (stop_reason != refusal); recall olculebilir
 - [x] K2 korundu: her confirmed bulguda PoC (json'da); bulgu_kapisi.py PASS
 - [x] kapilar 7/0, ceviri 12/12, sabit cumle 25/25, ic ad 0; kor kapi + mutant oz-testleri geciyor
 - [x] EGER hala kesiliyorsa → DURDURULDU (hüküm KRITER FIX DİLİMİ KAYDI): -> DURDUR, hukum "restructuring cozmuyor -> Cyber Verification Program (Onur) + README limitasyon"; recall icin kurtarilan-rapor sayimi
 - [x] NE ÖLÇÜLEMEDİ (KRITER FIX DİLİMİ KAYDI sonu)
 
 ## TESLİM
-- [ ] bagimsiz denetim (Cowork): stop gitti mi, K2 korundu mu, kapilar yesil mi
-- [ ] README×2 durust benchmark kiyasi (yeni H1 recall + tum caveat) — Cowork, ayri oturum
-- [ ] surum etiketi + CHANGELOG; geri alma plani
-- [ ] push YOK
+- [x] bagimsiz denetim (Cowork) TESLIME UYGUN (O9): stop 3/3 end_turn (oncesi 2/6), K2 bulgu_kapisi PASS, kapilar/ceviri/ic_ad yesil; recall 17/17 SKOR+ID-sayimiyla tutarli
+- [x] README×2 durust benchmark kiyasi (O9 Cowork): EN+TR benchmark bolumu guncellendi — H1 17/17, teslim CVP ile 3/3 / CVP'siz 2/6, nedensellik kanitsiz; calisma agacinda, push YOK
+- [x] ATLANDI: surum etiketi yok (Onur karari O9: kod degismedi, surumsuz belge commit'i); CHANGELOG [Unreleased] satiri eklendi; geri alma = git revert <commit> (yalniz belge)
+- [x] push: Onur yetkisiyle (O9) Cowork push etti, belge commit'i (sonuc DURUM karar gunlugunde)
 
 ## Sonuç
 DURDURULDU: yeniden yapılandırma [cyber] kesilmesini çözmedi → Cyber Verification Program (Onur) + README limiti. Ayrıntı ve sayılar KRITER.md "FIX DİLİMİ KAYDI".
+
+2026-10-01 EK (O10): CVP onaylı org altında stok 2.6.0 ile H1 yeniden koşuldu — 3/3 kesilmeden teslim, recall 17/17 (katı 17·17·16), FP 0. Fix (2.6.1) geri alınmış kalır; nedensellik (CVP) kanıtsız (n=3, p≈0,12). Ayrıntı KRITER "CVP SONRASI H1 YENİDEN KOŞUM". Kalan: bağımsız denetim + README güncellemesi (Cowork), push (Onur).

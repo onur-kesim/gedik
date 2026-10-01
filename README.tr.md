@@ -6,11 +6,13 @@ ve yama önerisiyle gelir.
 
 ## NE TESLİM EDİLMEDİ (bu sürümde HAYIR)
 
-- **Benchmark: ölçüldü, ama zafer değil.** Artık ilk puanlı koşu var (bkz.
-  [Benchmark](#benchmark-ölçülmüş--2026-09-30)). gedik'in *tespiti* iki hedefte de
-  incelenen en iyi araç kadar ya da daha iyi çıktı, ama exploit-yoğun gerçek bir hedefte
-  raporu Claude'un gerçek-zamanlı siber önlemiyle 6 koşudan 4'ünde kesildi — teslim
-  güvenilirliği limiti, tespit zafiyeti değil. Genel "X'ten daha iyi" iddiası yok.
+- **Benchmark: ölçüldü — tespit en iyi araç kadar/üstünde.** Artık ilk puanlı koşu var (bkz.
+  [Benchmark](#benchmark-ölçülmüş--2026-09-30)). gedik'in *tespiti* iki hedefte de incelenen
+  en iyi araç kadar/üstünde çıktı (Hedef 1 17/17, Hedef 2 11/11, 0 yanlış pozitif). Tek
+  zayıflığı — raporun exploit-yoğun hedeflerde Claude'un gerçek-zamanlı siber önlemiyle
+  kesilmesi — artık **Cyber Verification Program onaylı hesaplar için** çözüldü (onay sonrası
+  3/3 teslim; onaysız ~2/6). Genel "X'ten daha iyi" iddiası yok: tespit üstünlüğü gerçek,
+  teslim üstünlüğü hesaba bağlı.
 - **iOS şeridi (A8) bir kontrol listesidir, gerçek bir sistemde doğrulanmadı.** Henüz
   gerçek bir iOS/Capacitor-iOS uygulamasında koşmadı.
 - **Canlı test yalnız yetki kapısı arkasında — yetkisiz reddeder.** Varsayılan olarak
@@ -115,22 +117,18 @@ olasılıkla modelin eğitim verisinde):**
 
 | 17 ekili | gedik | cloudflare | `/security-review` | Semgrep |
 |---|---|---|---|---|
-| tespit *(teslim edildiğinde)* | 16–17/17 | 16/17 | 5/17 | 6/17 |
-| rapor teslim | **6 koşudan 4'ü kesildi** | evet | evet | evet |
+| tespit *(teslim edildiğinde)* | 17/17 | 16/17 | 5/17 | 6/17 |
+| rapor teslim | **CVP ile 3/3 · CVP'siz 2/6** | evet | evet | evet |
 
-gedik'in tespiti burada en güçlüsü — ama bu exploit-yoğun hedefte raporu, Claude'un
-**gerçek-zamanlı siber önlemi** (`[cyber]`) tarafından 6 koşudan 4'ünde akış ortasında
-kesildi; kullanıcıya yalnız hata ulaştı. Exploit yüklerini rapor gövdesinden çıkarmak
-bunu **çözmedi**. Bu bir **teslim güvenilirliği** limiti, tespit zafiyeti değil; çözüm
-kod değil, Anthropic'in **Cyber Verification Program**'ı.
+gedik'in tespiti burada en güçlüsü — ama bu exploit-yoğun hedefte, bir önlem ayarı olmadan, raporu Claude'un **gerçek-zamanlı siber önlemi** (`[cyber]`) tarafından 6 koşudan 4'ünde akış ortasında kesildi; kullanıcıya yalnız hata ulaştı. Exploit yüklerini rapor gövdesinden çıkarmak bunu **çözmedi**.
 
-**Dürüst hüküm.** gedik iki hedefte de incelenen en iyi araç kadar ya da daha iyi tespit
-ediyor ve K4 / öz-çürütme'de tek başına — ama exploit-yoğun gerçek kodda tam raporu henüz
-güvenilir biçimde *teslim edemiyor*. Genel "daha iyi" iddia edilmiyor.
+**Güncelleme (2026-10-01) — teslim, Cyber Verification Program ile.** Yazarın hesabı Anthropic'in **Cyber Verification Program (CVP)**'ına kabul edildi. gedik, onaylı organizasyon altında **stok v2.6.0** ile (2.6.1 teslim yaması geri alınmıştı) Hedef 1'de yeniden koşuldu: tam rapor **3 koşudan 3'ünde** teslim edildi (`stop_reason: end_turn`, 0 hata), recall her koşuda **17/17** (bir koşu: 16 kesin + 1 şüpheli), **0 yanlış pozitif**. CVP öncesi aynı koşul **6'da 2** teslim ediyordu. **Bu, teslim limitini yalnız CVP-onaylı hesaplar için kaldırır** — CVP onayı *olmayan* bir kullanıcının raporu exploit-yoğun hedeflerde hâlâ kesilir (~2/6). Nedensellik **kanıtlı değil**: n=3, Fisher p≈0,12 ve kod fix'i geri alındı — yani değişim gedik'in koduna değil, hesap düzeyindeki önlem ayarına atfedilir.
+
+**Dürüst hüküm.** gedik iki hedefte de incelenen en iyi araç kadar ya da daha iyi tespit ediyor (Hedef 1 17/17, Hedef 2 11/11, 0 yanlış pozitif) ve K4 / öz-çürütme'de tek başına. Exploit-yoğun gerçek kodda rapor teslimi artık **CVP-onaylı hesapta** güvenilir (3/3), **CVP'siz** sınırlı (2/6). Genel "daha iyi" iddia edilmiyor: tespit üstünlüğü gerçek ve ölçülü; teslim üstünlüğü hesaba bağlı ve nedeni kanıtsız.
 
 **Caveat'lar.** Tek anotatör = gedik'in yazarı · Hedef 2 gedik'in şeridine ekili · Hedef
 1 temizlenmiş + ezber riski · Semgrep yalnız ücretsiz kurallar · araç×hedef başına tek
-koşu (gedik-Hedef 1'de altı) · tüm araçlar Windows'ta.
+koşu (gedik-Hedef 1'de altı, CVP sonrası üç) · tüm araçlar Windows'ta · CVP nedenselliği kanıtsız (n=3, p≈0,12, kod fix geri alındı) · teslim güvenilirliği hesabın CVP durumuna bağlı · `gedik-bulgular.json` CVP koşularında üretilmedi (düz metin rapor).
 
 ## Rakipler, dürüstçe
 
@@ -162,10 +160,11 @@ gedik'in artık bir puanlı benchmark'ı var (bkz.
   mekanik bir çeviri kapısına tabi çeviridir.
 
 **gedik'in dürüstçe geride olduğu yerler (hepsi gerçek, hepsi bugünkü açık):**
-- **Asıl açık: exploit-yoğun hedeflerde teslim güvenilirliği.** İlk benchmark'ta gedik
-  en iyi araç kadar ya da daha iyi tespit etti (Hedef 1: 16–17/17), ama Claude'un
-  `[cyber]` önlemi tam raporu 6 koşudan 4'ünde kesti — çözüm kod değil, Cyber
-  Verification Program. İki benchmark hedefi de zayıf kanıt (bkz.
+- **Teslim güvenilirliği hesabın durumuna bağlı.** İlk benchmark'ta gedik en iyi araç
+  kadar/üstünde tespit etti (Hedef 1: 17/17), ama Claude'un `[cyber]` önlemi tam raporu 6
+  koşudan 4'ünde kesti. Hesap Anthropic'in Cyber Verification Program'ında olunca bu 3/3
+  olur; CVP'siz ~2/6 kalır — yani bu, gedik'in kodunda değil, onaylı hesap başına kalkar.
+  İki benchmark hedefi de zayıf kanıt (bkz.
   [Benchmark](#benchmark-ölçülmüş--2026-09-30)).
 - **Tasarım gereği canlı exploit yok** — yalnız canlı bir hedefte çalışma zamanında
   ortaya çıkan sınıflara kördür.
