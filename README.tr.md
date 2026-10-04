@@ -11,7 +11,7 @@ ve yama önerisiyle gelir.
   en iyi araç kadar/üstünde çıktı (Hedef 1 17/17, Hedef 2 11/11, 0 yanlış pozitif). Tek
   zayıflığı — raporun exploit-yoğun hedeflerde Claude'un gerçek-zamanlı siber önlemiyle
   kesilmesi — artık **Cyber Verification Program onaylı hesaplar için** çözüldü (onay sonrası
-  3/3 teslim; onaysız ~2/6). Genel "X'ten daha iyi" iddiası yok: tespit üstünlüğü gerçek,
+  3/3 teslim; onaysız ~2/6 teslim). Genel "X'ten daha iyi" iddiası yok: tespit üstünlüğü gerçek,
   teslim üstünlüğü hesaba bağlı.
 - **iOS şeridi (A8) bir kontrol listesidir, gerçek bir sistemde doğrulanmadı.** Henüz
   gerçek bir iOS/Capacitor-iOS uygulamasında koşmadı.
@@ -186,7 +186,7 @@ gedik'in artık bir puanlı benchmark'ı var (bkz.
 ```
 
 **Teslim uyarısı.** Exploit-yoğun gerçek kodda Claude'un gerçek-zamanlı siber önlemi gedik'in
-raporunu akış ortasında kesebilir (ölçülen ~6 koşudan 2'si). Yetkili güvenlik çalışmasında
+raporunu akış ortasında kesebilir (ölçülen: 6 koşudan ~4'ü kesildi, 2'si teslim edildi). Yetkili güvenlik çalışmasında
 Anthropic'in **Cyber Verification Program**'ı bunu onaylı hesap başına kaldırır (benchmark'ta
 3/3); onsuz gedik salt-okunur kalır ve bu tür hedeflerde yalnızca daha az teslim eder. Bkz.
 [Benchmark](#benchmark-ölçülmüş--2026-09-30).

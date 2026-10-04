@@ -11,7 +11,7 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   surveyed tool on both targets (Target 1 17/17, Target 2 11/11, 0 false positives). Its one
   weakness — the report being cut by Claude's real-time cyber safeguard on exploit-heavy
   targets — is now resolved **for Cyber-Verification-Program-approved accounts** (3/3 delivered
-  after approval; ~2/6 without). No general "better than X" claim is made: the detection edge
+  after approval; ~2/6 delivered without). No general "better than X" claim is made: the detection edge
   is real, the delivery edge is account-dependent.
 - **iOS lane (A8) is a checklist, not validated on a real system.** It has not yet been
   run against a real iOS / Capacitor-iOS app.
@@ -190,7 +190,7 @@ differences*.
 ```
 
 **Heads-up on delivery.** On exploit-heavy real code, Claude's real-time cyber safeguard can
-cut gedik's report mid-stream (measured ~2 of 6 runs). For authorized security work,
+cut gedik's report mid-stream (measured: cut in ~4 of 6 runs; delivered 2 of 6). For authorized security work,
 Anthropic's **Cyber Verification Program** lifts this per approved account (3/3 in our
 benchmark); without it gedik stays read-only and simply delivers less on such targets. See
 [Benchmark](#benchmark-measured--2026-09-30).
