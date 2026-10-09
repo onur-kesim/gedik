@@ -72,8 +72,10 @@ MOD: NORMAL
 ## KOMUTLAR (proje.toml ile aynı)
 kur: — · çalıştır: — (skill, çalıştırılabilir uygulama değil) · test: `python araclar/kapilar.py --pozitif-kontrol` · lint: `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py` · build: —
 ## ORTAM MAYINLARI (≤10, yalnız ölçülmüş)
-- `git status` normalde mount'ta bayat `.git/index.lock` bırakabilir → `--no-optional-locks` kullan (anayasa §3.3), bu oturumda henüz ısırmadı, önlem olarak yazıldı.
+- `git status` normalde mount'ta bayat `.git/index.lock` bırakabilir → `--no-optional-locks` kullan (anayasa §3.3), 2026-10-04'te ısırdı: device_bash'ten `git commit` her seferinde 0 baytlık `.git/index.lock` + `.git/HEAD.lock` (+ `objects/maintenance.lock`, `tmp_obj_*`) bıraktı, mount silmeye izin vermiyor → her commit'ten sonra `find .git -name '*.lock'` ile bul, 0 baytlıları `_calisma/git-stale/` altına `mv` ile taşı.
 - `gh auth status` bu makinede birden çok hesap listeleyebiliyor — repo işlemlerinde aktif hesabı `gh api user --jq .login` ile teyit et (beklenen: `onur-kesim`).
+- device_bash'in bash'i Windows global git `user.name`'ini görmüyor ve PATH'inde `gh` yok (2026-10-04 ölçüldü) → commit'te `git -c user.name=...` (global'e dokunma); gh ölçümü Chrome'dan ya da Onur'un PowerShell'inden.
+- Windows PowerShell 5.1 native komutlara (gh) geçen argümandaki çift tırnakları yutuyor (2026-10-05 ölçüldü) → `gh --jq` ifadelerinde string interpolasyonu yerine tırnaksız dizi kullan: `--jq '[.a,.b]'`.
 ## PROJE KURALLARI (≤5, tek cümle, yalnız daraltır)
 1. Tüm iş ve dosyalar yalnız `<proje klasörü>` içinde; geçici iş `_calisma\` (gitignore'da), başka hiçbir konuma dosya yazılmaz.
 2. `git config` yalnız `--local` yazılır; `--global` hiçbir komutla değiştirilmez.
