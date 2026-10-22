@@ -1,29 +1,30 @@
-# DILIM — gedik rapor TESLİM defekti (PoC-yoğun rapor [cyber] safeguard ile kesiliyor)     açıldı: 2026-09-30 · aşama: YAPIM · sürüm dilimi: EVET (2.6.1/2.7.0)
-Hedef: gedik tam denetim raporunun RCE/enjeksiyon-yoğun GERÇEK hedeflerde KESİLMEDEN teslim edilmesi. K2 "PoC zorunlu" KORUNUR; ayrıntılı exploit yükü akan rapor gövdesinden ayrılır (aday çözüm, ölçülecek).
-Kanıt (O7 benchmark): gedik NodeGoat/H1 üzerinde 2/2 stop_reason:refusal + [cyber] — tespit tamamlandı (27/21 bulgu ilan edildi), yalnız son rapor akışı kesildi. cloudflare/secrev aynı kodda durmadı. Ham: _calisma/benchmark/ham/hedef1-gedik*
-İŞ BÖLÜMÜ: teşhis+kod+re-koşum = Claude Code. Bağımsız denetim + README kıyas metni = Cowork (ayrı oturum).
-WIP: benchmark ÖLÇÜM dilimi bitti (TESLİME UYGUN, DURUM O7); README kıyası bu fixten sonra yeni H1 recall ile (downstream, bloke).
+# DILIM — gedik v2.7.0: PHP görünürlüğü (triyaj + çalışma zamanı + paket CVE)     açıldı: 2026-10-22 · aşama: YAPIM · sürüm dilimi: EVET (2.7.0)
+Hedef: gedik bir PHP projesinde (Laravel/Symfony/WordPress/düz PHP) sunucu şeridini doğru açsın, PHP çalışma zamanı sürümünü ve composer paket açıklarını ÖLÇSÜN, ölçemediğini "ÖLÇÜLEMEDİ" yazsın — asla "temiz" demesin. gedik salt-okur kalır: yamalamaz, raporlar.
+Tetik (2026-10-22, Cowork ölçümü): PHP CVE-2026-109618/109619 (CVSS v4 9,2, kimliksiz RCE; yamalı: 8.5.12 · 8.4.27 · 8.3.36 · 8.2.35; ≤8.1 resmî yama yok — kaynak php.net 21 Eki). Skill metni ölçüldü: (1) triyaj T2 imzalarında PHP yok (express/flask/django/spring/rails var); (2) `composer audit` hiç geçmiyor; (3) çalışma zamanı sürümü yalnız Docker base-imaj CVE'si üzerinden dolaylı görülüyor; paylaşımlı hosting'de sürüm depoda yok.
+İŞ BÖLÜMÜ: YAP + re-koşum = Claude Code. Bağımsız denetim + README metni = Cowork (ayrı oturum).
+Kural: sabit CVE tablosu YAZILMAZ (bayatlar) — açık eşleşmesi tarayıcı veritabanından (trivy/grype/osv-scanner/composer audit) gelir. Yalnız EOL dalı kuralı sabittir, ölçüm tarihiyle yazılır.
 
 ## YAP  (Claude Code)
-- [x] TEŞHİS (İZOLE EDİLEMEDİ → TAHMİN: olasılıksal, kesim noktası koşudan koşuya değişiyor): mümkünse [cyber] tetikleyeni izole et — kesik raporlarda exploit payloadı mı, RCE/XSS sınıf tarifi mi son akışı kesiyor (izole edilemezse TAHMİN işaretle)
-- [x] MİTİGASYON (aday uygulandı; etkisi yok/kanıtsız) (aday): ayrıntılı exploit/PoC payload -> gedik-bulgular.json (poc_girdi alani var) ve/veya ayri kanit dosyasi; md rapor govdesi = bulgu + konum + etki + duzeltme + PoC REFERANSI (ham exploit degil)
-- [x] SKILL.md (TR+EN) rapor sablonu + adimlar; etkilenen sabit_cumleler.json kilitleri; gerekirse bulgu-semasi/bulgu_kapisi; surum 4 yerde
-- [x] RE-KOSUM (n=3 tamamlanmadı: 1 teslim / 1 ret / 1 durdurulan): gedik NodeGoat-temiz (H1) uzerinde ust-duzey yeniden kosulur
+- [ ] ÖN ÖLÇÜM: sürümün geçtiği yerler (önceki dilim "4 yer" dedi — grep'le doğrula) + `araclar/kapilar.py` altın küme/fixture yapısı; DILIM'e tek satır yaz
+- [ ] TRİYAJ (SKILL.md T2 + triyaj-ve-kapsam.md): PHP imzaları — `composer.json`, `artisan`, `laravel/framework`, `symfony/*`, `wp-config.php` / `wp-content/`, kökte `index.php` router, `php-fpm` pool dosyası, `.htaccess` + PHP handler; T9/T12: `Dockerfile` `FROM php:` / docker-compose `image: php`
+- [ ] ÇALIŞMA ZAMANI SÜRÜMÜ (kod-inceleme-guvenlik.md): kaynak sırası — Dockerfile/compose imaj etiketi · `.php-version` · `composer.json` `config.platform.php` · CI `setup-php`/matris · buildpack/platform dosyası. Bulunan sürüm rapora KAYNAĞIYLA yazılır; `composer.json` `"php": ">=x"` kısıtı çalışan sürüm SAYILMAZ (yalnız alt sınır)
+- [ ] ÖLÇÜLEMEDİ KURALI: sürüm depoda yoksa sabit satır — "PHP çalışma zamanı sürümü depoda yok — ÖLÇÜLEMEDİ; sunucu/hosting panelinden kontrol et." Temiz DENMEZ
+- [ ] EOL KURALI (ölçüm 2026-10-22, php.net): PHP ≤8.1 = resmî güvenlik yaması yok → bulgu (dağıtım/LTS backport'u ayrıca sorulur); 8.2 EOL 2026-12-31 → uyarı. Referansa ölçüm tarihi + "yeniden doğrula" notu
+- [ ] PAKET CVE: `composer.lock` varsa `composer audit` (yoksa ÖLÇÜLEMEDİ); imaj varsa `trivy`/`grype` ile base imaj; çıktı SAYIYLA
+- [ ] TR kanonik + EN birebir; değişen sabit cümleler `sabit_cumleler.json`'a; sürüm 2.7.0 tüm yerlerde; CHANGELOG
 
-## DOĞRULA
-- [x] ASIL KABUL — SAĞLANDI (2026-10-01, CVP onaylı org + stok 2.6.0, n=3): 3/3 kesilmeden teslim (end_turn); recall 17/17·17/17·17/17, FP 0 — H1 tam raporu KESILMEDEN teslim (stop_reason != refusal); recall olculebilir
-- [x] K2 korundu: her confirmed bulguda PoC (json'da); bulgu_kapisi.py PASS
-- [x] kapilar 7/0, ceviri 12/12, sabit cumle 25/25, ic ad 0; kor kapi + mutant oz-testleri geciyor
-- [x] EGER hala kesiliyorsa → DURDURULDU (hüküm KRITER FIX DİLİMİ KAYDI): -> DURDUR, hukum "restructuring cozmuyor -> Cyber Verification Program (Onur) + README limitasyon"; recall icin kurtarilan-rapor sayimi
-- [x] NE ÖLÇÜLEMEDİ (KRITER FIX DİLİMİ KAYDI sonu)
+## DOĞRULA (mekanik kabul)
+- [ ] Altın küme +3 fixture (kapilar.py zincirinde): (a) Laravel iskeleti + `FROM php:8.3.30-fpm` → T2 PHP=evet, sürüm=8.3.30 kaynağıyla, 8.3.36 altında olduğu raporda; (b) `composer.lock`'lu depo → composer audit adımı koşar ya da ÖLÇÜLEMEDİ; (c) WordPress dosya yedeği, sürüm yok → ÖLÇÜLEMEDİ satırı çıkar
+- [ ] Kör kapı/mutant: (a)'dan imaj satırı silinince kapı KIRMIZI; (c) için "temiz" yazan sahte rapor KIRMIZI; EOL fixture'ında `FROM php:8.1` → bulgu yoksa KIRMIZI
+- [ ] Var olan kapılar yeşil: kapilar · çeviri · sabit cümle · iç ad · bulgu_kapisi
+- [ ] Gerçek hedef koşumu (CVP org, üst düzey, salt-okuma kaynak): açık kaynak bir PHP uygulaması (aday: DVWA — Dockerfile'ı php base imaj) → T2 PHP açıldı, çalışma zamanı sürümü kaynağıyla raporda, rapor teslim (stop_reason ≠ refusal). Canlı sisteme istek YOK
+- [ ] NE ÖLÇÜLEMEDİ (dolu)
 
 ## TESLİM
-- [x] bagimsiz denetim (Cowork) TESLIME UYGUN (O9): stop 3/3 end_turn (oncesi 2/6), K2 bulgu_kapisi PASS, kapilar/ceviri/ic_ad yesil; recall 17/17 SKOR+ID-sayimiyla tutarli
-- [x] README×2 durust benchmark kiyasi (O9 Cowork): EN+TR benchmark bolumu guncellendi — H1 17/17, teslim CVP ile 3/3 / CVP'siz 2/6, nedensellik kanitsiz; calisma agacinda, push YOK
-- [x] ATLANDI: surum etiketi yok (Onur karari O9: kod degismedi, surumsuz belge commit'i); CHANGELOG [Unreleased] satiri eklendi; geri alma = git revert <commit> (yalniz belge)
-- [x] push: Onur yetkisiyle (O9) Cowork push etti, belge commit'i (sonuc DURUM karar gunlugunde)
+- [ ] Bağımsız denetim (Cowork, ayrı oturum) TESLİME UYGUN
+- [ ] README×2: PHP kapsamı + "bu sürümde HAYIR: paylaşımlı hosting'de çalışma zamanı sürümü depodan görülemez"; rakip/öncül satırı gerekirse
+- [ ] `v2.7.0` etiketi + CHANGELOG + Release; geri alma = önceki etikete dönüş
+- [ ] push: Onur ("push et" ile Cowork/Code)
 
 ## Sonuç
-DURDURULDU: yeniden yapılandırma [cyber] kesilmesini çözmedi → Cyber Verification Program (Onur) + README limiti. Ayrıntı ve sayılar KRITER.md "FIX DİLİMİ KAYDI".
-
-2026-10-01 EK (O10): CVP onaylı org altında stok 2.6.0 ile H1 yeniden koşuldu — 3/3 kesilmeden teslim, recall 17/17 (katı 17·17·16), FP 0. Fix (2.6.1) geri alınmış kalır; nedensellik (CVP) kanıtsız (n=3, p≈0,12). Ayrıntı KRITER "CVP SONRASI H1 YENİDEN KOŞUM". Kalan: bağımsız denetim + README güncellemesi (Cowork), push (Onur).
+(açık)
