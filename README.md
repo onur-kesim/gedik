@@ -43,8 +43,11 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   shared hosting (cPanel/Plesk) the version lives on the server, not in the code — gedik then
   writes "NOT MEASURED — check the server/hosting panel" and never calls it clean.
   Vulnerability matching comes from scanners (`composer audit`, `trivy`/`grype`), not from a
-  built-in CVE list; in our tests those scanners were not installed, so only the NOT MEASURED
-  path was measured. The PHP report gate (`araclar/php_kapisi.py`) is keyword-based: each of
+  built-in CVE list. Field test (2026-10-23): trivy did not recognize PHP inside the official
+  `php` Docker image (PHP there is compiled from source, not an OS package) and so did not report
+  PHP2Shell (CVE-2026-109618/109619); grype did, on the one image tested (`php:8.3.30-fpm`). grype
+  in turn missed an advisory in a `composer.lock` that `composer audit` and trivy found — run more
+  than one scanner. The PHP report gate (`araclar/php_kapisi.py`) is keyword-based: each of
   three independent review rounds found new wording it misjudged (fixed, with fixtures), so
   treat it as a guard rail, not proof.
 

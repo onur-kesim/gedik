@@ -40,8 +40,10 @@ ve yama önerisiyle gelir.
   kaynağıyla raporlar; `"php": ">=x"` gibi bir kısıt çalışan sürüm sayılmaz. Paylaşımlı
   hosting'de (cPanel/Plesk) sürüm kodda değil sunucuda durur — gedik o zaman "ÖLÇÜLEMEDİ —
   sunucu/hosting panelinden kontrol et" yazar, asla "temiz" demez. Açık eşleşmesi gömülü bir
-  CVE listesinden değil tarayıcılardan (`composer audit`, `trivy`/`grype`) gelir; testlerimizde
-  bu tarayıcılar kurulu değildi, yalnız ÖLÇÜLEMEDİ yolu ölçüldü. PHP rapor kapısı
+  CVE listesinden değil tarayıcılardan (`composer audit`, `trivy`/`grype`) gelir. Saha testi (2026-10-23): trivy resmî `php` Docker imajındaki
+  PHP'yi tanımadı (orada PHP OS paketi değil, kaynaktan derlenir) ve PHP2Shell'i (CVE-2026-109618/109619)
+  raporlamadı; grype test edilen tek imajda (`php:8.3.30-fpm`) gördü. grype ise `composer audit`'in ve
+  trivy'nin bulduğu bir `composer.lock` danışmasını kaçırdı — birden fazla tarayıcı koş. PHP rapor kapısı
   (`araclar/php_kapisi.py`) anahtar sözcük tabanlıdır: üç bağımsız inceleme turunun her biri
   yanlış değerlendirdiği yeni ifadeler buldu (fixture'larla düzeltildi) — kanıt değil, korkuluk
   olarak düşün.
