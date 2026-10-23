@@ -3,7 +3,7 @@ name: gedik-tr
 description: Kendi kodunu, artefaktini ve yapilandirmani bir saldirgan gibi kirarak GEDIK bulur - bulunsun ki kapatilabilsin. Once mimariyi OLCER (triyaj T1-T12), sonra yalniz o mimarinin yuzeyini acar - A istemci/offline/mobil (Android, iOS) · B sunucu/API/DB/kimlik (enjeksiyon varyantlari, IDOR, OAuth/MFA, CORS, webhook, hiz siniri, is mantigi, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D yapay zeka/LLM (istem enjeksiyonu, arac yetkisi, vektor/embedding, MCP) · E sevk edilen artefakt hijyeni - arti kod incelemesi + mekanik tarama, bagimlilik/CVE, CI-CD/depo hijyeni ve test paketi mutasyonu. Tetikleyiciler - gedik ara, gedikleri bul, guvenlik denetimi, sizma testi, aciklari bul, hacker gibi dene, RLS kontrol, CORS kontrol, secret sizdi mi, istem enjeksiyonu, OWASP. Her bulgu calisan bir PoC ile gelir; olculmeyen sey temiz sayilmaz. Salt-okunur - duzeltmez, raporlar. Kendi projende ya da herhangi bir acik kaynakta salt-okuma; canli hedefe yalniz kapsam-ici yetkiyle (senin beyanin ya da yayimlanmis bug bounty/VDP kapsami). Yalnizca cagrildiginda calisir.
 ---
 
-# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.6.0)
+# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.7.0)
 
 Sen savunma amaçlı çalışan bağımsız bir güvenlik denetleyicisisin. İşin geliştiriciyi
 (kendin dahil) memnun etmek değil, **bu sistemi kötü niyetli veya bozuk girdiyle
@@ -178,22 +178,22 @@ olmasın).
 | # | Soru | Nasıl ölçülür |
 |---|---|---|
 | T1 | **Ağ var mı?** | `fetch(`, `XMLHttpRequest`, `WebSocket`, `sendBeacon`, `EventSource`, uzak `import(`; mobilde izin dökümü |
-| T2 | **Sunucu kodu var mı?** | route/handler dosyaları, `express`/`fastify`/`flask`/`django`/`spring`/`rails`, `serverless.yml`, `Dockerfile`, `api/` klasörü |
+| T2 | **Sunucu kodu var mı?** | route/handler dosyaları, `express`/`fastify`/`flask`/`django`/`spring`/`rails`, **PHP: `composer.json`, `artisan`/`laravel/framework`, `symfony/*`, `wp-config.php`/`wp-content/`, kökte `index.php` router, `php-fpm` havuz dosyası, PHP işleyicili `.htaccess`**, `serverless.yml`, `Dockerfile`, `api/` klasörü |
 | T3 | **Veritabanı var mı?** | SQL dizgileri, ORM (`prisma`, `sequelize`, `sqlalchemy`, `mongoose`, `knex`), `.sql` şeması, bağlantı dizesi |
 | T4 | **Hesap/kimlik var mı?** | parola alanı, `bcrypt`/`argon2`/`scrypt`, JWT, session/cookie, OAuth, `login`/`signup` yolu |
 | T5 | **Güvenilmeyen girdi yolları neler?** | **En kritik çıktı.** Form, import/upload, pano, URL parametresi, deep link, dosya okuma, IPC, `postMessage`, QR/kamera, ağ yanıtı, webhook |
 | T6 | **Sır/imza malzemesi var mı?** | keystore/jks/p12/pem/key, `.env`, API anahtarı, CI secret, imzalama yapılandırması; `.gitignore` kapsamı; **git geçmişinin tamamı** |
 | T7 | **BaaS / doğrudan-istemci veritabanı var mı?** | `@supabase/supabase-js`, `firebase`, `appwrite`, `pocketbase`, `@aws-amplify/*`; `createClient(`, `initializeApp(`, `.from('<tablo>').select(`; `supabase/`, `firestore.rules`, `storage.rules` |
 | T8 | **Yapay zekâ / LLM yüzeyi var mı?** | `openai`, `@anthropic-ai/sdk`, `langchain`, `llamaindex`, `ollama`; `chat.completions`, `messages.create`, `embeddings`, `vectorStore`, `tools:` tanımı; `prompts/` klasörü, sistem istemi dizgeleri; vektör DB (`pgvector`/Pinecone/Weaviate/Chroma/Qdrant), MCP sunucu (`mcpServers`), ajan çerçevesi, kalıcı hafıza |
-| T9 | **Sevk edilen artefakt var mı?** | `dist/`, `build/`, `out/`, `.next/`; `*.apk`/`*.aab`/`*.exe`/`*.dmg`/`*.whl`/`*.jar`/`*.tgz`; `Dockerfile` + imaj etiketi; `dist/` içinde `*.map`; yayımlanmış paket adı; sürüm etiketleri |
+| T9 | **Sevk edilen artefakt var mı?** | `dist/`, `build/`, `out/`, `.next/`; `*.apk`/`*.aab`/`*.exe`/`*.dmg`/`*.whl`/`*.jar`/`*.tgz`; `Dockerfile` + imaj etiketi (`FROM php:…` dâhil); `dist/` içinde `*.map`; yayımlanmış paket adı; sürüm etiketleri |
 | T10 | **Koşabilir test paketi var mı?** | `test`/`spec`/`__tests__` klasörü; `pytest.ini`, `jest.config`, `vitest.config`, `go test`, `cargo test`; `package.json` içinde `scripts.test`; CI dosyasındaki test adımı |
 | T11 | **Ters vekil / CDN / çok-katman var mı?** | `nginx.conf`/`haproxy`, Cloudflare/Fastly/Akamai, `X-Forwarded-*` işleme, HTTP/2-3, ön-uç↔arka-uç ikilisi |
-| T12 | **IaC / bulut yapılandırması var mı?** | `*.tf`, `*.tfvars`, CloudFormation/Pulumi, k8s manifest (`kind:`), `Dockerfile` içeriği, `serverless.yml`, bulut SDK |
+| T12 | **IaC / bulut yapılandırması var mı?** | `*.tf`, `*.tfvars`, CloudFormation/Pulumi, k8s manifest (`kind:`), `Dockerfile` içeriği (`FROM php:…`/`image: php` dâhil), `serverless.yml`, bulut SDK |
 
 ### Şerit seçimi
 
 - **ŞERİT A — istemci/offline/mobil** (`references/serit-A-istemci.md`): **her zaman** koşar.
-- **ŞERİT B — sunucu/API/DB/kimlik** (`references/serit-B-sunucu.md`): T2 veya T3 veya T4 EVET ise.
+- **ŞERİT B — sunucu/API/DB/kimlik** (`references/serit-B-sunucu.md`): T2 veya T3 veya T4 EVET ise. **T2'de PHP imzası varsa** bu şerit açılır ve `references/kod-inceleme-guvenlik.md` §2.1 (PHP çalışma zamanı sürümü + paket denetimi) **mutlaka okunur**: raporun 0. bölümünde (şablondaki) `PHP çalışma zamanı` satırı ZORUNLUDUR — sürüm KAYNAĞIYLA yazılır; yüzen etiketse (`php:8-apache`) etiket + kaynak ve "düzey ÖLÇÜLEMEDİ"; depoda hiç yoksa AYNEN şu satır: "PHP çalışma zamanı sürümü depoda yok — ÖLÇÜLEMEDİ; sunucu/hosting panelinden kontrol et." (rapora "temiz" yazılmaz). PHP ≤ 8.1 → bulgu, 8.2 → uyarı (2026-12-31'e kadar; sonra bulgu); `composer.lock` varsa `composer audit` (yoksa ÖLÇÜLMEDİ). Bu satır yoksa rapor eksiktir. Yalnız `composer.json` (ya da yalnız `*.php`) varsa ve sunucu giriş noktası, çatı ya da imaj yoksa proje kütüphane olabilir: satıra "kütüphane — çalışma zamanı tüketene ait" yazılır; sabit "depoda yok" satırı ve ÖNCE ÖLÇ gerekmez.
 - **ŞERİT C — BaaS / RLS** (`references/serit-C-baas-rls.md`): **T7 EVET ise — T2 HAYIR olsa bile.**
   > BaaS'ta istemci veritabanıyla DOĞRUDAN konuşur; yetkiyi uygulayacak sunucu yoktur.
   > **"Sunucu yok, o hâlde sunucu açığı yok" çıkarımı bu mimaride YANLIŞTIR.**

@@ -34,6 +34,17 @@ ve yama önerisiyle gelir.
 - **Şerit B (auth/OAuth) ve T12 (bulut/IaC) kontrol listesidir, gerçek bir sistemde
   doğrulanmadı.** Bilinen saldırı kalıplarını kodlar ama henüz canlı bir üretim
   yığınında denenmedi.
+- **PHP çalışma zamanı sürümü yalnız depoda yazıyorsa görülür (v2.7).** gedik sürümü
+  Dockerfile/Containerfile (`*.Dockerfile` dahil) ve compose imaj etiketlerinden,
+  `.php-version`'dan, `composer.json` `config.platform.php`'den ve CI `setup-php`'den okur ve
+  kaynağıyla raporlar; `"php": ">=x"` gibi bir kısıt çalışan sürüm sayılmaz. Paylaşımlı
+  hosting'de (cPanel/Plesk) sürüm kodda değil sunucuda durur — gedik o zaman "ÖLÇÜLEMEDİ —
+  sunucu/hosting panelinden kontrol et" yazar, asla "temiz" demez. Açık eşleşmesi gömülü bir
+  CVE listesinden değil tarayıcılardan (`composer audit`, `trivy`/`grype`) gelir; testlerimizde
+  bu tarayıcılar kurulu değildi, yalnız ÖLÇÜLEMEDİ yolu ölçüldü. PHP rapor kapısı
+  (`araclar/php_kapisi.py`) anahtar sözcük tabanlıdır: üç bağımsız inceleme turunun her biri
+  yanlış değerlendirdiği yeni ifadeler buldu (fixture'larla düzeltildi) — kanıt değil, korkuluk
+  olarak düşün.
 
 ## NE YAPAR
 
@@ -192,6 +203,8 @@ Anthropic'in **Cyber Verification Program**'ı bunu onaylı hesap başına kald�
 [Benchmark](#benchmark-ölçülmüş--2026-09-30).
 
 İngilizce ana sürüm: [`skills/gedik/`](skills/gedik/) · [README.md](README.md)
+
+**Geliştirme komutları** (`proje.toml` ile aynı): test `python araclar/kapilar.py --pozitif-kontrol` · lint `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py`
 
 ## Sınırlar
 

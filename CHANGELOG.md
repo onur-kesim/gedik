@@ -6,7 +6,55 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 ## [Unreleased]
 
 ### Belgeler
-- **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Skill kodu değişmedi (2.6.0).
+- **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Bu satır 2.6.0 dönemine aittir.
+
+## [2.7.0] — 2026-10-22
+### Eklendi
+- **PHP görünürlüğü.** Triyaj T2 artık PHP'yi görür: `composer.json`, `artisan`/`laravel/framework`, `symfony/*`,
+  `wp-config.php`/`wp-content/`, kökte `index.php`, `php-fpm` havuz dosyası, PHP işleyicili `.htaccess`; T9/T12'de
+  `FROM php:` / `image: php`. T2'de PHP imzası varsa Şerit B açılır. Öncesinde PHP imzası hiç yoktu (yalnız
+  express/flask/django/spring/rails). Tarama komutları `fd -H`/`rg --hidden` (noktalı dosyalar: `.htaccess`, `.php-version`).
+- **PHP çalışma zamanı sürümü (`kod-inceleme-guvenlik.md` §2.1, TR+EN).** Kaynak sırası: imaj etiketi (`ARG` varsayılanı dahil;
+  çok aşamalı Dockerfile'da SON aşama) · `.php-version` · `composer.json` `config.platform.php` · CI matrisi · platform dosyası.
+  Sürüm rapora KAYNAĞIYLA yazılır; kaynaklar çelişirse çelişki yazılır ve EOL en eski çalışma-zamanı kaynağına uygulanır;
+  `composer.json` `"php": ">=x"` kısıtı alt sınırdır, çalışan sürüm sayılmaz; yüzen etiket (`php:8-apache`, `latest`)
+  etiket+kaynak olarak yazılır, eksik düzey ÖLÇÜLMEDİ; yalnız `composer.json`/`*.php` varsa (kütüphane) sabit satır istenmez;
+  sürüm depoda hiç yoksa sabit satır ("PHP çalışma zamanı sürümü depoda yok — ÖLÇÜLEMEDİ; sunucu/hosting panelinden kontrol et.")
+  yazılır, rapora "temiz" yazılmaz, sonuç ÖLÇÜLMEYENLER'e ve `kapsam`'a gider, karar ÖNCE ÖLÇ olur.
+  SKILL.md Lane B maddesi bu satırı ZORUNLU kılar ve sabit cümleyi aynen taşır (ölçüm: referans dosyasında kalan kural
+  model tarafından okunmadı — aşağıdaki doğrulama).
+- **EOL kuralı** (php.net `supported-versions` + `eol.php`, ölçüm 2026-10-22, yeniden doğrulanmalı): PHP ≤ 8.1 resmî güvenlik
+  yaması almıyor → bulgu (`confirmed`, STATİK, şiddet ORTA; tarayıcı kritik/yüksek CVE eşlerse onun şiddeti); 8.2 güvenlik
+  desteği 2026-12-31'de bitiyor → uyarı (BILGI), tarihten sonra bulgu. Sabit CVE tablosu YOKTUR (bayatlar): açık eşleşmesi
+  tarayıcı veri tabanından gelir.
+- **Paket/imaj taraması:** `composer.lock` (herhangi bir derinlikte, `vendor/` hariç) varsa `composer audit`, sayıyla; yoksa ya da araç/ağ
+  yoksa ÖLÇÜLMEDİ + sebep. İmaj taraması (`trivy`/`grype`) yalnız KAMUYA AÇIK taban imaj etiketi için; hedefin kendi/özel kayıt
+  defteri için "ÖLÇÜLMEDİ — yetki yok (§0.1)". Şerit B kapanış listesine 27. madde.
+- **`araclar/php_olc.py` + `php_kapisi.py` + `php_oz_test.py` + `php_oz_duzelt.py`** — deterministik referans ölçüm, rapor denetimi (`--hedef DİZİN [--rapor RAPOR]`)
+  ve kör kapı öz-testi. `kapilar.py` altın kümesine 208 vaka eklendi (altın küme 21 → 229; ölçüm 2026-10-23, `python araclar/kapilar.py --pozitif-kontrol`): 3 asıl fixture (Laravel+`php:8.3.30-fpm`,
+  `composer.lock`'lu depo, sürümsüz WordPress yedeği) + EOL 8.1/8.2, `require` kısıtı, yüzen/dal etiketi, çelişen kaynaklar,
+  çok aşamalı Dockerfile, `.htaccess`/php-fpm/compose/CI/`.php-version`/platform kaynakları, kütüphane (zayıf imza); mutantlar: imaj
+  satırı silinince, "temiz" yazan sahte rapor (TR+EN), EOL bulgusu yok, audit satırı yok, uydurma sürüm+kaynak, dedektör mutantları (sürüm
+  çözücü/EOL/imaj dosyası/test yolu/yorum bozulunca golden KIRMIZI). Anahtar sözcük TABANIDIR, anlam denetlemez.
+- **Yayın öncesi bağımsız denetimin (2026-10-23) bulguları kapatıldı** — her düzeltmenin TR+EN doğru raporu YEŞİL, bozuk kopyası KIRMIZI: `*.Dockerfile`/`*.Containerfile` ve `docker.io/php:`
+  imajları görünür (ölçüm + triyaj `rg` komutu); `composer.json` `config.platform.php` kaynağı gerçek satırla kaydedilir (config…php aralığı geçerli);
+  "temiz" denetimi: yükseltme önerisindeki "güvenli/secure sürüm" tarifi iddia sayılmaz, ayrı satırdaki "risk yok / no action needed" kararı iddiadır;
+  `composer.json` kısıtını "kullanıyor/uses/running" diye sürüm sayan rapor yakalanır; "EOL: no official security patches" yazan doğru rapor
+  yanlışlıkla "EOL değil" sayılıyordu (EN fixture buldu); öz-test dosyası doğrudan çalıştırılınca hiçbir şey koşmadan çıkış 0 veriyordu (sahte yeşil).
+- Sabit cümle kilidine 5 cümle (25 → 30): sürüm-depoda-yok satırı (referansta ve SKILL.md'de), `require` alt sınırdır, ≤ 8.1 bulgu, sabit CVE tablosu yok.
+### Değişti
+- Sürüm 2.7.0 (dört yer: `plugin.json`, `marketplace.json`, `SKILL.md` TR+EN). Rapor şablonuna "PHP çalışma zamanı" satırı
+  (`.md` şablonu; `gedik-bulgular.json` şeması `gedik-bulgular/1` DEĞİŞMEDİ). `lint` komutuna `php_olc.py`, `php_kapisi.py`,
+  `php_oz_test.py`, `php_oz_duzelt.py`; `araclar/kapilar.py` +2 satır (şablondan bilinçli sapma).
+### Değiştirilmedi (bilinçli)
+- gedik salt-okur kalır (yamalamaz, raporlar); canlı sisteme istek yok; 2.6.1 adayı geri alınmıştı, rapor akışı/PoC yeri 2.6.0 ile aynı.
+### Bu sürümde HAYIR
+- Paylaşımlı hosting'de çalışma zamanı sürümü depodan GÖRÜLEMEZ (ÖLÇÜLEMEDİ satırı çıkar). PHP'ye özgü saldırı yükleri (unserialize,
+  include/LFI, type juggling) bu sürümde YOK: bu dilim görünürlüktür. `php_kapisi.py` anahtar-sözcük tabanıdır: bağımsız incelemeler her
+  turda (3 tur) yeni atlatma/yanlış-pozitif buldu. Mutasyon ölçümü (2026-10-23, bu sürümün kodu, satır-düzeyi): 127 mutant, 126 öldü, 1 hayatta
+  (kanıtlanabilir eşdeğer: tek elemanlı `'.'.join` = elemanın kendisi); ilk koşuda 6 hayatta kalmıştı, 5'i gerçek davranış farkıydı ve vektörle kapatıldı.
+  Adlandırılmış mutantlar (denetçinin 19'u + bu turun her düzeltmesini geri alan 13): 32 uygulandı, 32 öldü. Sınır: anahtar-sözcük tabanı bir raporun
+  DOĞRU olduğunu kanıtlamaz; yalnız ölçülen kusur sınıflarının yokluğunu gösterir.
 
 ## [2.6.0] — 2026-09-29
 ### Eklendi

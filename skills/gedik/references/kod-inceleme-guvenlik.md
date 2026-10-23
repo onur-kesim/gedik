@@ -100,6 +100,59 @@ unconditional validation." Without an inventory, there is no review.
   a popular package; is it maintenance-abandoned (date of last release)?
 - **License:** the user's red line — a new dependency = license + CVE check.
 
+### 2.1 PHP project: runtime version and package audit (v2.7.0)
+
+This section runs when T2 finds a PHP signature. **No fixed CVE table is kept** (it goes stale):
+the match for a known vulnerability comes from a scanner database; only the EOL-branch rule
+is fixed here.
+
+**Runtime version — source order.** Every version found is written into the report WITH ITS
+SOURCE (`8.3.30 — Dockerfile:1`); a comment line (`#`) is not a source:
+1. Dockerfile / docker-compose image tag (`FROM php:8.3.30-fpm`, `image: php:…`; the default
+   value if given through `ARG`)
+2. `.php-version`
+3. `composer.json` → `config.platform.php` (a dependency-resolution target, which may not be
+   what runs; say so)
+4. CI: `setup-php` / matrix (`php-version:`) — a matrix lists tested versions, which may not
+   be what runs in production; say so
+5. Buildpack/platform file (`.platform.app.yaml` `type: php:…`, `app.yaml` `runtime: php…`,
+   `.htaccess` with a PHP handler)
+
+- In a multi-stage Dockerfile the LAST `FROM php:` stage is the runtime; earlier stages are written separately.
+- If sources disagree (e.g. compose `php:7.4`, Dockerfile `php:8.3.30`), every version is written
+  with its source and the disagreement is stated; the EOL rule applies to the oldest runtime source.
+- `"require": {"php": ">=8.1"}` in `composer.json` is a **lower bound and does NOT count as the running version**.
+- If the tag does not give the patch level (`php:8.3-fpm`, `php:8-apache`, `latest`), write the
+  tag + source (the branch, if the tag gives one) and mark the missing level NOT MEASURED; the
+  source EXISTS, so the fixed "not in the repository" line below is not written.
+- If only `composer.json` (or only `*.php`) exists and there is no server entry point, framework or
+  image, the project may be a library: write "library — the runtime belongs to the consumer" on that
+  line; the fixed "not in the repository" line and `MEASURE FIRST` are not required (a
+  `config.platform.php`, if present, is still written with its source).
+- If the version is nowhere in the repository (shared hosting, a file backup), write **this
+  fixed line** into the report and do NOT say "clean": "PHP runtime version is not in the repository — NOT MEASURED; check it on the server/hosting panel."
+  This result is also written to the report's NOT MEASURED section and to a `kapsam` row in the
+  JSON (`olculmedi`, `sebep`); the verdict becomes `MEASURE FIRST`.
+
+**EOL rule** (measured 2026-10-22, php.net `supported-versions` and `eol.php`; **re-verify**):
+PHP ≤ 8.1 no longer receives official security patches → finding (the distribution's/LTS
+vendor's backport may exist; ask separately, do not assume). PHP 8.2's security support ends
+on 2026-12-31 → warning; after that date 8.2 is a finding too. Report mapping: a ≤ 8.1 finding is
+`confirmed`, evidence type STATIC (`poc_girdi` = the `file:line` of the tag, `gozlenen` = the
+version), severity MEDIUM — or the severity of a critical/high CVE that scanner output matches to
+that version; the 8.2 warning is INFO.
+
+**Package and image scan** (output into the report **as a count**): if `composer.lock` exists at
+any depth (excluding `vendor/`), `composer audit` (if composer is missing or the package database
+is unreachable, NOT MEASURED + reason); if `composer.json` exists but `composer.lock` does not,
+"composer.lock missing — composer audit does not run, NOT MEASURED". The image scan covers only a
+PUBLIC base-image tag (`php:…`): `trivy image <tag>` / `grype <tag>` (if the tool is installed;
+pulling an image needs network — no tool or network, NOT MEASURED). For an image in the target's
+own/private registry write "NOT MEASURED — no authorization (§0.1)". CVEs that hit the version
+found, and the versions that fix them, are written **from scanner output**; with no scanner,
+write "comparison with the current patched version NOT MEASURED".
+
+Optional mechanical check: `python <araclar-path>/php_kapisi.py --hedef <dir> --rapor <report.md>`.
 ---
 
 ## 3. Secret used in the WRONG LAYER

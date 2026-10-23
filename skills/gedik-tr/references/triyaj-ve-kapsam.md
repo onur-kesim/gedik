@@ -31,7 +31,19 @@ aapt dump badging <apk>
 fd -t d "^(api|server|routes|handlers|controllers|functions)$"
 rg -n "express\(|fastify\(|Flask\(|FastAPI\(|createServer|app\.(get|post|put|delete)\("
 fd "serverless\.(yml|yaml)|Dockerfile|docker-compose\.(yml|yaml)|Procfile"
+fd -H -i "^(composer\.(json|lock)|artisan|wp-config\.php|\.php-version|\.htaccess|index\.php)$|php-fpm.*\.conf"
+fd -H -t d "^(wp-content|wp-includes|php-fpm\.d)$"
+rg -n "laravel/framework|symfony/|slim/slim|wordpress" composer.json
+rg -n --hidden "AddHandler|SetHandler|x-httpd|php_(value|flag)" -g .htaccess
+rg -n -i "^\s*FROM\s+(--\S+\s+)*(\S+/)*php:|image:\s*['\"]?(\S+/)*php:" -g 'Dockerfile*' -g 'Containerfile*' -g '*.[Dd]ockerfile' -g '*.[Cc]ontainerfile' -g '*compose*.y*ml'
 ```
+
+**PHP imzası bulunursa** (`composer.json`, `artisan`, `wp-config.php`/`wp-content/`, kökte
+`index.php`, `php-fpm` havuz dosyası, PHP işleyicili `.htaccess`, `FROM php:`) T2 = EVET (PHP):
+Şerit B açılır; çalışma zamanı sürümü ve paket denetimi koşar
+(`references/kod-inceleme-guvenlik.md` §2.1). `composer.json`'daki `"php": ">=x"` kısıtı
+çalışan sürümü göstermez. Yalnız `composer.json` varsa (sunucu giriş noktası ya da çatı yoksa) kütüphane olabilir:
+Şerit B'nin sunucu maddeleri uygulanmayabilir, sürüm ve paket denetimi yine koşar.
 
 ## T3 — Veritabanı var mı?
 ```
@@ -164,6 +176,7 @@ fd -e tf -e tfvars
 fd "serverless\.(yml|yaml)|Dockerfile|docker-compose\.(yml|yaml)"
 rg -l "kind:\s*(Deployment|Pod|StatefulSet|DaemonSet)" -g '*.yaml' -g '*.yml'
 rg -n -i "cloudformation|pulumi" -g '!node_modules'
+rg -n -i "^\s*FROM\s+(--\S+\s+)*(\S+/)*php:|image:\s*['\"]?(\S+/)*php:" -g 'Dockerfile*' -g 'Containerfile*' -g '*.[Dd]ockerfile' -g '*.[Cc]ontainerfile' -g '*compose*.y*ml'
 ```
 `*.tf`/`*.tfvars`, CloudFormation/Pulumi şablonu, k8s manifest (`kind:`), `Dockerfile`
 içeriği ya da bulut SDK bağımlılığı varsa EVET.
@@ -178,6 +191,7 @@ içeriği ya da bulut SDK bağımlılığı varsa EVET.
 | Offline Capacitor uygulaması | Hayır | Hayır | Hayır | Hayır | Yalnız Şerit A |
 | Statik tanıtım sitesi (form yok) | Evet (CDN) | Hayır | Hayır | Hayır | Şerit A (dar) + tedarik zinciri |
 | Next.js + Postgres + giriş | Evet | Evet | Evet | Evet | Şerit A + Şerit B (tam) |
+| Laravel + MySQL + giriş (PHP) | Evet | Evet (PHP) | Evet | Evet | Şerit A + Şerit B (tam) + PHP çalışma zamanı/paket denetimi |
 | Yerel masaüstü aracı, dosya okur | Hayır | Hayır | Hayır | Hayır | Şerit A (dosya/deserileştirme ağırlıklı) |
 
 Sunucusuz projede rapor Şerit B'yi **tek satırda** kapatır:

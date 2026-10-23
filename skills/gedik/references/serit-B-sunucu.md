@@ -664,3 +664,4 @@ The security angle is **accidental sharing:**
 25. **Was the B20 app DB-account privilege measured; are SQLi escalation sinks
     reachable (B1.2)?**
 26. Did a self-mutant run in at least two areas, and did it bite?
+27. If there is a PHP signature, was the runtime version written WITH ITS SOURCE, or else the fixed NOT MEASURED line with the verdict MEASURE FIRST (`kod-inceleme-guvenlik.md` §2.1)?

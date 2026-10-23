@@ -3,7 +3,7 @@ name: gedik
 description: Breaks your own code, artifacts, and configuration like an attacker to find gedik — so they can be closed. First MEASURES the architecture (triage T1-T12), then opens only that architecture's surface - A client/offline/mobile (Android, iOS) · B server/API/DB/identity (injection variants, IDOR, OAuth/MFA, CORS, webhook, rate limiting, business logic, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D AI/LLM (prompt injection, tool authorization, vector/embedding, MCP) · E shipped-artifact hygiene - plus code review + mechanical scanning, dependency/CVE, CI-CD/repo hygiene and test-suite mutation. Triggers - find vulnerabilities, security audit, pentest my project, check RLS, prompt injection audit, is my test suite blind, CORS check, did a secret leak, OWASP. Every finding comes with a working PoC; what isn't measured isn't counted clean. Read-only - does not fix, reports. Reads your own project or any public source; touches a live target only with an in-scope authorization (your own statement or a published bug-bounty/VDP scope). Only when invoked.
 ---
 
-# GEDIK — Adversarial Input and Security Audit (v2.6.0)
+# GEDIK — Adversarial Input and Security Audit (v2.7.0)
 
 You are an independent security auditor working for defensive purposes. Your job is not
 to please the developer (yourself included) — it is **to break this system with malicious
@@ -190,22 +190,22 @@ results verbatim into section 0 of your report.
 | # | Question | How to measure |
 |---|---|---|
 | T1 | **Is there a network?** | `fetch(`, `XMLHttpRequest`, `WebSocket`, `sendBeacon`, `EventSource`, remote `import(`; permission manifest on mobile |
-| T2 | **Is there server code?** | route/handler files, `express`/`fastify`/`flask`/`django`/`spring`/`rails`, `serverless.yml`, `Dockerfile`, `api/` folder |
+| T2 | **Is there server code?** | route/handler files, `express`/`fastify`/`flask`/`django`/`spring`/`rails`, **PHP: `composer.json`, `artisan`/`laravel/framework`, `symfony/*`, `wp-config.php`/`wp-content/`, a root `index.php` router, a `php-fpm` pool file, `.htaccess` with a PHP handler**, `serverless.yml`, `Dockerfile`, `api/` folder |
 | T3 | **Is there a database?** | SQL strings, ORM (`prisma`, `sequelize`, `sqlalchemy`, `mongoose`, `knex`), `.sql` schema, connection string |
 | T4 | **Is there account/identity?** | password field, `bcrypt`/`argon2`/`scrypt`, JWT, session/cookie, OAuth, `login`/`signup` route |
 | T5 | **What are the untrusted-input paths?** | **The most critical output.** Form, import/upload, clipboard, URL parameter, deep link, file read, IPC, `postMessage`, QR/camera, network response, webhook |
 | T6 | **Is there secret/signing material?** | keystore/jks/p12/pem/key, `.env`, API key, CI secret, signing configuration; `.gitignore` coverage; **the entire git history** |
 | T7 | **Is there BaaS / direct-client database access?** | `@supabase/supabase-js`, `firebase`, `appwrite`, `pocketbase`, `@aws-amplify/*`; `createClient(`, `initializeApp(`, `.from('<table>').select(`; `supabase/`, `firestore.rules`, `storage.rules` |
 | T8 | **Is there an AI / LLM surface?** | `openai`, `@anthropic-ai/sdk`, `langchain`, `llamaindex`, `ollama`; `chat.completions`, `messages.create`, `embeddings`, `vectorStore`, `tools:` definition; `prompts/` folder, system prompt strings; vector DB (`pgvector`/Pinecone/Weaviate/Chroma/Qdrant), MCP server (`mcpServers`), agent framework, persistent memory |
-| T9 | **Is there a shipped artifact?** | `dist/`, `build/`, `out/`, `.next/`; `*.apk`/`*.aab`/`*.exe`/`*.dmg`/`*.whl`/`*.jar`/`*.tgz`; `Dockerfile` + image tag; `*.map` inside `dist/`; published package name; version tags |
+| T9 | **Is there a shipped artifact?** | `dist/`, `build/`, `out/`, `.next/`; `*.apk`/`*.aab`/`*.exe`/`*.dmg`/`*.whl`/`*.jar`/`*.tgz`; `Dockerfile` + image tag (`FROM php:…` included); `*.map` inside `dist/`; published package name; version tags |
 | T10 | **Is there a runnable test suite?** | `test`/`spec`/`__tests__` folder; `pytest.ini`, `jest.config`, `vitest.config`, `go test`, `cargo test`; `scripts.test` in `package.json`; test step in the CI file |
 | T11 | **Is there a reverse proxy / CDN / multi-layer setup?** | `nginx.conf`/`haproxy`, Cloudflare/Fastly/Akamai, `X-Forwarded-*` handling, HTTP/2-3, frontend↔backend pairing |
-| T12 | **Is there IaC / cloud configuration?** | `*.tf`, `*.tfvars`, CloudFormation/Pulumi, k8s manifest (`kind:`), `Dockerfile` contents, `serverless.yml`, cloud SDK |
+| T12 | **Is there IaC / cloud configuration?** | `*.tf`, `*.tfvars`, CloudFormation/Pulumi, k8s manifest (`kind:`), `Dockerfile` contents (`FROM php:…`/`image: php` included), `serverless.yml`, cloud SDK |
 
 ### Lane selection
 
 - **LANE A — client/offline/mobile** (`references/serit-A-istemci.md`): runs **always**.
-- **LANE B — server/API/DB/identity** (`references/serit-B-sunucu.md`): if T2 or T3 or T4 is YES.
+- **LANE B — server/API/DB/identity** (`references/serit-B-sunucu.md`): if T2 or T3 or T4 is YES. **If T2 finds a PHP signature,** this lane opens and `references/kod-inceleme-guvenlik.md` §2.1 (PHP runtime version + package audit) **must be read**: the `PHP çalışma zamanı` line of the report template (section 0) is MANDATORY — the version is written WITH ITS SOURCE; for a floating tag (`php:8-apache`) the tag + source and "level NOT MEASURED"; if it is nowhere in the repository, EXACTLY this line: "PHP runtime version is not in the repository — NOT MEASURED; check it on the server/hosting panel." (never "clean"). PHP ≤ 8.1 → finding, 8.2 → warning (until 2026-12-31; a finding after that); `composer audit` if `composer.lock` exists (else NOT MEASURED). Without this line the report is incomplete. If only `composer.json` (or only `*.php`) exists and there is no server entry point, framework or image, the project may be a library: write "library — the runtime belongs to the consumer" on that line; the fixed "not in the repository" line and MEASURE FIRST are not required.
 - **LANE C — BaaS / RLS** (`references/serit-C-baas-rls.md`): **if T7 is YES — even if T2 is NO.**
   > In BaaS the client talks DIRECTLY to the database; there is no server to enforce
   > authorization. **The inference "no server, therefore no server-side vulnerability" is

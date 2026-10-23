@@ -111,6 +111,7 @@ File name: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 
 **Şerit kararı:** ...
 **Yapısal olarak uygulanamayan sınıflar:** ... (tek satır, N/A listesi yazma)
+**PHP çalışma zamanı (T2'de PHP varsa):** <sürüm — kaynak:satır> · EOL durumu · ya da sabit ÖLÇÜLEMEDİ satırı (kod-inceleme-guvenlik.md §2.1)
 
 ## 1. YÜZEY ENVANTERİ
 ### 1.1 Güvenilmeyen girdi yolları

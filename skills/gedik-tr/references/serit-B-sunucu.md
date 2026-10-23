@@ -559,3 +559,4 @@ Güvenlik tarafı **yanlış paylaşımdır:**
 24. Subdomain/DNS envanteri dangling CNAME için tarandı mı (B19)?
 25. **B20 app DB-hesabı yetkisi ölçüldü mü; SQLi escalation sink'leri erişilebilir mi (B1.2)?**
 26. En az iki alanda self-mutant koştu ve ısırdı mı?
+27. PHP imzası varsa çalışma zamanı sürümü KAYNAĞIYLA yazıldı mı; yoksa sabit ÖLÇÜLEMEDİ satırı ve karar ÖNCE ÖLÇ mü (`kod-inceleme-guvenlik.md` §2.1)?

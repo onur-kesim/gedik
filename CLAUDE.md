@@ -70,7 +70,7 @@ olarak (İngilizce ana + Türkçe orijinal, MIT) yayımlar.
 AŞAMA: YAPIM
 MOD: NORMAL
 ## KOMUTLAR (proje.toml ile aynı)
-kur: — · çalıştır: — (skill, çalıştırılabilir uygulama değil) · test: `python araclar/kapilar.py --pozitif-kontrol` · lint: `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py` · build: —
+kur: — · çalıştır: — (skill, çalıştırılabilir uygulama değil) · test: `python araclar/kapilar.py --pozitif-kontrol` · lint: `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py` · build: —
 ## ORTAM MAYINLARI (≤10, yalnız ölçülmüş)
 - `git status` normalde mount'ta bayat `.git/index.lock` bırakabilir → `--no-optional-locks` kullan (anayasa §3.3), 2026-10-04'te ısırdı: device_bash'ten `git commit` her seferinde 0 baytlık `.git/index.lock` + `.git/HEAD.lock` (+ `objects/maintenance.lock`, `tmp_obj_*`) bıraktı, mount silmeye izin vermiyor → her commit'ten sonra `find .git -name '*.lock'` ile bul, 0 baytlıları `_calisma/git-stale/` altına `mv` ile taşı.
 - `gh auth status` bu makinede birden çok hesap listeleyebiliyor — repo işlemlerinde aktif hesabı `gh api user --jq .login` ile teyit et (beklenen: `onur-kesim`).

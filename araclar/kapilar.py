@@ -19,6 +19,7 @@ import sys
 import time
 
 import bulgu_kapisi  # gedik v2.6: şablon kapilar.py'den bilinçli sapma — bulgu şeması kapısı (bkz. DURUM karar günlüğü)
+import php_oz_test  # gedik v2.7: şablon kapilar.py'den bilinçli sapma — PHP görünürlüğü kapısı (altın küme +3 fixture, mutantlar)
 
 KOD_UZANTI = {'.py', '.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.dart', '.kt', '.kts', '.java',
               '.go', '.rs', '.swift', '.cs', '.rb', '.php', '.c', '.cc', '.cpp', '.h', '.hpp',
@@ -229,6 +230,7 @@ def altin_kume():
     vakalar.append(('bozuk_kodlamasiz', bozuk, True, 'W kodlamasız çağrı'))
     vakalar.append(('temiz_kodlamali', bool(kendi | kodlamasiz_alt_surec(f'def f(x):\n    {KODLU_ORNEK}\n')), False, 'W yanlış-pozitif'))
     vakalar.extend(bulgu_kapisi.oz_test_vakalari())
+    vakalar.extend(php_oz_test.oz_test_vakalari())
     satirlar, gecti = [], True
     for ad, sonuc, beklenen, etiket in vakalar:
         ok = sonuc == beklenen

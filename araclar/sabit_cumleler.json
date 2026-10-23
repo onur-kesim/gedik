@@ -150,6 +150,36 @@
       "dosya": "references/kanit-ve-rapor.md",
       "tr": "Şemaya uymayan dosya teslim edilmez",
       "en": "A file that does not match the schema is not delivered"
+    },
+    {
+      "id": "php-surum-depoda-yok",
+      "dosya": "references/kod-inceleme-guvenlik.md",
+      "tr": "PHP çalışma zamanı sürümü depoda yok — ÖLÇÜLEMEDİ; sunucu/hosting panelinden kontrol et.",
+      "en": "PHP runtime version is not in the repository — NOT MEASURED; check it on the server/hosting panel."
+    },
+    {
+      "id": "php-require-alt-sinir",
+      "dosya": "references/kod-inceleme-guvenlik.md",
+      "tr": "bir **alt sınırdır, çalışan sürüm SAYILMAZ**",
+      "en": "is a **lower bound and does NOT count as the running version**"
+    },
+    {
+      "id": "php-eol-81-bulgu",
+      "dosya": "references/kod-inceleme-guvenlik.md",
+      "tr": "PHP ≤ 8.1 resmî güvenlik yaması almıyor → bulgu",
+      "en": "PHP ≤ 8.1 no longer receives official security patches → finding"
+    },
+    {
+      "id": "php-sabit-cve-tablosu-yok",
+      "dosya": "references/kod-inceleme-guvenlik.md",
+      "tr": "**Sabit CVE tablosu tutulmaz**",
+      "en": "**No fixed CVE table is kept**"
+    },
+    {
+      "id": "php-surum-depoda-yok-skill",
+      "dosya": "SKILL.md",
+      "tr": "PHP çalışma zamanı sürümü depoda yok — ÖLÇÜLEMEDİ; sunucu/hosting panelinden kontrol et.",
+      "en": "PHP runtime version is not in the repository — NOT MEASURED; check it on the server/hosting panel."
     }
   ]
 }

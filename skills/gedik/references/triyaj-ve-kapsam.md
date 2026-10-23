@@ -31,7 +31,19 @@ closes off **the entire server-side class** (SQLi, SSRF, CSRF, session hijacking
 fd -t d "^(api|server|routes|handlers|controllers|functions)$"
 rg -n "express\(|fastify\(|Flask\(|FastAPI\(|createServer|app\.(get|post|put|delete)\("
 fd "serverless\.(yml|yaml)|Dockerfile|docker-compose\.(yml|yaml)|Procfile"
+fd -H -i "^(composer\.(json|lock)|artisan|wp-config\.php|\.php-version|\.htaccess|index\.php)$|php-fpm.*\.conf"
+fd -H -t d "^(wp-content|wp-includes|php-fpm\.d)$"
+rg -n "laravel/framework|symfony/|slim/slim|wordpress" composer.json
+rg -n --hidden "AddHandler|SetHandler|x-httpd|php_(value|flag)" -g .htaccess
+rg -n -i "^\s*FROM\s+(--\S+\s+)*(\S+/)*php:|image:\s*['\"]?(\S+/)*php:" -g 'Dockerfile*' -g 'Containerfile*' -g '*.[Dd]ockerfile' -g '*.[Cc]ontainerfile' -g '*compose*.y*ml'
 ```
+
+**If a PHP signature is found** (`composer.json`, `artisan`, `wp-config.php`/`wp-content/`, a
+root `index.php`, a `php-fpm` pool file, `.htaccess` with a PHP handler, `FROM php:`), T2 = YES
+(PHP): Lane B opens, and the runtime version and package audit run
+(`references/kod-inceleme-guvenlik.md` §2.1). The `"php": ">=x"` constraint in `composer.json`
+does not show the running version. If only `composer.json` exists (no server entry point or framework), it may be a library:
+Lane B's server items may not apply, but the version and package audit still run.
 
 ## T3 — Is there a database?
 ```
@@ -166,6 +178,7 @@ fd -e tf -e tfvars
 fd "serverless\.(yml|yaml)|Dockerfile|docker-compose\.(yml|yaml)"
 rg -l "kind:\s*(Deployment|Pod|StatefulSet|DaemonSet)" -g '*.yaml' -g '*.yml'
 rg -n -i "cloudformation|pulumi" -g '!node_modules'
+rg -n -i "^\s*FROM\s+(--\S+\s+)*(\S+/)*php:|image:\s*['\"]?(\S+/)*php:" -g 'Dockerfile*' -g 'Containerfile*' -g '*.[Dd]ockerfile' -g '*.[Cc]ontainerfile' -g '*compose*.y*ml'
 ```
 If `*.tf`/`*.tfvars`, a CloudFormation/Pulumi template, a k8s manifest (`kind:`), `Dockerfile`
 content, or a cloud SDK dependency is present, YES.
@@ -180,6 +193,7 @@ content, or a cloud SDK dependency is present, YES.
 | Offline Capacitor application | No | No | No | No | Lane A only |
 | Static marketing site (no form) | Yes (CDN) | No | No | No | Lane A (narrow) + supply chain |
 | Next.js + Postgres + login | Yes | Yes | Yes | Yes | Lane A + Lane B (full) |
+| Laravel + MySQL + login (PHP) | Yes | Yes (PHP) | Yes | Yes | Lane A + Lane B (full) + PHP runtime/package audit |
 | Local desktop tool, reads files | No | No | No | No | Lane A (file/deserialization-heavy) |
 
 For a serverless project, the report closes out Lane B **in a single line**:

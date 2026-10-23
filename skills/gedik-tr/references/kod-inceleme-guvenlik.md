@@ -89,6 +89,55 @@ doğrulama koşulsuz." Envanter yoksa inceleme yoktur.
   bakım terk edilmiş mi (son yayın tarihi)?
 - **Lisans:** kullanıcının kırmızı çizgisi — yeni bağımlılık = lisans + CVE kontrolü.
 
+### 2.1 PHP projesi: çalışma zamanı sürümü ve paket denetimi (v2.7.0)
+
+T2'de PHP imzası bulunduysa bu bölüm koşar. **Sabit CVE tablosu tutulmaz** (bayatlar): açık
+eşleşmesi tarayıcı veri tabanından gelir; burada yalnız EOL dalı kuralı sabittir.
+
+**Çalışma zamanı sürümü — kaynak sırası.** Bulunan her sürüm KAYNAĞIYLA rapora yazılır
+(`8.3.30 — Dockerfile:1`); yorum satırı (`#`) kaynak sayılmaz:
+1. Dockerfile / docker-compose imaj etiketi (`FROM php:8.3.30-fpm`, `image: php:…`; `ARG` ile
+   verilmişse varsayılan değeri)
+2. `.php-version`
+3. `composer.json` → `config.platform.php` (bağımlılık çözümleme hedefidir, çalışan sürüm
+   olmayabilir; öyle yazılır)
+4. CI: `setup-php` / matris (`php-version:`) — matris test edilen sürümlerdir, canlıda çalışan
+   olmayabilir; öyle yazılır
+5. Buildpack/platform dosyası (`.platform.app.yaml` `type: php:…`, `app.yaml` `runtime: php…`,
+   PHP işleyicili `.htaccess`)
+
+- Çok aşamalı Dockerfile'da SON `FROM php:` aşaması çalışma zamanıdır; önceki aşamalar ayrıca yazılır.
+- Kaynaklar çelişirse (ör. compose `php:7.4`, Dockerfile `php:8.3.30`) her sürüm kaynağıyla
+  yazılır, çelişki belirtilir; EOL kuralı çalışma zamanı kaynaklarının en eskisine uygulanır.
+- `composer.json` içindeki `"require": {"php": ">=8.1"}` bir **alt sınırdır, çalışan sürüm SAYILMAZ**.
+- Etiket yama düzeyini vermiyorsa (`php:8.3-fpm`, `php:8-apache`, `latest`) rapora etiket +
+  kaynak yazılır (dal belliyse dal), eksik düzey ÖLÇÜLMEDİ; bu durumda kaynak VAR olduğundan
+  aşağıdaki sabit "depoda yok" satırı yazılmaz.
+- Yalnız `composer.json` (ya da yalnız `*.php`) varsa ve sunucu giriş noktası, çatı ya da imaj yoksa
+  proje kütüphane olabilir: satıra "kütüphane — çalışma zamanı tüketene ait" yazılır; sabit "depoda yok"
+  satırı ve `ÖNCE ÖLÇ` gerekmez (varsa `config.platform.php` yine kaynağıyla yazılır).
+- Sürüm depoda hiç yoksa (paylaşımlı hosting, dosya yedeği) rapora **şu sabit satır** yazılır
+  ve "temiz" DENMEZ: "PHP çalışma zamanı sürümü depoda yok — ÖLÇÜLEMEDİ; sunucu/hosting panelinden kontrol et."
+  Bu sonuç raporun ÖLÇÜLMEYENLER bölümüne ve JSON'da `kapsam` (`olculmedi`, `sebep`) satırına da
+  yazılır; karar `ÖNCE ÖLÇ` olur. `ÖLÇÜLEMEDİ` ile `ÖLÇÜLMEDİ` aynı durumdur.
+
+**EOL kuralı** (ölçüm 2026-10-22, php.net `supported-versions` ve `eol.php`; **yeniden doğrula**):
+PHP ≤ 8.1 resmî güvenlik yaması almıyor → bulgu (dağıtımın/LTS sağlayıcısının backport'u
+olabilir; ayrıca sorulur, varsayılmaz). PHP 8.2'nin güvenlik desteği 2026-12-31'de bitiyor →
+uyarı; bu tarih geçtikten sonra 8.2 de bulgudur. Rapor eşlemesi: ≤ 8.1 bulgusu `confirmed`,
+kanıt türü STATİK (`poc_girdi` = etiketin `dosya:satır`ı, `gozlenen` = sürüm), şiddet ORTA —
+tarayıcı çıktısında bu sürüme düşen kritik/yüksek CVE varsa onun şiddeti; 8.2 uyarısı BILGI.
+
+**Paket ve imaj taraması** (çıktı rapora **sayıyla**): `composer.lock` herhangi bir derinlikte
+(`vendor/` hariç) varsa `composer audit` (composer yoksa ya da paket veri tabanına ulaşılamıyorsa
+ÖLÇÜLMEDİ + sebep); `composer.json` var, `composer.lock` yoksa "composer.lock yok — composer audit
+koşmaz, ÖLÇÜLMEDİ". İmaj taraması yalnız KAMUYA AÇIK taban imaj etiketi için (`php:…`):
+`trivy image <etiket>` / `grype <etiket>` (araç kuruluysa; imaj çekmek ağ ister — araç ya da ağ
+yoksa ÖLÇÜLMEDİ). Hedefin kendi/özel kayıt defterindeki imaj için "ÖLÇÜLMEDİ — yetki yok (§0.1)"
+yazılır. Bulunan sürüme düşen CVE'ler ve düzeltildiği sürümler **tarayıcı çıktısından** yazılır;
+tarayıcı yoksa "güncel yamalı sürümle karşılaştırma ÖLÇÜLMEDİ" yazılır.
+
+İsteğe bağlı mekanik denetim: `python <araclar-yolu>/php_kapisi.py --hedef <dizin> --rapor <rapor.md>`.
 ---
 
 ## 3. Sırrın YANLIŞ KATMANDA kullanımı

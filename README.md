@@ -36,6 +36,17 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
 - **Lane B (auth/OAuth) and T12 (cloud/IaC) are checklists, not validated on a real
   system.** They encode known attack patterns but have not yet been exercised against a
   live production stack.
+- **PHP runtime version is visible only when it is written in the repo (v2.7).** gedik reads
+  it from Dockerfile/Containerfile (including `*.Dockerfile`) and compose image tags,
+  `.php-version`, `composer.json` `config.platform.php` and CI `setup-php`, and reports it
+  with its source; a `"php": ">=x"` requirement is not treated as the running version. On
+  shared hosting (cPanel/Plesk) the version lives on the server, not in the code — gedik then
+  writes "NOT MEASURED — check the server/hosting panel" and never calls it clean.
+  Vulnerability matching comes from scanners (`composer audit`, `trivy`/`grype`), not from a
+  built-in CVE list; in our tests those scanners were not installed, so only the NOT MEASURED
+  path was measured. The PHP report gate (`araclar/php_kapisi.py`) is keyword-based: each of
+  three independent review rounds found new wording it misjudged (fixed, with fixtures), so
+  treat it as a guard rail, not proof.
 
 ## What it does
 
@@ -196,6 +207,8 @@ benchmark); without it gedik stays read-only and simply delivers less on such ta
 [Benchmark](#benchmark-measured--2026-09-30).
 
 Turkish original: [`skills/gedik-tr/`](skills/gedik-tr/) · [README.tr.md](README.tr.md)
+
+**Development commands** (identical to `proje.toml`): test `python araclar/kapilar.py --pozitif-kontrol` · lint `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py`
 
 ## Limits
 
