@@ -28,8 +28,8 @@ Kural: sabit CVE tablosu YAZILMAZ (bayatlar) — açık eşleşmesi tarayıcı v
 ## TESLİM
 - [x] Bağımsız denetim (Cowork, ayrı bağlam) — tur 1 DÜZELT (2 yanlış beyan + 4 doğruluk kusuru, `_calisma/denetim_270/RAPOR.md`), DÜZELT turu sonrası Cowork kapanış ölçümü 2026-10-23 TESLİME UYGUN: kapılar yeşil, mutant 32/32 öldü, PHP 208 vaka / altın küme 229 (D5 doğrulandı), denetçi senaryoları yeniden: `*.Dockerfile` 7.4 ve `docker.io/php:8.1` görülüyor, kötü "depoda yok"/"risk yok" raporları FAIL, tam doğru TR+EN raporlar PASS
 - [x] README×2 (Cowork 2026-10-23): PHP sınırı "bu sürümde HAYIR" maddesi + anahtar-sözcük kapısı sınırı + geliştirme komutları (Bulgu 9; lint'e ic_ad_kapisi.py, proje.toml/CLAUDE.md/README birebir) — eski: README×2: PHP kapsamı + "bu sürümde HAYIR: paylaşımlı hosting'de çalışma zamanı sürümü depodan görülemez"; rakip/öncül satırı gerekirse
-- [ ] `v2.7.0` etiketi + CHANGELOG + Release; geri alma = önceki etikete dönüş
-- [ ] push: Onur ("push et" ile Cowork/Code)
+- [x] `v2.7.0` etiketi (a34bb20) + CHANGELOG [2.7.0] + Release yayında (2026-10-23 06:42Z, gh ile ölçüldü); geri alma = `v2.6.0`'a dönüş
+- [x] push: Onur 2026-10-23 — origin/main = a34bb20 = v2.7.0; CI kapilar/kapilar-windows/kor-kapi/surum hepsi success (gh check-runs)
 
 ## Sonuç (2026-10-22, Claude Code · YAP + DOĞRULA bitti; TESLİM = Cowork denetimi + README + etiket + push)
 **Yapılan:** PHP görünürlüğü (T2 imzaları, §2.1 çalışma zamanı sürümü + ÖLÇÜLEMEDİ + EOL + paket/imaj taraması kuralları, TR+EN, 5 yeni kilit, sürüm 2.7.0) + `php_olc/php_kapisi/php_oz_test/php_oz_duzelt.py` (208 vakalı kör kapı öz-testi). Ürün dosyaları çalışma ağacında, **commit yok** (talimat: push yok; commit istenmedi), yeni üç dosya `git add -N`.
