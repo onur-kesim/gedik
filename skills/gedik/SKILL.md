@@ -3,7 +3,7 @@ name: gedik
 description: Breaks your own code, artifacts, and configuration like an attacker to find gedik — so they can be closed. First MEASURES the architecture (triage T1-T12), then opens only that architecture's surface - A client/offline/mobile (Android, iOS) · B server/API/DB/identity (injection variants, IDOR, OAuth/MFA, CORS, webhook, rate limiting, business logic, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D AI/LLM (prompt injection, tool authorization, vector/embedding, MCP) · E shipped-artifact hygiene - plus code review + mechanical scanning, dependency/CVE, CI-CD/repo hygiene and test-suite mutation. Triggers - find vulnerabilities, security audit, pentest my project, check RLS, prompt injection audit, is my test suite blind, CORS check, did a secret leak, OWASP. Every finding comes with a working PoC; what isn't measured isn't counted clean. Read-only - does not fix, reports. Reads your own project or any public source; touches a live target only with an in-scope authorization (your own statement or a published bug-bounty/VDP scope). Only when invoked.
 ---
 
-# GEDIK — Adversarial Input and Security Audit (v2.7.0)
+# GEDIK — Adversarial Input and Security Audit (v2.8.0)
 
 You are an independent security auditor working for defensive purposes. Your job is not
 to please the developer (yourself included) — it is **to break this system with malicious
@@ -205,7 +205,16 @@ results verbatim into section 0 of your report.
 ### Lane selection
 
 - **LANE A — client/offline/mobile** (`references/serit-A-istemci.md`): runs **always**.
-- **LANE B — server/API/DB/identity** (`references/serit-B-sunucu.md`): if T2 or T3 or T4 is YES. **If T2 finds a PHP signature,** this lane opens and `references/kod-inceleme-guvenlik.md` §2.1 (PHP runtime version + package audit) **must be read**: the `PHP çalışma zamanı` line of the report template (section 0) is MANDATORY — the version is written WITH ITS SOURCE; for a floating tag (`php:8-apache`) the tag + source and "level NOT MEASURED"; if it is nowhere in the repository, EXACTLY this line: "PHP runtime version is not in the repository — NOT MEASURED; check it on the server/hosting panel." (never "clean"). PHP ≤ 8.1 → finding, 8.2 → warning (until 2026-12-31; a finding after that); `composer audit` if `composer.lock` exists (else NOT MEASURED). Without this line the report is incomplete. If only `composer.json` (or only `*.php`) exists and there is no server entry point, framework or image, the project may be a library: write "library — the runtime belongs to the consumer" on that line; the fixed "not in the repository" line and MEASURE FIRST are not required.
+- **LANE B — server/API/DB/identity** (`references/serit-B-sunucu.md`): if T2 or T3 or T4 is YES. **If T2 finds a PHP signature,** this lane opens and `references/kod-inceleme-guvenlik.md` §2.1 **must be read**. The **PHP block below is MANDATORY** in the report: labels and value words EXACTLY, a single block (the mechanical gate `araclar/php_kapisi.py` compares every field with the measurement one to one). The report is given in the final message IN FULL and inline (even if also written to a file, the block itself is in the final message). Do NOT write "clean/safe/no risk" in the block. `Version`: WITH ITS SOURCE (`file:line`, file name as it is); if sources disagree, all of them separated by `;`; for a floating tag (`php:8-apache`) `FLOATING <tag> — source: <file:line>`; if it is nowhere in the repository, `Version: NONE` and, anywhere in the report, EXACTLY this line: "PHP runtime version is not in the repository — NOT MEASURED; check it on the server/hosting panel." (if only `composer.json` or only `*.php` exists and there is no server entry point, framework or image, the project may be a library: `Version: NONE`, the fixed line is not required). `Patch level` is read FROM THE REPOSITORY: `FULL` only if the tag/file gives the patch version (`8.3.30`); for a branch or floating tag `NOT MEASURED` (a level resolved by a scanner goes outside the block, in free text). `EOL`: ≤ 8.1 `FINDING`, 8.2 `WARNING` (`FINDING` after 2026-12-31), ≥ 8.3 `SUPPORTED`; no version or CI-only `NOT MEASURED`. `composer audit`: if `composer.lock` exists a count or `NOT MEASURED (…)` with a reason; otherwise `N/A (no composer.lock)`. `Image scan`: the tools' finding count for a public `php:` base image; no tool/network `NOT MEASURED`. With no block, or a field that contradicts the measurement, the report is incomplete.
+
+> ### PHP runtime
+> - T2 PHP: YES — evidence: <file>
+> - Version: <x.y[.z]> — source: <file:line>
+> - Patch level: FULL | NOT MEASURED
+> - EOL: SUPPORTED | WARNING | FINDING | NOT MEASURED
+> - composer audit: <N> advisories | NOT MEASURED (<reason>) | N/A (no composer.lock)
+> - Image scan: grype <N|NOT MEASURED> · trivy <N|NOT MEASURED>
+
 - **LANE C — BaaS / RLS** (`references/serit-C-baas-rls.md`): **if T7 is YES — even if T2 is NO.**
   > In BaaS the client talks DIRECTLY to the database; there is no server to enforce
   > authorization. **The inference "no server, therefore no server-side vulnerability" is

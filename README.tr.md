@@ -34,7 +34,7 @@ ve yama önerisiyle gelir.
 - **Şerit B (auth/OAuth) ve T12 (bulut/IaC) kontrol listesidir, gerçek bir sistemde
   doğrulanmadı.** Bilinen saldırı kalıplarını kodlar ama henüz canlı bir üretim
   yığınında denenmedi.
-- **PHP çalışma zamanı sürümü yalnız depoda yazıyorsa görülür (v2.7).** gedik sürümü
+- **PHP çalışma zamanı sürümü yalnız depoda yazıyorsa görülür (v2.7; v2.8'den beri sabit alanlı rapor).** gedik sürümü
   Dockerfile/Containerfile (`*.Dockerfile` dahil) ve compose imaj etiketlerinden,
   `.php-version`'dan, `composer.json` `config.platform.php`'den ve CI `setup-php`'den okur ve
   kaynağıyla raporlar; `"php": ">=x"` gibi bir kısıt çalışan sürüm sayılmaz. Paylaşımlı
@@ -43,10 +43,20 @@ ve yama önerisiyle gelir.
   CVE listesinden değil tarayıcılardan (`composer audit`, `trivy`/`grype`) gelir. Saha testi (2026-10-23): trivy resmî `php` Docker imajındaki
   PHP'yi tanımadı (orada PHP OS paketi değil, kaynaktan derlenir) ve PHP2Shell'i (CVE-2026-109618/109619)
   raporlamadı; grype test edilen tek imajda (`php:8.3.30-fpm`) gördü. grype ise `composer audit`'in ve
-  trivy'nin bulduğu bir `composer.lock` danışmasını kaçırdı — birden fazla tarayıcı koş. PHP rapor kapısı
-  (`araclar/php_kapisi.py`) anahtar sözcük tabanlıdır: üç bağımsız inceleme turunun her biri
-  yanlış değerlendirdiği yeni ifadeler buldu (fixture'larla düzeltildi) — kanıt değil, korkuluk
-  olarak düşün.
+  trivy'nin bulduğu bir `composer.lock` danışmasını kaçırdı — birden fazla tarayıcı koş. v2.8'den beri
+  PHP sonucu sabit alanlı bir bloktur (`### PHP çalışma zamanı`: T2 PHP · Sürüm + `dosya:satır`
+  kaynak · Yama düzeyi · EOL · composer audit · İmaj taraması) ve `araclar/php_kapisi.py` kapısı her
+  alanı kendi depo ölçümüyle (`araclar/php_olc.py`) karşılaştırır. Saha testi (2026-10-24; n=15, tek
+  model, CVP hesabı): kapı PASS **14/15** (Wilson %70–99); tek FAIL biçim kaymasıydı (Sürüm alanının
+  içine not yazılmış), içerik doğruydu; incelenen raporlarda içerik ihlali yok. **Kapının
+  doğrulamadıkları:** composer ve tarayıcı sayıları ile ÖLÇÜLEMEDİ / UYGULANMAZ sebep metni; serbest
+  metin — yalnız `PHP x.y … dosya:satır` kalıbı denetlenir (kaynaksız sürüm, `satır 2` / `#L2`
+  yazımları, `php.ini:N`, "php" sözcüğü geçmeyen ya da kısıt sözcüklü satır, blok dışındaki serbest
+  "temiz" ve yanlış EOL geçer); bloğun altında, değer olarak blokla çelişen alan satırları (EOL /
+  yama düzeyi / T2). Blok ilk boş satırda biter — notları bir boş satırdan sonra yaz, yoksa çift
+  alan sayılır. Blok katıdır: şablondan sapma (başlığa ek, tablo, numaralı madde, değerin içine not)
+  KIRMIZI verir. Tarayıcı sayıları koşular arasında karşılaştırılamaz (şiddet kapsamı sabit değil).
+  Kapıyı kanıt değil, korkuluk olarak düşün.
 
 ## NE YAPAR
 
@@ -201,12 +211,14 @@ gedik'in artık bir puanlı benchmark'ı var (bkz.
 **Teslim uyarısı.** Exploit-yoğun gerçek kodda Claude'un gerçek-zamanlı siber önlemi gedik'in
 raporunu akış ortasında kesebilir (ölçülen: 6 koşudan ~4'ü kesildi, 2'si teslim edildi). Yetkili güvenlik çalışmasında
 Anthropic'in **Cyber Verification Program**'ı bunu onaylı hesap başına kaldırır (benchmark'ta
-3/3); onsuz gedik salt-okunur kalır ve bu tür hedeflerde yalnızca daha az teslim eder. Bkz.
+3/3); onsuz gedik salt-okunur kalır ve bu tür hedeflerde yalnızca daha az teslim eder.
+Onay kesilmeyi azaltır ama teslimi garanti etmez: onaylı hesapta PHP saha koşularında v2.7.1'de 15
+raporun 1'i reddedildi, v2.8.0'da 15'in 0'ı (her biri n=15 — oran değil, örnek). Bkz.
 [Benchmark](#benchmark-ölçülmüş--2026-09-30).
 
 İngilizce ana sürüm: [`skills/gedik/`](skills/gedik/) · [README.md](README.md)
 
-**Geliştirme komutları** (`proje.toml` ile aynı): test `python araclar/kapilar.py --pozitif-kontrol` · lint `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py`
+**Geliştirme komutları** (`proje.toml` ile aynı): test `python araclar/kapilar.py --pozitif-kontrol` · lint `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py araclar/php_oz_blok.py araclar/php_oz_sabit.py araclar/php_oz_denetim.py araclar/php_oz_denetci.py araclar/php_oz_gerileme.py`
 
 ## Sınırlar
 

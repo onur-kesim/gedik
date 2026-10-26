@@ -1,4 +1,4 @@
-"""php_olc.py — gedik v2.7.0: PHP olcumu (deterministik referans). Yalniz standart kutuphane; hedefe YAZMAZ.
+"""php_olc.py — gedik v2.8.0: PHP olcumu (deterministik referans). Yalniz standart kutuphane; hedefe YAZMAZ.
 
 Kural kaynagi: skills/gedik*/references/kod-inceleme-guvenlik.md §2.1 (sabit CVE tablosu YOKTUR; yalniz EOL dali kurali sabittir ve
 EOL_OLCUM_TARIHI ile yazilidir). Bu modul yalniz DEPODAN gorulebileni olcer; okunamayani `okunamayan`/`kesildi` listesine yazar,
@@ -201,10 +201,13 @@ def dosya_imzasi(kok, yol, sorun):
 
 
 def imzalar(kok, liste, sorun):
-    imza = set()
+    """(imza etiketleri, imza veren dosyalar): rapor blogundaki T2 kaniti bu listeye karsi denetlenir."""
+    imza, dosyalar = set(), []
     for yol in liste:
-        imza |= set() if uyari_yolu(yol) else dosya_imzasi(kok, yol, sorun)
-    return sorted(imza)
+        d = set() if uyari_yolu(yol) else dosya_imzasi(kok, yol, sorun)
+        imza |= d
+        dosyalar += [yol] if d else []
+    return sorted(imza), dosyalar
 
 
 # ---------- olcum ----------
@@ -245,7 +248,7 @@ def olc(kok, bugun=None):
     bugun = bugun or date.today()
     liste, hata = dosyalar(kok)
     sorun = [f'dizin okunamadı: {h}' for h in hata]
-    imza, kay = imzalar(kok, liste, sorun), kaynaklar(kok, liste, sorun)
+    (imza, imza_dosyalari), kay = imzalar(kok, liste, sorun), kaynaklar(kok, liste, sorun)
     calisan, cozulen, yalniz_ci, yuzen = _secim(kay)
     secili = cozulen or yalniz_ci or {}
     eol, en_eski = _eol_alanlari(calisan, yalniz_ci, bugun)
@@ -255,4 +258,5 @@ def olc(kok, bugun=None):
             'tam': bool(secili.get('tam')), 'kaynak': secili.get('kaynak'), 'yalniz_ci': bool(yalniz_ci),
             'surumler': surumler, 'ci_surumleri': sorted({k['surum'] for k in kay if k['tur'] == 'ci'}), 'celiski': _celiski(surumler),
             'eol': eol, 'en_eski': en_eski,
-            'eol_olcum_tarihi': EOL_OLCUM_TARIHI, 'composer_json': cj, 'composer_lock': cl, 'okunamayan': sorun}
+            'eol_olcum_tarihi': EOL_OLCUM_TARIHI, 'composer_json': cj, 'composer_lock': cl, 'okunamayan': sorun,
+            'imza_dosyalari': imza_dosyalari, 'dosya_listesi': liste}

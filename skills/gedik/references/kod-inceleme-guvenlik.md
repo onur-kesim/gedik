@@ -100,7 +100,7 @@ unconditional validation." Without an inventory, there is no review.
   a popular package; is it maintenance-abandoned (date of last release)?
 - **License:** the user's red line — a new dependency = license + CVE check.
 
-### 2.1 PHP project: runtime version and package audit (v2.7.0)
+### 2.1 PHP project: runtime version and package audit (v2.8.0)
 
 This section runs when T2 finds a PHP signature. **No fixed CVE table is kept** (it goes stale):
 the match for a known vulnerability comes from a scanner database; only the EOL-branch rule
@@ -151,6 +151,8 @@ pulling an image needs network — no tool or network, NOT MEASURED). For an ima
 own/private registry write "NOT MEASURED — no authorization (§0.1)". CVEs that hit the version
 found, and the versions that fix them, are written **from scanner output**; with no scanner,
 write "comparison with the current patched version NOT MEASURED".
+
+**Report block (v2.8.0).** The PHP finding is not free text but the FIXED-FIELD block in `SKILL.md` LANE B (`### PHP runtime`). The mechanical gate `php_kapisi.py` compares every field with the `php_olc` measurement one to one: T2 PHP, version+`file:line` (a real source; case included), patch level, EOL, composer audit (a count, or not-measured+reason, or n/a), image-scan format. What the gate CANNOT verify: (1) whether the numbers (composer N, scanner N) are true; (2) the content of the `NOT MEASURED (<reason>)` / `N/A (<reason>)` reason text (only ≥ 3 characters); (3) the free text as a whole — only the `PHP x.y … file:line` pattern is checked (a version without a source, "Dockerfile line 2", a line without the word `php`, a line containing a constraint word slip through; on a line with a scanner word only the version is exempt, the `file:line` must be real; field-labelled lines outside the block fall under this pattern too, but a field VALUE contradiction — e.g. `EOL: SUPPORTED` outside the region — is not checked). Block region: from the heading to the first blank line; "clean/safe/no risk" is forbidden on ALL lines of the region; a "Notes:" below it does not count as a field; the `T2 PHP` evidence must be a list of files/directories that exist in the target and include at least one PHP signature file.
 
 Optional mechanical check: `python <araclar-path>/php_kapisi.py --hedef <dir> --rapor <report.md>`.
 ---

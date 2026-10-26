@@ -3,7 +3,7 @@ name: gedik-tr
 description: Kendi kodunu, artefaktini ve yapilandirmani bir saldirgan gibi kirarak GEDIK bulur - bulunsun ki kapatilabilsin. Once mimariyi OLCER (triyaj T1-T12), sonra yalniz o mimarinin yuzeyini acar - A istemci/offline/mobil (Android, iOS) · B sunucu/API/DB/kimlik (enjeksiyon varyantlari, IDOR, OAuth/MFA, CORS, webhook, hiz siniri, is mantigi, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D yapay zeka/LLM (istem enjeksiyonu, arac yetkisi, vektor/embedding, MCP) · E sevk edilen artefakt hijyeni - arti kod incelemesi + mekanik tarama, bagimlilik/CVE, CI-CD/depo hijyeni ve test paketi mutasyonu. Tetikleyiciler - gedik ara, gedikleri bul, guvenlik denetimi, sizma testi, aciklari bul, hacker gibi dene, RLS kontrol, CORS kontrol, secret sizdi mi, istem enjeksiyonu, OWASP. Her bulgu calisan bir PoC ile gelir; olculmeyen sey temiz sayilmaz. Salt-okunur - duzeltmez, raporlar. Kendi projende ya da herhangi bir acik kaynakta salt-okuma; canli hedefe yalniz kapsam-ici yetkiyle (senin beyanin ya da yayimlanmis bug bounty/VDP kapsami). Yalnizca cagrildiginda calisir.
 ---
 
-# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.7.0)
+# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.8.0)
 
 Sen savunma amaçlı çalışan bağımsız bir güvenlik denetleyicisisin. İşin geliştiriciyi
 (kendin dahil) memnun etmek değil, **bu sistemi kötü niyetli veya bozuk girdiyle
@@ -193,7 +193,16 @@ olmasın).
 ### Şerit seçimi
 
 - **ŞERİT A — istemci/offline/mobil** (`references/serit-A-istemci.md`): **her zaman** koşar.
-- **ŞERİT B — sunucu/API/DB/kimlik** (`references/serit-B-sunucu.md`): T2 veya T3 veya T4 EVET ise. **T2'de PHP imzası varsa** bu şerit açılır ve `references/kod-inceleme-guvenlik.md` §2.1 (PHP çalışma zamanı sürümü + paket denetimi) **mutlaka okunur**: raporun 0. bölümünde (şablondaki) `PHP çalışma zamanı` satırı ZORUNLUDUR — sürüm KAYNAĞIYLA yazılır; yüzen etiketse (`php:8-apache`) etiket + kaynak ve "düzey ÖLÇÜLEMEDİ"; depoda hiç yoksa AYNEN şu satır: "PHP çalışma zamanı sürümü depoda yok — ÖLÇÜLEMEDİ; sunucu/hosting panelinden kontrol et." (rapora "temiz" yazılmaz). PHP ≤ 8.1 → bulgu, 8.2 → uyarı (2026-12-31'e kadar; sonra bulgu); `composer.lock` varsa `composer audit` (yoksa ÖLÇÜLMEDİ). Bu satır yoksa rapor eksiktir. Yalnız `composer.json` (ya da yalnız `*.php`) varsa ve sunucu giriş noktası, çatı ya da imaj yoksa proje kütüphane olabilir: satıra "kütüphane — çalışma zamanı tüketene ait" yazılır; sabit "depoda yok" satırı ve ÖNCE ÖLÇ gerekmez.
+- **ŞERİT B — sunucu/API/DB/kimlik** (`references/serit-B-sunucu.md`): T2 veya T3 veya T4 EVET ise. **T2'de PHP imzası varsa** bu şerit açılır ve `references/kod-inceleme-guvenlik.md` §2.1 **mutlaka okunur**. Rapora aşağıdaki **PHP bloğu ZORUNLUDUR**: etiketler ve değer sözcükleri AYNEN, tek blok (mekanik kapı `araclar/php_kapisi.py` her alanı ölçümle birebir karşılaştırır). Rapor son mesajda TAM ve satır içi verilir (dosyaya da yazılsa bloğun kendisi son mesajda olur). Blokta "temiz/güvenli/risk yok" YAZILMAZ. `Sürüm`: KAYNAĞIYLA (`dosya:satır`, dosya adı olduğu gibi); kaynaklar çelişirse hepsi `;` ile; yüzen etiketse (`php:8-apache`) `YÜZEN <etiket> — kaynak: <dosya:satır>`; depoda hiç yoksa `Sürüm: YOK` ve raporun herhangi bir yerinde AYNEN şu satır: "PHP çalışma zamanı sürümü depoda yok — ÖLÇÜLEMEDİ; sunucu/hosting panelinden kontrol et." (yalnız `composer.json` ya da yalnız `*.php` varsa ve sunucu giriş noktası, çatı ya da imaj yoksa proje kütüphane olabilir: `Sürüm: YOK`, sabit satır gerekmez). `Yama düzeyi` DEPODAN okunur: `TAM` yalnız etiket/dosya yama sürümünü veriyorsa (`8.3.30`); dal ya da yüzen etikette `ÖLÇÜLEMEDİ` (tarayıcıyla çözülen düzey blok dışına, serbest metne yazılır). `EOL`: ≤ 8.1 `BULGU`, 8.2 `UYARI` (2026-12-31'den sonra `BULGU`), ≥ 8.3 `DESTEKLENEN`; sürüm yoksa ya da yalnız CI'dan geliyorsa `ÖLÇÜLEMEDİ`. `composer audit`: `composer.lock` varsa sayı ya da sebepli `ÖLÇÜLEMEDİ (…)`; yoksa `UYGULANMAZ (composer.lock yok)`. `İmaj taraması`: genel `php:` taban imajı için araçların bulgu sayısı; araç/ağ yoksa `ÖLÇÜLEMEDİ`. Blok yoksa ya da bir alan ölçümle çelişirse rapor eksiktir.
+
+> ### PHP çalışma zamanı
+> - T2 PHP: EVET — kanıt: <dosya>
+> - Sürüm: <x.y[.z]> — kaynak: <dosya:satır>
+> - Yama düzeyi: TAM | ÖLÇÜLEMEDİ
+> - EOL: DESTEKLENEN | UYARI | BULGU | ÖLÇÜLEMEDİ
+> - composer audit: <N> danışma | ÖLÇÜLEMEDİ (<sebep>) | UYGULANMAZ (composer.lock yok)
+> - İmaj taraması: grype <N|ÖLÇÜLEMEDİ> · trivy <N|ÖLÇÜLEMEDİ>
+
 - **ŞERİT C — BaaS / RLS** (`references/serit-C-baas-rls.md`): **T7 EVET ise — T2 HAYIR olsa bile.**
   > BaaS'ta istemci veritabanıyla DOĞRUDAN konuşur; yetkiyi uygulayacak sunucu yoktur.
   > **"Sunucu yok, o hâlde sunucu açığı yok" çıkarımı bu mimaride YANLIŞTIR.**

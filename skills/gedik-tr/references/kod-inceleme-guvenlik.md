@@ -89,7 +89,7 @@ doğrulama koşulsuz." Envanter yoksa inceleme yoktur.
   bakım terk edilmiş mi (son yayın tarihi)?
 - **Lisans:** kullanıcının kırmızı çizgisi — yeni bağımlılık = lisans + CVE kontrolü.
 
-### 2.1 PHP projesi: çalışma zamanı sürümü ve paket denetimi (v2.7.0)
+### 2.1 PHP projesi: çalışma zamanı sürümü ve paket denetimi (v2.8.0)
 
 T2'de PHP imzası bulunduysa bu bölüm koşar. **Sabit CVE tablosu tutulmaz** (bayatlar): açık
 eşleşmesi tarayıcı veri tabanından gelir; burada yalnız EOL dalı kuralı sabittir.
@@ -136,6 +136,8 @@ koşmaz, ÖLÇÜLMEDİ". İmaj taraması yalnız KAMUYA AÇIK taban imaj etiketi
 yoksa ÖLÇÜLMEDİ). Hedefin kendi/özel kayıt defterindeki imaj için "ÖLÇÜLMEDİ — yetki yok (§0.1)"
 yazılır. Bulunan sürüme düşen CVE'ler ve düzeltildiği sürümler **tarayıcı çıktısından** yazılır;
 tarayıcı yoksa "güncel yamalı sürümle karşılaştırma ÖLÇÜLMEDİ" yazılır.
+
+**Rapor bloğu (v2.8.0).** PHP bulgusu serbest metin değil, `SKILL.md` ŞERİT B'deki SABİT ALANLI bloktur (`### PHP çalışma zamanı`). Mekanik kapı `php_kapisi.py` her alanı `php_olc` ölçümüyle birebir karşılaştırır: T2 PHP, sürüm+`dosya:satır` (gerçek kaynak; büyük/küçük harf dahil), yama düzeyi, EOL, composer audit (sayı ya da ölçülemedi+sebep ya da uygulanmaz), imaj taraması biçimi. Kapının DOĞRULAYAMADIĞI: (1) sayıların (composer N, tarayıcı N) gerçekliği; (2) `ÖLÇÜLEMEDİ (<sebep>)` / `UYGULANMAZ (<sebep>)` sebep metninin içeriği (yalnız ≥ 3 karakter); (3) serbest metnin tamamı — yalnız `PHP x.y … dosya:satır` kalıbı denetlenir (kaynaksız sürüm, "Dockerfile satır 2", `php` sözcüksüz satır, kısıt sözcüğü geçen satır kaçar; tarayıcı sözcüğü geçen satırda yalnız sürüm muaftır, `dosya:satır` gerçek olmalı; blok dışı alan-etiketli satırlar da bu kalıba girer ama alan DEĞERİ çelişkisi — ör. bölge dışı `EOL: DESTEKLENEN` — denetlenmez). Blok bölgesi: başlıktan ilk boş satıra kadar; bölgenin TÜM satırlarında "temiz/güvenli/risk yok" yasak; altındaki "Notlar:" alan sayılmaz; `T2 PHP` kanıtı hedefte var olan ve en az bir PHP imza dosyası içeren dosya/dizin listesi olmalı.
 
 İsteğe bağlı mekanik denetim: `python <araclar-yolu>/php_kapisi.py --hedef <dizin> --rapor <rapor.md>`.
 ---

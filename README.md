@@ -36,7 +36,7 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
 - **Lane B (auth/OAuth) and T12 (cloud/IaC) are checklists, not validated on a real
   system.** They encode known attack patterns but have not yet been exercised against a
   live production stack.
-- **PHP runtime version is visible only when it is written in the repo (v2.7).** gedik reads
+- **PHP runtime version is visible only when it is written in the repo (v2.7; fixed-field report since v2.8).** gedik reads
   it from Dockerfile/Containerfile (including `*.Dockerfile`) and compose image tags,
   `.php-version`, `composer.json` `config.platform.php` and CI `setup-php`, and reports it
   with its source; a `"php": ">=x"` requirement is not treated as the running version. On
@@ -47,9 +47,20 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   `php` Docker image (PHP there is compiled from source, not an OS package) and so did not report
   PHP2Shell (CVE-2026-109618/109619); grype did, on the one image tested (`php:8.3.30-fpm`). grype
   in turn missed an advisory in a `composer.lock` that `composer audit` and trivy found — run more
-  than one scanner. The PHP report gate (`araclar/php_kapisi.py`) is keyword-based: each of
-  three independent review rounds found new wording it misjudged (fixed, with fixtures), so
-  treat it as a guard rail, not proof.
+  than one scanner. Since v2.8 the PHP result is a fixed-field block (`### PHP runtime`:
+  T2 PHP · Version + `file:line` source · Patch level · EOL · composer audit · Image scan) and
+  the gate `araclar/php_kapisi.py` compares every field with its own repo measurement
+  (`araclar/php_olc.py`). Field test (2026-10-24; n=15, one model, CVP account): gate PASS
+  **14/15** (Wilson 70–99%); the one FAIL was a format slip (a note written inside the Version
+  field), content correct; no content violation in the reviewed reports. **What the gate does not
+  verify:** composer and scanner counts and the wording of NOT MEASURED / N/A reasons; free text,
+  except the pattern `PHP x.y … file:line` (an unsourced version, `line 2` / `#L2` styles,
+  `php.ini:N`, lines without the word "php" or with a constraint word, free-text "clean" and a
+  wrong EOL outside the block all pass); field lines after the block that contradict it in value
+  (EOL / patch level / T2). The block ends at the first blank line — put notes below a blank
+  line, otherwise they count as duplicate fields. The block is strict: template deviations
+  (heading suffix, table, numbered list, a note inside a value) fail. Scanner counts are not
+  comparable across runs (severity scope is not fixed). Treat the gate as a guard rail, not proof.
 
 ## What it does
 
@@ -206,12 +217,14 @@ differences*.
 **Heads-up on delivery.** On exploit-heavy real code, Claude's real-time cyber safeguard can
 cut gedik's report mid-stream (measured: cut in ~4 of 6 runs; delivered 2 of 6). For authorized security work,
 Anthropic's **Cyber Verification Program** lifts this per approved account (3/3 in our
-benchmark); without it gedik stays read-only and simply delivers less on such targets. See
-[Benchmark](#benchmark-measured--2026-09-30).
+benchmark); without it gedik stays read-only and simply delivers less on such targets.
+Approval lowers the cut rate but does not guarantee delivery: in PHP field runs on an approved
+account, 1 of 15 reports was refused on v2.7.1 and 0 of 15 on v2.8.0 (n=15 each — a sample, not
+a rate). See [Benchmark](#benchmark-measured--2026-09-30).
 
 Turkish original: [`skills/gedik-tr/`](skills/gedik-tr/) · [README.tr.md](README.tr.md)
 
-**Development commands** (identical to `proje.toml`): test `python araclar/kapilar.py --pozitif-kontrol` · lint `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py`
+**Development commands** (identical to `proje.toml`): test `python araclar/kapilar.py --pozitif-kontrol` · lint `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py araclar/php_oz_blok.py araclar/php_oz_sabit.py araclar/php_oz_denetim.py araclar/php_oz_denetci.py araclar/php_oz_gerileme.py`
 
 ## Limits
 

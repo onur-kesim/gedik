@@ -180,6 +180,48 @@
       "dosya": "SKILL.md",
       "tr": "PHP çalışma zamanı sürümü depoda yok — ÖLÇÜLEMEDİ; sunucu/hosting panelinden kontrol et.",
       "en": "PHP runtime version is not in the repository — NOT MEASURED; check it on the server/hosting panel."
+    },
+    {
+      "id": "php-blok-baslik",
+      "dosya": "SKILL.md",
+      "tr": "### PHP çalışma zamanı",
+      "en": "### PHP runtime"
+    },
+    {
+      "id": "php-blok-t2",
+      "dosya": "SKILL.md",
+      "tr": "- T2 PHP: EVET — kanıt: <dosya>",
+      "en": "- T2 PHP: YES — evidence: <file>"
+    },
+    {
+      "id": "php-blok-surum",
+      "dosya": "SKILL.md",
+      "tr": "- Sürüm: <x.y[.z]> — kaynak: <dosya:satır>",
+      "en": "- Version: <x.y[.z]> — source: <file:line>"
+    },
+    {
+      "id": "php-blok-yama",
+      "dosya": "SKILL.md",
+      "tr": "- Yama düzeyi: TAM | ÖLÇÜLEMEDİ",
+      "en": "- Patch level: FULL | NOT MEASURED"
+    },
+    {
+      "id": "php-blok-eol",
+      "dosya": "SKILL.md",
+      "tr": "- EOL: DESTEKLENEN | UYARI | BULGU | ÖLÇÜLEMEDİ",
+      "en": "- EOL: SUPPORTED | WARNING | FINDING | NOT MEASURED"
+    },
+    {
+      "id": "php-blok-composer",
+      "dosya": "SKILL.md",
+      "tr": "- composer audit: <N> danışma | ÖLÇÜLEMEDİ (<sebep>) | UYGULANMAZ (composer.lock yok)",
+      "en": "- composer audit: <N> advisories | NOT MEASURED (<reason>) | N/A (no composer.lock)"
+    },
+    {
+      "id": "php-blok-imaj",
+      "dosya": "SKILL.md",
+      "tr": "- İmaj taraması: grype <N|ÖLÇÜLEMEDİ> · trivy <N|ÖLÇÜLEMEDİ>",
+      "en": "- Image scan: grype <N|NOT MEASURED> · trivy <N|NOT MEASURED>"
     }
   ]
 }

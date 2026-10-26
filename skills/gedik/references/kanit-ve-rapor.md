@@ -111,7 +111,7 @@ File name: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 
 **Şerit kararı:** ...
 **Yapısal olarak uygulanamayan sınıflar:** ... (tek satır, N/A listesi yazma)
-**PHP çalışma zamanı (T2'de PHP varsa):** <sürüm — kaynak:satır> · EOL durumu · ya da sabit ÖLÇÜLEMEDİ satırı (kod-inceleme-guvenlik.md §2.1)
+**PHP bloğu (T2'de PHP varsa, ZORUNLU):** `### PHP çalışma zamanı` — sabit alanlı blok; şablon `SKILL.md` ŞERİT B'de, kural `kod-inceleme-guvenlik.md` §2.1. Rapor son mesajda TAM ve satır içi.
 
 ## 1. YÜZEY ENVANTERİ
 ### 1.1 Güvenilmeyen girdi yolları

@@ -14,7 +14,7 @@ os = "ubuntu"                # ubuntu | windows  (CI çalıştırıcısı ubuntu
 [komutlar]                  # boş dize = kapı ATLANDI olarak raporlanır (sessiz değil)
 kur = ""
 test = "python araclar/kapilar.py --pozitif-kontrol"
-lint = "python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py"
+lint = "python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py araclar/php_oz_blok.py araclar/php_oz_sabit.py araclar/php_oz_denetim.py araclar/php_oz_denetci.py araclar/php_oz_gerileme.py"
 build = ""
 
 [urun]                      # ürün nabzı ve kod sağlığı bu desenlere bakar

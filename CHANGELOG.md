@@ -8,6 +8,25 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 ### Belgeler
 - **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Bu satır 2.6.0 dönemine aittir.
 
+## [2.8.0] — 2026-10-26
+### Değişti
+- **PHP raporu: serbest metin yerine SABİT ALANLI blok.** `SKILL.md` ŞERİT B (TR+EN) artık zorunlu bir `### PHP çalışma zamanı` / `### PHP runtime` bloğu ister:
+  `T2 PHP` · `Sürüm`/`Version` (+`kaynak:`/`source:` `dosya:satır`) · `Yama düzeyi`/`Patch level` · `EOL` · `composer audit` · `İmaj taraması`/`Image scan`. Etiketler ve değer
+  sözcükleri sabit (sabit cümle kilidine 7 satır eklendi); blokta "temiz/güvenli/risk yok" yasak; rapor son mesajda TAM ve satır içi.
+- **`araclar/php_kapisi.py` alan-tabanlı:** her alan `php_olc` ölçümüyle BİREBİR karşılaştırılır (sürüm + gerçek kaynak `dosya:satır`, büyük/küçük harf dahil; yama düzeyi; EOL;
+  composer sayı/ÖLÇÜLEMEDİ+sebep/UYGULANMAZ; imaj biçimi). Serbest-metin anahtar-sözcük avı KALDIRILDI (4 turda her seferinde yeni okuma hatası: K5 MEKANİKLEŞTİR). Kalan tek
+  serbest-metin kuralı: gerçek kaynakla eşleşmeyen "PHP x.y … Dosya:satır" iddiası (`UYDURMA_KAYNAK`; `php-fpm`/`php-cli`/`php.ini` satırları dahil, `swagger-php`/`gen_openapi.php` hariç).
+  Kapının doğrulayamadığı: (1) sayıların (composer N, tarayıcı N) gerçekliği; (2) `ÖLÇÜLEMEDİ (<sebep>)`/`UYGULANMAZ (<sebep>)` sebep metninin içeriği; (3) serbest metnin tamamı —
+  yalnız `PHP x.y … dosya:satır` kalıbı denetlenir (kaynaksız sürüm, `Dockerfile satır 2`, `php` sözcüksüz satır, kısıt/tarayıcı sözcüklü satır kaçar). `php.ini` bir PHP çapasıdır
+  ama `php.ini:N` sürüm kaynağı olarak denetlenmez.
+- **Bağımsız denetim DÜZELT turu (2026-10-24):** blok bölgesi başlıktan ilk boş satıra kadar (altındaki "Notlar:" alan sayılmaz); "temiz/güvenli/risk yok" yasağı bölgenin TÜM
+  satırlarında; `T2 PHP` kanıtı hedefte var olan dosya/dizin olmalı ve en az biri PHP imza dosyası (`php_olc` `imza_dosyalari`); tarayıcı-çözümü satırı (grype/trivy/syft/tarayıcı/scanner/
+  resolved/çözül) yalnız SÜRÜM karşılaştırmasından muaf — satırdaki `dosya:satır` yine gerçek bir kaynak olmalı (DÜZELT-2, G1); blok bölgesi dışına kaçan ALAN ETİKETLİ satırlar
+  (`- Sürüm: … kaynak: dosya:satır`) da `x.y … dosya:satır` denetimine girer (G2; alan DEĞERİ çelişkisi — ör. bölge dışı `- EOL: SUPPORTED` — denetlenmez, README sınırı); imaj alanı `ÖLÇÜLEMEDİ (<sebep>)` kabul; `YÜZEN <etiket> — kaynak:` etiketle tire arasında boşluk ister; serbest metinde `dizin/ad:satır`
+  tam yol karşılaştırılır; mutasyon aracı etiket/regex sabitlerini bozar.
+- Öz-test: `php_oz_blok.py` (alan başına doğru-YEŞİL / bozuk-kopya-KIRMIZI, TR+EN; SKILL.md şablonu ↔ kapı sözcük tutarlılığı); üç öz-test dosyası doğrudan çalıştırılınca vakaları koşar.
+- v2.7.1 kapı denemesi yayımlanmadı (`deneme/271-kapi` dalı): A2 düzeltmesi `php-fpm`/`php-cli` satırlarını eliyordu (denetim Bulgu 1).
+
 ## [2.7.0] — 2026-10-22
 ### Eklendi
 - **PHP görünürlüğü.** Triyaj T2 artık PHP'yi görür: `composer.json`, `artisan`/`laravel/framework`, `symfony/*`,
