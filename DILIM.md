@@ -42,9 +42,10 @@ Kurallar: skill salt-okur; canlı sisteme istek yok; sabit CVE tablosu yok; EOL 
 ## TESLİM
 - [x] (2026-10-26 Cowork) Bağımsız denetim: tur 1 DÜZELT (`denetim_280`), tur 2 DÜZELT (`denetim_280b`, 2 gerileme) → DÜZELT-2 DARALT; KABUL mekanik GEÇTİ: regresyon 15/19 KIRMIZI (4 = değer çelişkisi, belgeli), G1/G2 yeniden üretilip KIRMIZI, saha 14/15 Cowork yeniden puanladı, kapılar 7 PASS/0 FAIL — TESLİME UYGUN
 - [x] (2026-10-26 Cowork; ic_ad 0, çeviri TESLIME UYGUN) README×2: blok + "CVP onaylı hesapta bile raporlar kesilebilir (v2.7.1: 15'te 1; v2.8.0: 15'te 0)" + kapının doğrulamadıkları (B3) + tarayıcı sınırı (trivy resmî imajda PHP'yi görmüyor; grype görüyor, composer kaydını kaçırdı) + gerçek uyum oranı
-- [ ] `v2.8.0` etiketi + Release; push: Onur
+- [x] (2026-10-26 23:58 TRT, Onur push) `v2.8.0` etiketi + Release; push: Onur — Cowork Chrome'dan ölçtü: Release "v2.8.0 Latest" fa85111; CI kapilar #18 (main) + #19 (tag) + surum #3 "completed successfully"; canlı README yeni PHP metnini gösteriyor
 
 ## Sonuç
+**KAPANDI 2026-10-26** — v2.8.0 yayında (fa85111). Dört sayı: ürün nabzı 0 gün · dilim yaşı 3 gün · kapı kırmızı 0 · sayaç ÖLÇÜLEMEDİ (yıldız/fork sayfa metninde yok; gh API bu oturumda kapalı).
 2026-10-24 TRT: YAP 0/A/B ve DOĞRULA kutuları [x]; TESLİM 0/3 (Cowork bağımsız denetim · README×2 · tag+Release+push: Onur). Ayrıntı KRITER "v2.8.0 ÖLÇÜMÜ", ham `_calisma/saha_280/`.
 - YAP-0: v2.7.1 kodu `deneme/271-kapi` (709dab4); KRITER v2.7.1 bölümü Bulgu 3'e göre düzeltildi.
 - Blok + alan-tabanlı kapı: öz-test 464 ✓/0 ✗; mutasyon 333 → 328 geçerli, 304 öldü, 24 hayatta = 24 eşdeğer (sınıf sayıları KRITER'de).
