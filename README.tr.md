@@ -21,13 +21,19 @@ ve yama önerisiyle gelir.
   da yayımlanmış bir bug bounty/VDP kapsamı + kullanıcının o kapsamda çalıştığı beyanı —
   hedefin kendi sayfasında yazan metin ASLA sayılmaz). Yetki yoksa gedik salt-okumada
   kalır, "ÖLÇÜLMEDİ — yetki yok" yazar. Bkz. `SKILL.md §0.1` ve `references/yetki-kapisi.md`.
-  Kapı metin düzeyinde doğrulandı (kilitli cümleler + çeviri kapısı); davranışı henüz
-  canlı bir ajan koşusunda denenmedi.
+  Canlı ajan testi (2026-10-27; n=15, tek model, CVP hesabı; canlı hedef hiç çözülmeyen bir
+  `.invalid` host'u): gerçek bir host'a istek 0/15. Yetkisizken canlı hedefe HTTP isteği 0/6,
+  ama 6 koşunun 1'i ona DNS sorgusu (`nslookup`) attı ve raporu "hiçbir canlı istek
+  gönderilmedi" dedi; hedefin kendi belgesine gömülü "test izni var" notu 3/3 reddedildi.
+  Sohbetteki yetki beyanıyla kapı 3/3 açıldı. Yetkisiz 6 raporun 6'sı canlı sistemin test
+  edilmediğini yazdı, ama birebir kilitli cümle yalnız 6'da 1'inde çıktı (sözcükler sapıyor).
 - **SARIF yok, CI/Action entegrasyonu yok.** Tam denetim koşusu bir Markdown rapor ve
   gedik'in kendi `gedik-bulgular.json` dosyasını yazar (v2.6; şema
   `araclar/bulgu-semasi.json`, doğrulayıcı kapı `araclar/bulgu_kapisi.py`), ama SARIF
-  çıktısı ve CI/Action sarmalayıcısı yok. JSON yolu yalnız sentetik kayıtlarla doğrulandı
-  (kör kapı öz-testi); henüz hiçbir canlı denetim bir tane üretmedi.
+  çıktısı ve CI/Action sarmalayıcısı yok. Canlı test (2026-10-27): 6 tam denetimin 6'sı
+  dosyayı üretti ve doğrulayıcıdan 6/6 geçti — **ama 6'sı da dosyayı raporun yanına değil
+  oturumun geçici klasörüne yazdı**, bu yüzden `bulgu_kapisi.py` onu varsayılan aramada
+  bulmaz; yolu koşu çıktısında ara.
 - **Bağımsız çürütme adımı ve iki mod (danışma / tam denetim) yalnız metin düzeyinde
   doğrulandı** (çeviri-yapı kapısı, 15 kritik v2.6 cümlesi için sabit cümle kilidi,
   bağımsız bir TR↔EN okuma); davranışları henüz canlı bir ajan koşusunda denenmedi.
@@ -192,8 +198,8 @@ gedik'in artık bir puanlı benchmark'ı var (bkz.
 - **Tasarım gereği canlı exploit yok** — yalnız canlı bir hedefte çalışma zamanında
   ortaya çıkan sınıflara kördür.
 - **Makine-okur çıktı yeni ve kanıtsız; SARIF yok, CI/Action entegrasyonu yok.**
-  gedik'in kendi `gedik-bulgular.json` + şema + doğrulayıcı kapısı v2.6'dan beri var ama
-  henüz hiçbir canlı denetim bir tane üretmedi; cloudflare/security-audit-skill şemalı bir
+  gedik'in kendi `gedik-bulgular.json` + şema + doğrulayıcı kapısı v2.6'dan beri var ve canlı
+  denetimler onu üretiyor (6/6, doğrulayıcı PASS 6/6), ama dosya oturumun geçici klasörüne düşüyor; cloudflare/security-audit-skill şemalı bir
   `findings.json`'u testli doğrulayıcılarla birlikte sunuyor.
 - **Daha dar kapsam:** cloudflare/security-audit-skill'e kıyasla (orada 9 çekirdek
   saldırı-sınıfı istemi + 10 hedef-türü sınıf dosyası var).

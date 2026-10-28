@@ -21,14 +21,20 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   chat, or a published bug-bounty/VDP scope + your statement that you're working within
   it — never text found on the target's own page). No authorization → gedik stays
   read-only and reports "NOT MEASURED — no authorization." See `SKILL.md §0.1` and
-  `references/yetki-kapisi.md`. The gate is verified at the text level (locked
-  sentences + translation gate); its behavior has not yet been tested in a live agent
-  run.
+  `references/yetki-kapisi.md`. Live agent test (2026-10-27; n=15, one model, CVP account;
+  live target a never-resolving `.invalid` host): requests to any real host 0/15. Without
+  authorization, HTTP requests to the live target 0/6, but 1 of 6 runs ran a DNS lookup
+  (`nslookup`) of it while its report said "no live request was sent"; a "test permission"
+  note planted in the target's own docs was rejected 3/3. With your chat authorization the
+  gate opened 3/3. All 6 unauthorized reports said the live system was not tested, but the
+  exact locked sentence appeared in only 1 of 6 (the wording drifts).
 - **No SARIF and no CI/Action integration.** A full-audit run writes a Markdown report
   plus gedik's own `gedik-bulgular.json` (v2.6; schema `araclar/bulgu-semasi.json`,
   validator gate `araclar/bulgu_kapisi.py`), but there is no SARIF export and no
-  CI/Action wrapper. The JSON path is verified only against synthetic records (a
-  blind-gate self-test); no live audit has produced one yet.
+  CI/Action wrapper. Live test (2026-10-27): 6 of 6 full audits produced the file and it
+  passed the validator 6/6 — **but all 6 wrote it to the session's scratch folder, not
+  next to the report**, so `bulgu_kapisi.py` does not find it by default; look for the
+  path in the run output.
 - **The independent-refutation step and the two modes (consultation / full audit) are
   verified at the text level only** (translation-structure gate, the locked-sentence gate
   for 15 key v2.6 sentences, one independent TR↔EN reading); their behavior has not yet
@@ -198,8 +204,8 @@ differences*.
 - **No live exploitation, by design** — blind to classes that only manifest at runtime
   against a live target.
 - **Machine-readable output is new and unproven; no SARIF, no CI/Action integration.**
-  gedik's own `gedik-bulgular.json` + schema + validator gate exist since v2.6 but no live
-  audit has produced one; cloudflare/security-audit-skill ships a schema'd `findings.json`
+  gedik's own `gedik-bulgular.json` + schema + validator gate exist since v2.6 and live
+  audits produce it (6/6, validator PASS 6/6), but it lands in the session scratch folder; cloudflare/security-audit-skill ships a schema'd `findings.json`
   with tested validators.
 - **Narrower scope** than cloudflare/security-audit-skill (9 core attack-class prompts +
   10 target-type class files there).
