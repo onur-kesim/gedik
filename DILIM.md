@@ -28,7 +28,7 @@ Kurallar: skill salt-okur; YENİ PYTHON KAPISI YAZILMAZ (PHP kapısı dersi: ana
 ## TESLİM
 - [x] Cowork hakemlik (6 raporun 6'sı elle; ayrı oturum) — O23: 10/10 rapor (ilk tur 6 + DÜZELT 4) elle okundu; Code'un sayımı 10/10 tuttu, fark yok
 - [x] README×2: Lanes tablosunda D satırına D9 + "What's not delivered": D9 yalnız fixture'da ölçüldü (O23; iki bilinen sınır + `grep -nP` doğrulama komutu, komut fixture'da pozitif kontrollü: unicode satır 4,6 · temiz 0)
-- [ ] `v2.9.0` etiketi + Release; push: Onur
+- [x] `v2.9.0` etiketi + Release; push: Onur — 2026-11-12 21:50 TRT: `ls-remote` main = v2.9.0^{} = f446be7; Release v2.9.0 (surum #4, 18:50:38Z) yayında; CI kapilar #23/#24 success
 
 ## DÜZELT (2026-11-12 · TEK tur; üçüncü tur YOK)
 - [x] D9.6 (TR+EN): satır, bayt ofsetinden değil satır sayarak; raporda kod noktası + satır + bayt ofseti birlikte
