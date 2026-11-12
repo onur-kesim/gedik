@@ -131,11 +131,15 @@ Dosya adı: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 ### 2.2 ÇÜRÜTÜLEN ADAYLAR — `rejected`
 - **G-n · <başlık>** — elenme nedeni: <...> · doğrulayan: alt-ajan / ayrı tur
 
+## Sertleştirme notları (bulgu değil)
+- <şiddetsiz gözlem; `G-n` numarası YOK; deny kuralı / pinli MCP / CODEOWNERS / komşu hijyen buraya> — yoksa: yok
+
 ## 3. TEMİZ ÇIKANLAR (her biri neyle ölçüldü)
 | Başlık | Sonuç | Ölçüm yöntemi |
 
 ## 4. ÖLÇÜLMEYENLER
 | Başlık | Neden ölçülmedi | Nasıl ölçülür |
+| Canlı sistem | ÖLÇÜLMEDİ — yetki yok | sohbette sahiplik + host beyanı (§0.1) |
 
 ## 5. SELF-MUTANT SONUCU
 | Mutant | Kirli kopya | Temiz sürüm | Karar |
@@ -149,11 +153,19 @@ Dosya adı: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 - ...
 ```
 
+**Şablon kuralları.** (1) `G-n` numarası yalnız `confirmed` ve `needs_validation` kayıtlara verilir;
+şiddetsiz sertleştirme gözlemi (deny kuralı, pinli MCP sürümü, CODEOWNERS varlığı/kapsam eksiği, komşu
+hijyen) **`## Sertleştirme notları (bulgu değil)`** bölümüne yazılır — numarasız ve şiddetsiz. (2) Yetki yoksa
+canlı sistem satırı **sabit cümledir ve aynen kopyalanır, yeniden yazılmaz** (raporun diline bakmadan):
+`ÖLÇÜLMEDİ — yetki yok` / `NOT MEASURED — no authorization`.
+
 ### 4.1 `gedik-bulgular.json` — makine-okur çıktı (tam denetim modu)
 
 `.md` rapor birincil ve insan içindir; JSON onun **yerine geçmez**, yanına (aynı klasöre)
 yazılır. Rapor dosyaları kullanıcının belirttiği çıktı klasörüne (yoksa oturumun çıktı/scratch
-klasörüne) yazılır; hedef projenin kaynak ağacına yazılmaz (SKILL.md §6). Şema ve doğrulayıcı
+klasörüne) yazılır; hedef projenin kaynak ağacına yazılmaz (SKILL.md §6). **JSON, raporun `.md` dosyasıyla AYNI dizine yazılır;
+rapor yalnız satır içi veriliyorsa JSON kullanıcının çıktı klasörüne yazılır ve raporun İLK SATIRI JSON'un TAM YOLUNU verir**
+(yoksa `bulgu_kapisi.py` varsayılan aramada dosyayı bulamaz). Dizin yazılamıyorsa JSON başka yere yazılır ve ilk satır yine tam yolu verir. Şema ve doğrulayıcı
 eklentinin kökündeki `araclar/` klasöründedir (`<eklenti-kökü>/araclar/`; skill klasörünün iki
 üst dizini): şema `bulgu-semasi.json`, doğrulayıcı kapı `bulgu_kapisi.py`
 (`python <araclar-yolu>/bulgu_kapisi.py --dosya gedik-bulgular.json`). Şemaya uymayan dosya

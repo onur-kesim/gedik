@@ -8,6 +8,19 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 ### Belgeler
 - **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Bu satır 2.6.0 dönemine aittir.
 
+## [2.10.0] — 2026-11-12
+### Eklendi
+- **CI/CD tedarik zinciri** (`cicd-depo-ve-kurtarma.md` §2, yeni §4.1): `issue_comment` pwn request (tek koruma `github.event.issue.pull_request` yetersiz), `workflow_run` artifact devri (`allow-unsafe-pr-checkout`), egzotik bağımlılık (`github:`/`git+`/`.tgz`), paket yöneticisi gevşetme (`.npmrc`, pnpm, dependabot, `npm install`), kötü amaçlı sürüm (sabit liste YOK; `osv-scanner`/`npm audit`, yoksa ÖLÇÜLEMEDİ).
+- **Şerit B / RSC eki** (`serit-B-rsc.md`, TR+EN; T2 + `next`/`react-server-dom-*`/`'use server'`): server function = herkese açık uç nokta (oturum + sahiplik + şema, mass assignment), yalnız-middleware yetkisi, sürüm (tarayıcıdan, ezber hüküm YASAK), `use cache` anahtarı ve config SSRF.
+### Değişti (v2.6–v2.9 ölçüm borçları)
+- **C1** `gedik-bulgular.json` konumu: JSON raporun `.md` dosyasıyla aynı dizine; rapor satır içiyse çıktı klasörüne ve raporun ilk satırı tam yolu verir (6/6 koşuda scratch'e yazılmıştı).
+- **C2** D9.6: satır sayma yok; sabit `grep -nobaP … | cat -A` komutu koşulur, `satır:ofset` aynen kopyalanır (4/8 satır doğruydu).
+- **C3** D9 komşu not: rapor şablonuna sabit "## Sertleştirme notları (bulgu değil)" bölümü; `G-n` yalnız `confirmed`/`needs_validation` (2/4 koşuda numaralı+şiddetli çıkmıştı).
+- **C4** DNS (`dig`/`nslookup`/`host`/`ping`) yetkisizde canlı istek sayılır; "istek atılmadı" beyanı Bash geçmişiyle çelişemez.
+- **C5** sabit ret cümlesi rapor şablonunda sabit satır (`ÖLÇÜLMEDİ — yetki yok` / `NOT MEASURED — no authorization`, aynen kopyalanır; birebir 1/6'ydı).
+### Sınır
+- Yeni Python kapısı yok; kabul ham rapor okumasıyla (bkz. KRITER "v2.10.0 ÖLÇÜMÜ").
+
 ## [2.9.0] — 2026-11-12
 ### Eklendi
 - **Şerit D9 — depo içi ajan yapılandırması** (`serit-D-yapayzeka.md`, TR kanonik + EN birebir): hook komutları, proje MCP otomatik onayı ve pinsiz `npx -y`, uç nokta/ortam yönlendirme (`ANTHROPIC_BASE_URL`, `apiKeyHelper`), izin gevşetme (`bypassPermissions`, CI'da `--dangerously-skip-permissions`), ajanın kendi yapılandırmasına yazabilmesi, talimat dosyasında gizli Unicode (kod noktası + satır), `runOn: folderOpen`/`postCreateCommand` (D9.1–D9.7).

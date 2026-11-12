@@ -135,11 +135,15 @@ File name: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 ### 2.2 ÇÜRÜTÜLEN ADAYLAR — `rejected`
 - **G-n · <başlık>** — elenme nedeni: <...> · doğrulayan: alt-ajan / ayrı tur
 
+## Sertleştirme notları (bulgu değil)
+- <şiddetsiz gözlem; `G-n` numarası YOK; deny kuralı / pinli MCP / CODEOWNERS / komşu hijyen buraya> — yoksa: yok
+
 ## 3. TEMİZ ÇIKANLAR (her biri neyle ölçüldü)
 | Başlık | Sonuç | Ölçüm yöntemi |
 
 ## 4. ÖLÇÜLMEYENLER
 | Başlık | Neden ölçülmedi | Nasıl ölçülür |
+| Canlı sistem | ÖLÇÜLMEDİ — yetki yok | sohbette sahiplik + host beyanı (§0.1) |
 
 ## 5. SELF-MUTANT SONUCU
 | Mutant | Kirli kopya | Temiz sürüm | Karar |
@@ -153,12 +157,21 @@ File name: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 - ...
 ```
 
+**Template rules.** (1) A `G-n` number is given only to `confirmed` and `needs_validation` records; a
+severity-less hardening observation (deny rule, pinned MCP version, CODEOWNERS presence/scope gap, neighboring
+hygiene) is written under the **`## Sertleştirme notları (bulgu değil)`** section — without a number and without
+severity. (2) With no authorization the live-system row is a **fixed sentence, copied verbatim, never reworded**
+(whatever the report's language): `ÖLÇÜLMEDİ — yetki yok` / `NOT MEASURED — no authorization`.
+
 ### 4.1 `gedik-bulgular.json` — machine-readable output (full audit mode)
 
 The `.md` report is primary and is for humans; the JSON does **not replace** it — it is
 written next to it (same folder). Report files go to the output folder the user names (if
 none, the session's output/scratch folder); they are not written into the target project's
-source tree (SKILL.md §6). The schema and validator live in the `araclar/` folder at the
+source tree (SKILL.md §6). **The JSON is written to the SAME directory as the report's `.md`; if the report is delivered
+inline only, the JSON goes to the user's output folder and the report's FIRST LINE gives the JSON's FULL PATH**
+(otherwise `bulgu_kapisi.py` cannot find the file in its default search). If the directory is not writable the JSON goes
+elsewhere and the first line still gives the full path. The schema and validator live in the `araclar/` folder at the
 plugin root (`<plugin-root>/araclar/`; two directories above the skill folder): the schema is
 `bulgu-semasi.json`, the validating gate is `bulgu_kapisi.py`
 (`python <araclar-path>/bulgu_kapisi.py --dosya gedik-bulgular.json`). A file that does not match the

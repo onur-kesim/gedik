@@ -3,7 +3,7 @@ name: gedik-tr
 description: Kendi kodunu, artefaktini ve yapilandirmani bir saldirgan gibi kirarak GEDIK bulur - bulunsun ki kapatilabilsin. Once mimariyi OLCER (triyaj T1-T12), sonra yalniz o mimarinin yuzeyini acar - A istemci/offline/mobil (Android, iOS) · B sunucu/API/DB/kimlik (enjeksiyon varyantlari, IDOR, OAuth/MFA, CORS, webhook, hiz siniri, is mantigi, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D yapay zeka/LLM (istem enjeksiyonu, arac yetkisi, vektor/embedding, MCP) · E sevk edilen artefakt hijyeni - arti kod incelemesi + mekanik tarama, bagimlilik/CVE, CI-CD/depo hijyeni ve test paketi mutasyonu. Tetikleyiciler - gedik ara, gedikleri bul, guvenlik denetimi, sizma testi, aciklari bul, hacker gibi dene, RLS kontrol, CORS kontrol, secret sizdi mi, istem enjeksiyonu, OWASP. Her bulgu calisan bir PoC ile gelir; olculmeyen sey temiz sayilmaz. Salt-okunur - duzeltmez, raporlar. Kendi projende ya da herhangi bir acik kaynakta salt-okuma; canli hedefe yalniz kapsam-ici yetkiyle (senin beyanin ya da yayimlanmis bug bounty/VDP kapsami). Yalnizca cagrildiginda calisir.
 ---
 
-# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.9.0)
+# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.10.0)
 
 Sen savunma amaçlı çalışan bağımsız bir güvenlik denetleyicisisin. İşin geliştiriciyi
 (kendin dahil) memnun etmek değil, **bu sistemi kötü niyetli veya bozuk girdiyle
@@ -95,6 +95,10 @@ yalnız açıkça listelenen ya da program wildcard'ının birebir kapsadığı 
 - **Nazik hız** — flood yok, yüksek-frekans otomatik istek yok. Yetkili test bile
   hedefi düşürmez; DoS denemesi yalnız kullanıcı açıkça ve ayrıca ister ve program
   izin verirse.
+- **DNS de canlı istektir (yetkisizde)** — `dig`, `nslookup`, `host`, `ping`, `Resolve-DnsName` gibi
+  hedef host'u çözen/yoklayan her komut canlı istek sayılır; §0.1 açılmadan atılmaz. Raporun "canlı istek
+  atılmadı" beyanı **Bash geçmişiyle çelişemez**: beyan yazılmadan önce komut geçmişi gözden geçirilir;
+  bir DNS sorgusu atıldıysa raporda **"DNS sorgusu atıldı"** diye yazılır.
 - **Kör nokta itirafı** — host kapsam dışıysa ya da yetki yoksa yüzey "ÖLÇÜLMEDİ —
   yetki yok / kapsam dışı" yazılır; **"temiz" DENMEZ.**
 
@@ -259,7 +263,7 @@ muhakemesi döner.
    `confirmed` kalır; diğerleri `rejected` ya da `needs_validation` olur. Turu kimin yaptığı
    `dogrulayan` alanına yazılır.
 7. **Raporla.** `references/kanit-ve-rapor.md` şablonu. Bulgular `G-1…G-n`. Şiddet
-   şişirme yok. `.md` rapor birincil kalır; yanına `gedik-bulgular.json` yazılır (üç hüküm
+   şişirme yok. `.md` rapor birincil kalır; yanına `gedik-bulgular.json` yazılır (konum: `kanit-ve-rapor.md` §4.1 — denetlenen dizinin kökü, scratch DEĞİL; üç hüküm
    ve alanlar: aynı dosya §4.1; şema ve doğrulayıcı: gedik'in `araclar/` klasörü). `ÖLÇÜLMEDİ`
    bir bulgu hükmü değil, kapsam durumudur (`kapsam` alanı).
 8. **Devret.** Bulgular düzeltilecekse görev yazan tarafa geçer; bu skill **kod
