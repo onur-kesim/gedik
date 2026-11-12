@@ -38,6 +38,25 @@ configuration.
   fork's code** in a context that has access to the repository's secrets. If
   either trigger is present and the workflow checks out the **PR head** with
   `actions/checkout` → **CRITICAL** (anyone can open a PR and steal the secrets).
+- **`issue_comment` pwn request (CRITICAL):** `on: issue_comment` is an event anyone can
+  trigger (anyone who can write a comment). If, in the same workflow, the `actions/checkout`
+  `ref:` value is a PR ref (`refs/pull/…`, `github.event.pull_request.head.*`) or a step runs
+  `gh pr checkout`, the fork's code runs in the secrets context. **If the only guard is
+  `github.event.issue.pull_request`, it is INSUFFICIENT** (it says the comment is on a PR, NOT
+  that the PR or the commenter is trusted); author permission (`author_association`/`permissions`)
+  and a separate approval are required. If the comment body (`github.event.comment.body`) goes
+  straight into `run:` it is also command injection. Note: GitHub's 2026-06-18 checkout change
+  does not cover this trigger (source: research note; platform behavior is NOT MEASURED by this
+  skill).
+- **`workflow_run` artifact handoff (CRITICAL/HIGH):** if `actions/download-artifact` with
+  `run-id: ${{ github.event.workflow_run.id }}` downloads an artifact produced by a fork PR
+  (attacker-controlled) and **anything is executed from the downloaded path** (`bash ./artifact/…`,
+  `npm test`, `node file.js`) or its contents are written to `$GITHUB_ENV` / `$GITHUB_OUTPUT`,
+  attacker code/environment runs in the secrets context. `allow-unsafe-pr-checkout: true` is the
+  setting that opens this risk on purpose — a finding.
+- **Evidence for A1/A2 (K2, without running):** `file:line` + trigger (`on:`) + the `ref:`/command
+  value + secrets access (`secrets.*`, `permissions: write`). Triggering the workflow (writing a
+  comment, opening a PR) is an action on the repo: **FORBIDDEN**; the signature is read statically.
 - **Third-party action/step pinning:** is `uses: some/action@v3` pinned by tag,
   or by **full SHA**? A tag is mutable; a SHA is not.
 - **Secret logging:** `set -x`, `echo $SECRET`, dumping the environment in debug
@@ -103,6 +122,33 @@ confirmed on the public registry.
 with a harmless name-check — if it is not registered, it means it **can be
 claimed**, a finding. **Severity: CRITICAL** (build-time RCE).
 
+## 4.1 SUPPLY CHAIN: exotic dependency, package-manager loosening, malicious version
+
+- **Exotic dependency source (A3):** a dependency in `package.json` / lockfile that arrives via
+  `github:`, `git+`, `git://`, or `https://….tgz`; especially inside `optionalDependencies` (installed
+  silently, may run an install script, version may be unpinned). Every dependency that does not come
+  from the registry = a finding candidate (severity HIGH/MEDIUM by who owns the source).
+- **Package-manager loosening (A4):** no `ignore-scripts` or `false` in `.npmrc`, loose `allow-git`;
+  `minimumReleaseAge: 0`, `dangerouslyAllowAllBuilds: true` in `pnpm-workspace.yaml`; no `cooldown`
+  or `insecure-external-code-execution: allow` in `dependabot.yml`; `npm install` instead of
+  `npm ci` in CI (drift from the lockfile). Signature example:
+
+```ini
+# .npmrc — gevşek örnek (imza)
+ignore-scripts=false
+allow-git=all
+```
+
+- **Malicious package version (A5):** NO fixed version/IOC list is kept (lists go stale). Matching
+  comes from a scanner: `osv-scanner` (including MAL- records) or `npm audit` is called; the query
+  goes to the advisory database, not to the target. If there is no scanner or no network write
+  **"NOT MEASURED — malicious-version matching needs a scanner"**; a from-memory "this version is
+  bad" or "clean" verdict is FORBIDDEN.
+- **PoC (K2, without running):** `file:line` + field + value; installing the dependency or running
+  the script is FORBIDDEN. For A3/A4 the evidence is the file content; for A5 it is the scanner output.
+
+---
+
 ## 5. CI OIDC → CLOUD TRUST MISCONFIGURATION
 
 A workflow that authenticates to the cloud via OIDC has a trust policy whose
@@ -144,3 +190,5 @@ is — pinned to a specific repo+branch, or a wildcard. **Severity: CRITICAL.**
    `sub`/`aud` condition narrow (§5)?
 9. If T12 is YES (IaC/cloud): was container root/latest/secret and IaC hardening
    (public bucket, IAM wildcard, privileged K8s pod) measured (§6)?
+10. In `issue_comment` / `workflow_run` workflows, does PR code or an artifact run in the secrets context (§2, A1/A2)?
+11. Were non-registry dependencies (`github:`/`git+`/`.tgz`) and `.npmrc`/pnpm/dependabot loosening measured; did malicious-version matching come from a scanner, or is it NOT MEASURED (§4.1)?

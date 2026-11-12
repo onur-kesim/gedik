@@ -35,6 +35,24 @@ Bu dosya, kaynak deposuna ve/veya CI yapılandırmasına erişim varsa okunur.
   sırlarına erişimi olan bağlamda çalıştırabilir. Bu tetikleyicilerden biri varsa
   ve iş akışı `actions/checkout` ile **PR head'ini** çekiyorsa → **KRİTİK**
   (herhangi biri PR açıp sırları çalar).
+- **`issue_comment` pwn request (KRİTİK):** `on: issue_comment` herkesin tetikleyebileceği bir
+  olaydır (yorumu yazabilen herkes). Aynı iş akışında `actions/checkout` `ref:` değeri bir PR
+  ref'iyse (`refs/pull/…`, `github.event.pull_request.head.*`) ya da bir adım `gh pr checkout`
+  koşuyorsa, fork'un kodu sırlı bağlamda çalışır. **Tek koruma `github.event.issue.pull_request`
+  ise YETERSİZDİR** (yorumun bir PR'da olduğunu söyler, PR'ın ya da yorumcunun güvenilir
+  olduğunu DEĞİL); yazar yetkisi (`author_association`/`permissions`) ve ayrı onay gerekir.
+  Yorum gövdesi (`github.event.comment.body`) `run:` içine doğrudan girerse ayrıca komut
+  enjeksiyonudur. Not: GitHub'ın 2026-06-18 tarihli checkout değişikliği bu tetikleyiciyi
+  kapsamıyor (kaynak: araştırma notu; platform davranışı bu skill'de ÖLÇÜLMEZ).
+- **`workflow_run` artifact devri (KRİTİK/YÜKSEK):** `actions/download-artifact` +
+  `run-id: ${{ github.event.workflow_run.id }}` ile, fork PR'ının ürettiği (saldırgan
+  kontrollü) artifact indirilip **indirilen yoldan bir şey çalıştırılıyorsa** (`bash ./artifact/…`,
+  `npm test`, `node dosya.js`) ya da içeriği `$GITHUB_ENV` / `$GITHUB_OUTPUT`'a yazılıyorsa
+  sırlı bağlamda saldırgan kodu/ortamı çalışır. `allow-unsafe-pr-checkout: true` bu riski
+  bilerek açan ayardır — bulgu.
+- **A1/A2 kanıtı (K2, çalıştırmadan):** `dosya:satır` + tetikleyici (`on:`) + `ref:`/komut
+  değeri + sır erişimi (`secrets.*`, `permissions: write`). İş akışını tetiklemek (yorum yazmak,
+  PR açmak) depoda eylemdir: **YASAK**; imza statik okunur.
 - **Üçüncü taraf action/adım sabitlemesi:** `uses: bir/action@v3` etiketle mi
   sabitlenmiş, yoksa **tam SHA** ile mi? Etiket taşınabilir; SHA taşınmaz.
 - **Sır log'lama:** `set -x`, `echo $SECRET`, hata ayıklama modunda ortam dökümü.
@@ -92,6 +110,32 @@ iç yerine onu çeker. (typosquat'tan farklı: namespace/scope sahiplenme, iç p
 **PoC/mutant:** iç paket adını public registry'de zararsız bir isim-kontrolüyle ara —
 kayıtlı değilse **claim edilebilir** demektir, bulgu. **Şiddet: KRİTİK** (build-time RCE).
 
+## 4.1 TEDARİK ZİNCİRİ: egzotik bağımlılık, paket yöneticisi gevşetme, kötü sürüm
+
+- **Egzotik bağımlılık kaynağı (A3):** `package.json` / lockfile'da `github:`, `git+`, `git://`
+  ya da `https://….tgz` ile gelen bağımlılık; özellikle `optionalDependencies` içinde (sessizce
+  kurulur, kurulum betiği çalıştırabilir, sürüm sabitlenmemiş olabilir). Registry'den gelmeyen
+  her bağımlılık = bulgu adayı (şiddet: kaynağın kime ait olduğuna göre YÜKSEK/ORTA).
+- **Paket yöneticisi gevşetme (A4):** `.npmrc`'de `ignore-scripts` yok ya da `false`, `allow-git`
+  gevşek; `pnpm-workspace.yaml` içinde `minimumReleaseAge: 0`, `dangerouslyAllowAllBuilds: true`;
+  `dependabot.yml`'de `cooldown` yok ya da `insecure-external-code-execution: allow`; CI'da
+  `npm ci` yerine `npm install` (kilit dosyasından sürüklenme). İmza örneği:
+
+```ini
+# .npmrc — gevşek örnek (imza)
+ignore-scripts=false
+allow-git=all
+```
+
+- **Kötü amaçlı paket sürümü (A5):** sabit sürüm/IOC listesi TUTULMAZ (liste bayatlar). Eşleme
+  tarayıcıdan: `osv-scanner` (MAL- kayıtları dahil) ya da `npm audit` çağrılır; sorgu hedefe değil
+  danışma veritabanınadır. Tarayıcı yoksa ya da ağ yoksa **"ÖLÇÜLEMEDİ — kötü sürüm eşlemesi
+  tarayıcı ister"** yazılır; ezberden "şu sürüm kötü" ya da "temiz" hükmü YASAK.
+- **PoC (K2, çalıştırmadan):** `dosya:satır` + alan + değer; bağımlılığı kurmak/betiği çalıştırmak
+  YASAK. A3/A4'te kanıt dosya içeriğidir; A5'te kanıt tarayıcı çıktısıdır.
+
+---
+
 ## 5. CI OIDC → BULUT GÜVEN YANLIŞ YAPILANDIRMASI
 
 Buluta OIDC ile giren workflow'un trust policy `sub` claim'i **wildcard** (`repo:*`,
@@ -126,3 +170,5 @@ Buluta OIDC ile giren workflow'un trust policy `sub` claim'i **wildcard** (`repo
 8. Buluta OIDC ile giren workflow'ların trust policy `sub`/`aud` koşulu dar mı (§5)?
 9. T12 EVET ise (IaC/bulut): konteyner root/latest/sır ve IaC (public bucket, IAM
    wildcard, k8s privileged pod) sertleştirmesi ölçüldü mü (§6)?
+10. `issue_comment` / `workflow_run` iş akışlarında PR kodu ya da artifact sırlı bağlamda çalışıyor mu (§2, A1/A2)?
+11. Registry dışı bağımlılık (`github:`/`git+`/`.tgz`), `.npmrc`/pnpm/dependabot gevşetmesi ölçüldü mü; kötü sürüm eşlemesi tarayıcıdan mı geldi, yoksa ÖLÇÜLEMEDİ mi (§4.1)?
