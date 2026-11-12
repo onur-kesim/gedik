@@ -203,6 +203,7 @@ olmasın).
 > - composer audit: <N> danışma | ÖLÇÜLEMEDİ (<sebep>) | UYGULANMAZ (composer.lock yok)
 > - İmaj taraması: grype <N|ÖLÇÜLEMEDİ> · trivy <N|ÖLÇÜLEMEDİ>
 
+- **ŞERİT B'nin Next.js/RSC eki** (`references/serit-B-rsc.md`): T2 EVET **ve** `next`, `react-server-dom-*` ya da `'use server'` imzası varsa Şerit B'ye ek olarak okunur: server function = herkese açık uç nokta (oturum + sahiplik + şema, mass assignment), yalnız-middleware yetkisi, sürüm (tarayıcıdan), `use cache`/config SSRF.
 - **ŞERİT C — BaaS / RLS** (`references/serit-C-baas-rls.md`): **T7 EVET ise — T2 HAYIR olsa bile.**
   > BaaS'ta istemci veritabanıyla DOĞRUDAN konuşur; yetkiyi uygulayacak sunucu yoktur.
   > **"Sunucu yok, o hâlde sunucu açığı yok" çıkarımı bu mimaride YANLIŞTIR.**
@@ -337,6 +338,7 @@ raporlarsa kullanıcı hangisinin gerçek olduğunu bilemez.
   güvenlik loglama/alarm yetersizliği (A09:2025), request smuggling, host header injection,
   cache poisoning/deception, subdomain takeover, SQLi escalation sink'leri (RCE/dosya
   yazma), uygulama DB-hesabı en-az-ayrıcalık (B20)
+- `references/serit-B-rsc.md` — Next.js/RSC: server function'lar herkese açık uç nokta (oturum + sahiplik + şema, mass assignment), yalnız-middleware yetkisi, sürüm (tarayıcıdan), `use cache` ve config SSRF.
 - `references/serit-C-baas-rls.md` — Supabase/Firebase: RLS kapalı tablo taraması,
   politika doğruluğu (`USING`/`WITH CHECK`), anahtar kapsamı, storage, RPC, realtime,
   PostgREST VIEW/function ifşası, kolon-düzeyi GRANT, `pg_net`/`http` ile DB'den SSRF

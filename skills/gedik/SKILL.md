@@ -215,6 +215,7 @@ results verbatim into section 0 of your report.
 > - composer audit: <N> advisories | NOT MEASURED (<reason>) | N/A (no composer.lock)
 > - Image scan: grype <N|NOT MEASURED> · trivy <N|NOT MEASURED>
 
+- **LANE B's Next.js/RSC addendum** (`references/serit-B-rsc.md`): if T2 is YES **and** there is a `next`, `react-server-dom-*`, or `'use server'` signature, read it in addition to Lane B: server function = public endpoint (session + ownership + schema, mass assignment), middleware-only authorization, version (from a scanner), `use cache`/config SSRF.
 - **LANE C — BaaS / RLS** (`references/serit-C-baas-rls.md`): **if T7 is YES — even if T2 is NO.**
   > In BaaS the client talks DIRECTLY to the database; there is no server to enforce
   > authorization. **The inference "no server, therefore no server-side vulnerability" is
@@ -362,6 +363,7 @@ different words, the user can't tell which one is real.
   GraphQL, fail-open (A10:2025), insufficient security logging/alerting (A09:2025), request
   smuggling, host header injection, cache poisoning/deception, subdomain takeover, SQLi
   escalation sinks (RCE/file write), application DB-account least-privilege (B20)
+- `references/serit-B-rsc.md` — Next.js/RSC: server functions are public endpoints (session + ownership + schema, mass assignment), middleware-only authorization, version (from a scanner), `use cache` and config SSRF.
 - `references/serit-C-baas-rls.md` — Supabase/Firebase: scan for tables with RLS
   disabled, policy correctness (`USING`/`WITH CHECK`), key scope, storage, RPC, realtime,
   PostgREST VIEW/function exposure, column-level GRANT, SSRF from the DB via `pg_net`/`http`
