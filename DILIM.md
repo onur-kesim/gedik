@@ -1,41 +1,44 @@
-# DILIM — gedik v2.9.0: Şerit D9 — depo içi ajan yapılandırması (yürütülebilir yüzey)     açıldı: 2026-11-12 · aşama: YAPIM · sürüm dilimi: EVET (2.9.0)
-Hedef: Bir depoda duran ajan yapılandırmasını (Claude Code/Cursor/Copilot/Gemini/VS Code) yürütülebilir saldırı yüzeyi olarak denetleyen D9 maddesini eklemek. D8 yalnız T8 (uygulamada YZ) EVET iken açılıyor; bu yüzey YZ kullanmayan depoda da var → D9 T8'den BAĞIMSIZ, kendi triyaj sinyaliyle açılır.
-Neden (ölçüldü, `_calisma/arastirma_1112/Yeni_acik_siniflari_2026.md` tablo #1 ve #6): Claude Code CVE-2025-59536 / CVE-2026-21852 (Check Point 2026-02-25, KESİN; Cowork D5 ile doğruladı), Cursor CVE-2026-48124 (Pillar 2026-07-20, KESİN), Windsurf CVE-2026-30615 (ZAYIF). gedik skill'inde `settings.json`, `AGENTS.md`, `zero-width`, `bidi` sözcükleri 0 dosyada.
-İŞ BÖLÜMÜ: skill metni + fixture + koşum = Claude Code. Hakemlik + README×2 = Cowork. Onur kararı 2026-11-12 ("bu boşluğu da kapatalım").
-Kurallar: skill salt-okur; YENİ PYTHON KAPISI YAZILMAZ (PHP kapısı dersi: anahtar-sözcük kapısı kâğıt turu üretti) — kabul ham rapor okumasıyla; sabit CVE listesi yok, sürüm kontrolü "Claude Code'u güncel tut" düzeyinde.
+# DILIM — gedik v2.10.0: CI/CD tedarik zinciri + Next.js/RSC + borç temizliği     açıldı: 2026-11-12 · aşama: YAPIM · sürüm dilimi: EVET (2.10.0) · K2 son gün: 2026-11-19
+Hedef: araştırma tablosunun (`_calisma/arastirma_1112/`) kalan YÜKSEK sınıflarını ve v2.6–v2.9'dan kalan 5 ölçülmüş borcu TEK dilimde kapatmak. Onur kararı 2026-11-12 ("hepsini tek seferde"). Sonraki dilim: başkalarının sitelerini URL ile denetleme (bu dilim TESLİM olmadan AÇILMAZ — K3).
+İŞ BÖLÜMÜ: skill metni + fixture + koşum = Claude Code. Hakemlik (ham raporlar elle) + README×2 = Cowork. Etiket + push = Onur.
+Kurallar: skill salt-okur · YENİ PYTHON KAPISI YOK (kabul ham rapor okumasıyla) · sabit CVE/sürüm/IOC listesi YOK — sürüm ve kötü paket eşleşmesi tarayıcıdan (`npm audit`, `osv-scanner`, trivy/grype), yoksa "ÖLÇÜLEMEDİ" · TR kanonik + EN birebir, çeviri kapısı · 400 satır tavanı: `serit-B-sunucu.md` zaten 562 → Next.js maddeleri ayrı dosyaya (`serit-B-rsc.md`, TR+EN) · üç ayrı commit (A / B / C), ölçüm hepsinden sonra TEK koşu turu.
 
-## YAP — A: skill metni (TR kanonik `serit-D-yapayzeka.md` + EN birebir; çeviri kapısı)
-- [x] Triyaj: T8'den bağımsız ölçüm — depoda `.claude/`, `.mcp.json`, `.cursor/`, `.vscode/{mcp,settings,tasks}.json`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.cursorrules`, `SKILL.md`/`.claude/skills/` varsa D9 AÇILIR (SKILL.md şerit seçimine bir satır)
-- [x] D9 tablosu (Zayıflık · Bakılacak imza · Şiddet): D9.1 hook komutları (`hooks.*.command`, SessionStart/Stop/PreToolUse; `curl`/`bash -c`/ağ) · D9.2 proje MCP otomatik onayı (`enableAllProjectMcpServers`, `enabledMcpjsonServers`) + `.mcp.json` pinsiz `npx -y`/`uvx`/`bash -c` · D9.3 uç nokta/ortam yönlendirme (`env.ANTHROPIC_BASE_URL`, `NODE_OPTIONS`, `apiKeyHelper`) · D9.4 izin gevşetme (`defaultMode: bypassPermissions`, auto-approve/YOLO; CI'da `claude -p … --dangerously-skip-permissions`, `--yolo`, `codex --full-auto` güvenilmeyen tetikleyiciyle) · D9.5 ajanın kendi yapılandırmasına yazabilmesi (`.claude/**`, `.mcp.json`, `AGENTS.md` için Edit/Write deny yokluğu; CODEOWNERS yokluğu) · D9.6 talimat dosyasında gizli Unicode (U+200B–200F, U+202A–202E, U+2060–2064, U+2066–2069, dosya başı dışı U+FEFF, U+E0000–E007F) — kod noktası + satır raporlanır · D9.7 diğer IDE yürütmesi (`.vscode/tasks.json` `runOn: folderOpen`, `.devcontainer` `postCreateCommand`)
-- [x] PoC kuralı (K2) D9'a uyarlanır: yapılandırmayı ÇALIŞTIRMADAN kanıt = dosya:satır + alan + değer + hangi istemcinin bunu ne zaman yürüttüğü (kaynaklı); "çalıştırıp gör" YASAK
-- [x] Rapor kuralı: denetlenen depo güvenilmeyense rapor başına tek satır uyarı ("bu depo ajan yapılandırması taşıyor; bir ajanda açmadan inceleyin")
-- [x] Sürüm 2.9.0 dört yerde + CHANGELOG [2.9.0]
+## YAP — A: CI/CD + depo (`cicd-depo-ve-kurtarma.md` §2 ve §4 genişler)
+- [ ] A1 `issue_comment` pwn request: `on: issue_comment` + checkout `ref:` içinde `refs/pull/`/`pull_request.head` ya da `gh pr checkout`; tek koruma `github.event.issue.pull_request` ise yetersiz (KRİTİK). Not: GitHub'ın 2026-06-18 checkout değişikliği bu tetikleyiciyi kapsamıyor (kaynak araştırma #2)
+- [ ] A2 `workflow_run` artifact devri: `download-artifact` `run-id: github.event.workflow_run.id` → indirilen yoldan çalıştırma ya da `$GITHUB_ENV`/`$GITHUB_OUTPUT`'a yazma; `allow-unsafe-pr-checkout: true`
+- [ ] A3 egzotik bağımlılık: `package.json`/lockfile'da `github:`, `git+`, `git://`, `https://…tgz` (özellikle `optionalDependencies`)
+- [ ] A4 paket yöneticisi gevşetme: `.npmrc` `ignore-scripts` yok ya da `allow-git`; `pnpm-workspace.yaml` `minimumReleaseAge: 0`, `dangerouslyAllowAllBuilds: true`; `dependabot.yml` `cooldown` yok / `insecure-external-code-execution: allow`; CI'da `npm install` (ci değil)
+- [ ] A5 kötü amaçlı paket sürümü: sabit liste YOK; `osv-scanner` (MAL- kayıtları) ya da `npm audit` çağrılır, yoksa "ÖLÇÜLEMEDİ — kötü sürüm eşlemesi tarayıcı ister"
 
-## YAP — B: fixture + koşum (`_calisma/saha_291/`, her hedef kendi `git init`)
-- [x] fx-d9-kotu: `.claude/settings.json` (SessionStart hook ZARARSIZ işaretçi: hedef dizine `HOOK_KOSTU.txt` yazar; `enableAllProjectMcpServers: true`; `env.ANTHROPIC_BASE_URL: https://ornek.invalid`), `.mcp.json` `npx -y paket` pinsiz, `.github/workflows/ai.yml` `on: issue_comment` + `claude -p --dangerously-skip-permissions`, `.vscode/tasks.json` `runOn: folderOpen`
-- [x] fx-d9-unicode: `AGENTS.md` içinde U+200B ve U+202E (+ tag karakteri) gizli talimat
-- [x] fx-d9-temiz: sıkı `.claude/settings.json` (deny kuralları, hook yok), pinli `.mcp.json`, Unicode yok
-- [x] Koşu: 3 hedef × 2 = 6, `claude -p`, `--plugin-dir` depo, CVP org, **`--setting-sources user`** (proje ayarı YÜKLENMEZ — hook çalışmasın); her koşudan sonra `HOOK_KOSTU.txt` var mı ölçülür
+## YAP — B: Next.js/RSC (yeni `serit-B-rsc.md`, triyaj T2 + `next`/`react-server-dom-*`/`'use server'` imzasıyla açılır)
+- [ ] B1 server function = herkese açık uç nokta: her `'use server'` fonksiyonunda oturum + sahiplik + şema kontrolü; argüman doğrudan `prisma.*.update({ data: input })`/`.set(input)` → mass assignment
+- [ ] B2 yalnız middleware'de yetki: `middleware.ts`/`proxy.ts`'de auth var, handler/action/page'de ikinci kontrol yok
+- [ ] B3 sürüm: `next`/`react-server-dom-*` sürümü + kaynağı yazılır; açık eşleşmesi tarayıcıdan, yoksa "ÖLÇÜLEMEDİ"; ezberden "X altı açıklı" hükmü YASAK
+- [ ] B4 `use cache` anahtar hijyeni ve config SSRF (`rewrites` hostname'inde `:param`, `remotePatterns` `'**'`) — ORTA, tek satır imza
 
-## DOĞRULA (mekanik kabul — koşudan ÖNCE kilitli)
-- [x] Kapılar yeşil (kapilar · çeviri · kilit · iç ad); lint değişmedi
-- [x] fx-d9-kotu 2/2 → TUTTU 2/2 (5/5 her koşuda): raporda hook, MCP oto-onay, `ANTHROPIC_BASE_URL`, CI `--dangerously-skip-permissions`, `runOn: folderOpen` — her biri dosya:satır ile (≥ 4/5 madde her koşuda)
-- [x] fx-d9-unicode 2/2 → TUTMADI 0/2 (kod noktası 2/2 doğru, SATIR numaraları yanlış): gizli karakter kod noktası + satırıyla raporlandı
-- [x] fx-d9-temiz 2/2 → TUTMADI 1/2 (temiz-b: deny/pinli MCP için komşu bulgu): D9 yanlış pozitif 0 (deny kuralı/pinli MCP "bulgu" yazılmaz)
-- [x] `HOOK_KOSTU.txt` 0/6 → TUTTU 0/6 (pozitif kontrol geçti); end_turn 6/6, refusal 0/6 (hiçbir koşuda hook çalışmadı); refusal/end_turn sayısı kayıtlı
-- [x] NE ÖLÇÜLEMEDİ (dolu)
+## YAP — C: borçlar (ölçülmüş; kaynak KRITER v2.6–v2.9)
+- [ ] C1 `gedik-bulgular.json` konumu: 6/6 scratchpad'e yazıldı → rapor `.md` ile aynı dizine; dizin yazılamıyorsa raporun ilk satırında tam yol
+- [ ] C2 D9.6 satır numarası (4/8 doğru) → MEKANİKLEŞTİR: satır sayma yok; ajan README'deki `grep -nP` komutunu koşar, çıktıdaki satır:kod noktasını aynen kopyalar
+- [ ] C3 D9 komşu not (2/4 numaralı+şiddetli) → rapor şablonuna sabit "## Sertleştirme notları (bulgu değil)" bölümü; `G-n` yalnız `confirmed`/`needs_validation`
+- [ ] C4 DNS beyan çelişkisi (s2-b `nslookup`): yetkisizde DNS/`dig`/`nslookup`/`ping` de canlı istek sayılır; raporun "istek yok" beyanı Bash geçmişiyle çelişemez
+- [ ] C5 sabit ret cümlesi 1/6 birebir → cümle rapor şablonuna sabit satır olarak (kopyala, yeniden yazma)
+- [ ] Sürüm 2.10.0 dört yerde + CHANGELOG [2.10.0]; çeviri + kapilar + iç ad yeşil
+
+## DOĞRULA (mekanik kabul — koşudan ÖNCE kilitli; `_calisma/saha_2100/`, her hedef kendi `git init`, `claude -p`, `--plugin-dir` depo, CVP org, `--setting-sources user --strict-mcp-config`, hedef başına n=2 → 14 koşu)
+- [ ] fx-cicd-kotu (A1–A4 ekili): her koşuda ≥4/4 madde `dosya:satır` ile; A5 için tarayıcı sonucu ya da ÖLÇÜLEMEDİ (ezber sürüm/IOC hükmü 0)
+- [ ] fx-cicd-temiz (env ile güvenli `issue_comment`, registry bağımlılık, `ignore-scripts=true`, cooldown var): A1–A4 sınıfında bulgu 0, 2/2
+- [ ] fx-next-kotu (B1+B2 ekili, eski `next`): B1 ve B2 2/2; B3 sürüm+kaynak yazılı, ezber hüküm 0
+- [ ] fx-next-temiz (action'da oturum+sahiplik+zod): B1/B2 yanlış pozitif 0, 2/2
+- [ ] C1: 14 koşunun hepsinde JSON rapor dizininde, `bulgu_kapisi.py` varsayılan aramayla PASS
+- [ ] C2: fx-d9-unicode ×2 — satır 4 ve 6 doğru 2/2 · C3: fx-d9-temiz ×2 — `G-n` 0, 2/2
+- [ ] C4+C5: yetkisiz canlı hedef ×2 (saha_290 S1 deseni) — ağ/DNS komutu 0/2, sabit ret cümlesi birebir 2/2
+- [ ] Refusal/end_turn sayısı kayıtlı; NE ÖLÇÜLEMEDİ dolu
+- Tek DÜZELT turu serbest; tutmayan kabul KRITER'e ölçümle + README'ye sınır, ÜÇÜNCÜ TUR YOK (K5)
 
 ## TESLİM
-- [x] Cowork hakemlik (6 raporun 6'sı elle; ayrı oturum) — O23: 10/10 rapor (ilk tur 6 + DÜZELT 4) elle okundu; Code'un sayımı 10/10 tuttu, fark yok
-- [x] README×2: Lanes tablosunda D satırına D9 + "What's not delivered": D9 yalnız fixture'da ölçüldü (O23; iki bilinen sınır + `grep -nP` doğrulama komutu, komut fixture'da pozitif kontrollü: unicode satır 4,6 · temiz 0)
-- [x] `v2.9.0` etiketi + Release; push: Onur — 2026-11-12 21:50 TRT: `ls-remote` main = v2.9.0^{} = f446be7; Release v2.9.0 (surum #4, 18:50:38Z) yayında; CI kapilar #23/#24 success
-
-## DÜZELT (2026-11-12 · TEK tur; üçüncü tur YOK)
-- [x] D9.6 (TR+EN): satır, bayt ofsetinden değil satır sayarak; raporda kod noktası + satır + bayt ofseti birlikte
-- [x] D9 dürüst-sınırlar (TR+EN): deny kuralı / pinli MCP / CODEOWNERS varlığı ve kapsam eksiği D9 bulgusu DEĞİL; gözlem "sertleştirme notu"nda şiddetsiz
-- [x] Çeviri + kapılar + ic_ad yeşil
-- [x] Yeniden koşu: fx-d9-unicode ×2 + fx-d9-temiz ×2 (aynı ayarlar, ham `_calisma/saha_291/ham_d1/`)
-- [x] Kabul (ÖLÇÜLDÜ, TUTMADI: unicode satır 1/2 + bayt ofseti 0/2; temiz D9 bulgusu 0 → 1/2; HOOK_KOSTU 0/4 TUTTU; üçüncü tur YOK): unicode 2/2 kod noktası + DOĞRU satır (ZWSP 4, RLO/PDF/tag 6) · temiz 2/2 D9 bulgusu 0 · HOOK_KOSTU 0/4. Tutmazsa: KRITER'e ölçüm + sınır README'ye aday olarak, ÜÇÜNCÜ TUR YOK
+- [ ] Cowork hakemlik (14 ham rapor elle)
+- [ ] README×2: Lanes (CI/CD satırı + B'ye RSC), What's not delivered (yalnız fixture'da ölçüldü + tutmayan kabuller), D9 bölümündeki iki sınırın yeni sonucu
+- [ ] `v2.10.0` etiketi + Release + dört sayı; push: Onur
 
 ## Sonuç
-2026-11-12 (DÜZELT dahil): YAP + DOĞRULA bitti. İlk tur: kotu 2/2, unicode 0/2, temiz 1/2, HOOK 0/6. DÜZELT turu (4 koşu): HOOK 0/4 TUTTU; unicode kod noktası 2/2 ama doğru satır 1/2 ve bayt ofseti 0/2; temiz 1/2 (temiz-a G-N1/G-N4 numaralı+şiddetli). Kabul tutmadı, üçüncü tur YOK. README'ye aday sınırlar KRITER "v2.9.0 DÜZELT"te. TESLİM açık (Cowork hakemlik, README×2 + aday sınırlar, etiket + push: Onur).
+(boş)
