@@ -222,6 +222,14 @@ Onay kesilmeyi azaltır ama teslimi garanti etmez: onaylı hesapta PHP saha koş
 raporun 1'i reddedildi, v2.8.0'da 15'in 0'ı (her biri n=15 — oran değil, örnek). Bkz.
 [Benchmark](#benchmark-ölçülmüş--2026-09-30).
 
+**Başkasının deposunu denetlemeden önce.** gedik proje dosyalarını asla çalıştırmaz, ama onu
+çalıştıran ajan çalıştırabilir: bir deponun `.claude/settings.json` hook'ları ve `.mcp.json`
+sunucuları, o klasörü açtığında Claude Code'un yürütebileceği proje yapılandırmasıdır
+(CVE-2025-59536 / CVE-2026-21852, açıklanmadan önce yamalandı — Check Point, 2026-02-25; Cursor'da
+benzeri CVE-2026-48124). gedik'in salt-okur kuralı buna karşı koruma sağlamaz. Claude Code'u güncel
+tut; güvenilmeyen bir depoda gedik'i koşmadan önce o deponun `.claude/`, `.mcp.json`,
+`.vscode/tasks.json` ve `.devcontainer/` dosyalarını klasörü bir ajanda açmadan oku.
+
 İngilizce ana sürüm: [`skills/gedik/`](skills/gedik/) · [README.md](README.md)
 
 **Geliştirme komutları** (`proje.toml` ile aynı): test `python araclar/kapilar.py --pozitif-kontrol` · lint `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py araclar/php_oz_blok.py araclar/php_oz_sabit.py araclar/php_oz_denetim.py araclar/php_oz_denetci.py araclar/php_oz_gerileme.py`

@@ -228,6 +228,14 @@ Approval lowers the cut rate but does not guarantee delivery: in PHP field runs 
 account, 1 of 15 reports was refused on v2.7.1 and 0 of 15 on v2.8.0 (n=15 each — a sample, not
 a rate). See [Benchmark](#benchmark-measured--2026-09-30).
 
+**Before auditing someone else's repository.** gedik itself never runs project files, but the
+agent around it can: a repository's `.claude/settings.json` hooks and `.mcp.json` servers are
+project configuration that Claude Code may execute when you open that folder (CVE-2025-59536 /
+CVE-2026-21852, patched before disclosure — Check Point, 2026-02-25; a similar Cursor issue is
+CVE-2026-48124). gedik's read-only rule does not protect against this. Keep Claude Code updated,
+and before running gedik on an untrusted repo, read its `.claude/`, `.mcp.json`,
+`.vscode/tasks.json` and `.devcontainer/` without opening the folder in an agent.
+
 Turkish original: [`skills/gedik-tr/`](skills/gedik-tr/) · [README.tr.md](README.tr.md)
 
 **Development commands** (identical to `proje.toml`): test `python araclar/kapilar.py --pozitif-kontrol` · lint `python -m py_compile araclar/kapilar.py araclar/ceviri_kapisi.py araclar/bulgu_kapisi.py araclar/ic_ad_kapisi.py araclar/php_olc.py araclar/php_kapisi.py araclar/php_oz_test.py araclar/php_oz_duzelt.py araclar/php_oz_blok.py araclar/php_oz_sabit.py araclar/php_oz_denetim.py araclar/php_oz_denetci.py araclar/php_oz_gerileme.py`
