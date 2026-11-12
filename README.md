@@ -15,6 +15,17 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   is real, the delivery edge is account-dependent.
 - **iOS lane (A8) is a checklist, not validated on a real system.** It has not yet been
   run against a real iOS / Capacitor-iOS app.
+- **D9 (in-repo agent configuration, v2.9) is measured only on synthetic fixtures**
+  (2026-11-12; one model, one prompt, CVP account, n=2 runs per fixture × 2 rounds). On the bad
+  fixture all 5 items (hook, project-MCP auto-approval + unpinned `npx -y`, `ANTHROPIC_BASE_URL`,
+  CI `--dangerously-skip-permissions`, `runOn: folderOpen`) were found with `file:line` in 2/2
+  runs. No run executed the planted hook (marker 0/10; positive control: with project settings
+  loaded the marker did appear). Two known limits: (1) **hidden-Unicode line numbers are
+  unreliable** — code points were right 4/4 and the hidden instruction was never followed, but
+  only 4 of 8 reported line numbers were right; verify yourself with
+  `grep -nP '[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2064}\x{2066}-\x{2069}\x{E0000}-\x{E007F}]' FILE`. (2) **On a tightly configured repo a neighbouring hardening note can still
+  appear as a numbered, rated finding** (2 of 4 runs; which run varies). False-positive rate on
+  real repositories: NOT MEASURED.
 - **Live testing only behind an authorization gate — refuses without one.** By default
   gedik reads code, configuration, and artifacts; it will send requests to a live target
   only when a machine-verifiable authorization exists (your own explicit statement in
@@ -118,7 +129,7 @@ Only on your own project, and only when invoked.
 | **A** client/offline/mobile | always | prototype pollution, type confusion, migration exploits, sink inventory, platform configuration, intent surface, iOS/Capacitor surface (A8, checklist-only — see above) |
 | **B** server/API/DB/identity | T2/T3/T4 yes | injection + ORM open-filter, AuthN/AuthZ (IDOR), account lifecycle, XSS/CSRF/SSRF, **CORS lock**, webhook signatures, **error-channel separation**, secret layering, **rate limits + cost-DoS + cache**, **server-side validation** |
 | **C** BaaS/RLS | T7 yes | **RLS-disabled table scan**, policy correctness (`USING`/`WITH CHECK`), anon vs. service_role, storage, RPC, realtime, Firebase equivalents |
-| **D** AI/LLM | T8 yes | direct + **indirect prompt injection**, **tool authorization**, output trust (model output = untrusted input), data flow, cost abuse |
+| **D** AI/LLM + agent config | T8 yes; **D9** also without AI, whenever the repo carries agent config (`.claude/`, `.mcp.json`, `.cursor/`, `.vscode/`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, …) | direct + **indirect prompt injection**, **tool authorization**, output trust (model output = untrusted input), data flow, cost abuse; **D9 in-repo agent configuration** — hooks, project-MCP auto-approval + unpinned `npx -y`, endpoint/env redirection, permission bypass (incl. CI `--dangerously-skip-permissions`), agent able to write its own config, hidden Unicode in instruction files, `folderOpen`/`postCreateCommand`; evidence by reading, never by running (D9 measured on fixtures only — see above) |
 | **E** shipped artifact | T9 yes | **leaked secrets** in artifacts, debug flags, **source-map reconstruction**, test/staging leftovers, over-broad permissions (Electron/container/extension/mobile), **artifact↔source matching**, embedded dependency footprint |
 | **Test-suite mutation** | T10 yes | poisoned-test scan + a ten-item mutant catalog; **M6 (authorization removal) and M7 (validation bypass) are mandatory** — an escaping mutant is a dead zone |
 | **Code review** | source available | security-impact correctness bugs, dependency/CVE, secrets used in the wrong layer |

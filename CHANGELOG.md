@@ -8,6 +8,23 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 ### Belgeler
 - **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Bu satır 2.6.0 dönemine aittir.
 
+## [2.9.0] — 2026-11-12
+### Eklendi
+- **Şerit D9 — depo içi ajan yapılandırması** (`serit-D-yapayzeka.md`, TR kanonik + EN birebir): hook komutları, proje MCP otomatik onayı ve pinsiz `npx -y`, uç nokta/ortam yönlendirme (`ANTHROPIC_BASE_URL`, `apiKeyHelper`), izin gevşetme (`bypassPermissions`, CI'da `--dangerously-skip-permissions`), ajanın kendi yapılandırmasına yazabilmesi, talimat dosyasında gizli Unicode (kod noktası + satır), `runOn: folderOpen`/`postCreateCommand` (D9.1–D9.7).
+- D9, T8'den **bağımsız** tetiklenir (`SKILL.md` Şerit seçimi): YZ kullanmayan depoda da ajan yapılandırma dosyası varsa açılır.
+- D9 PoC kuralı: yapılandırma **çalıştırılmadan** `dosya:satır` + alan + değer + hangi istemcinin ne zaman yürüttüğü; güvenilmeyen depoda rapor başına tek satır uyarı.
+### Düzeltme (aynı sürüm, tek tur)
+- D9.6: kod noktası + satır + bayt ofseti birlikte; satır, bayt ofsetinden değil satır sayarak (ilk ölçümde 2 koşuda satır numarası yanlıştı).
+- D9 dürüst-sınırlar: deny kuralı, pinli MCP sürümü, CODEOWNERS varlığı/kapsam eksiği D9 bulgusu değildir; "sertleştirme notu" başlığında şiddetsiz (ilk ölçümde 1 sıkı fixture'da komşu bulgu çıktı).
+### Sınır
+- Sabit CVE listesi yok; yeni Python kapısı yok (kabul ham rapor okumasıyla). D9 yalnız fixture'da ölçüldü (bkz. KRITER "v2.9.0 ÖLÇÜMÜ").
+### Bilinen sınırlar (ölçüm: KRITER "v2.9.0 ÖLÇÜMÜ" + "v2.9.0 DÜZELT"; claude-sonnet-5-5, tek model, tek istem, sentetik fixture, hedef başına n=2 koşu × 2 tur)
+- **Gizli-Unicode satır numarası güvenilmez (D9.6).** Kod noktaları 4/4 koşuda doğru bulundu ve gizli talimat 4/4'te uygulanmadı; ama raporlanan satırlar 8'in 4'ünde doğruydu, tüm satırları doğru veren koşu 4'te 1'dir (ilk tur 0/2, "satır sayarak ver" düzeltmesinden sonra 1/2). Bayt ofseti ("birlikte yaz") düzeltme turunda 0/2 raporlandı. Raporlanan kod noktasını kendiniz doğrulayın (`grep -nP`).
+- **Sıkı yapılandırmada komşu not bulgu gibi çıkabiliyor (D9 yanlış pozitifi).** Sıkı fixture'da (deny kuralı, pinli MCP, CODEOWNERS) D9'un kötü desenlerinden (hook, oto-onay, yönlendirme, gizli Unicode) hiçbiri 4/4 koşuda bulgu sayılmadı, ama 4 koşunun 2'sinde komşu sertleştirme gözlemi `G-n` numarası ve şiddetle yazıldı (ilk tur 1/2, "sertleştirme notu, şiddetsiz" düzeltmesinden sonra 1/2; hangi koşuda çıkacağı değişiyor).
+- **Kötü yapılandırmada tespit:** kötü fixture'da 5 maddenin 5'i `dosya:satır` ile 2/2 koşuda bulundu (yalnız tek fixture, n=2).
+- **Hook:** proje ayarı yüklenmeden (`--setting-sources user`) 10 koşunun 10'unda hook çalışmadı (`HOOK_KOSTU.txt` 0/10; pozitif kontrol: proje ayarıyla marker oluştu).
+- Gerçek (sentetik olmayan) depolarda yanlış-pozitif oranı, farklı model/istem ve istemci sürümlerindeki davranış ÖLÇÜLMEDİ.
+
 ## [2.8.0] — 2026-10-26
 ### Değişti
 - **PHP raporu: serbest metin yerine SABİT ALANLI blok.** `SKILL.md` ŞERİT B (TR+EN) artık zorunlu bir `### PHP çalışma zamanı` / `### PHP runtime` bloğu ister:

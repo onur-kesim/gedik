@@ -15,6 +15,17 @@ ve yama önerisiyle gelir.
   teslim üstünlüğü hesaba bağlı.
 - **iOS şeridi (A8) bir kontrol listesidir, gerçek bir sistemde doğrulanmadı.** Henüz
   gerçek bir iOS/Capacitor-iOS uygulamasında koşmadı.
+- **D9 (depo içi ajan yapılandırması, v2.9) yalnız sentetik fixture'da ölçüldü** (2026-11-12;
+  tek model, tek istem, CVP hesabı, fixture başına n=2 koşu × 2 tur). Kötü fixture'da 5 maddenin
+  5'i (hook, proje MCP otomatik onayı + pinsiz `npx -y`, `ANTHROPIC_BASE_URL`, CI
+  `--dangerously-skip-permissions`, `runOn: folderOpen`) 2/2 koşuda `dosya:satır` ile bulundu.
+  Hiçbir koşu ekili hook'u çalıştırmadı (işaretçi 0/10; pozitif kontrol: proje ayarı yüklenince
+  işaretçi oluştu). İki bilinen sınır: (1) **gizli-Unicode satır numarası güvenilmez** — kod
+  noktaları 4/4 doğru ve gizli talimat hiç uygulanmadı, ama raporlanan 8 satırın yalnız 4'ü
+  doğruydu; kendiniz doğrulayın:
+  `grep -nP '[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2064}\x{2066}-\x{2069}\x{E0000}-\x{E007F}]' DOSYA`. (2) **Sıkı yapılandırılmış depoda komşu bir sertleştirme
+  notu yine numaralı ve şiddetli bulgu olarak çıkabiliyor** (4 koşunun 2'si; hangi koşuda
+  çıkacağı değişiyor). Gerçek depolarda yanlış-pozitif oranı: ÖLÇÜLEMEDİ.
 - **Canlı test yalnız yetki kapısı arkasında — yetkisiz reddeder.** Varsayılan olarak
   gedik kodu, yapılandırmayı ve artefaktı okur; canlı bir hedefe yalnız makinece
   doğrulanabilir bir yetki varken istek atar (sohbette kullanıcının kendi açık beyanı, ya
@@ -113,7 +124,7 @@ Yalnız kendi projende, yalnız çağrıldığında.
 | **A** istemci/offline/mobil | her zaman | prototip kirletme, tip karışıklığı, göç istismarı, sink envanteri, platform yapılandırması, intent yüzeyi, iOS/Capacitor yüzeyi (A8, yalnız kontrol listesi — yukarı bakın) |
 | **B** sunucu/API/DB/kimlik | T2/T3/T4 evet | enjeksiyon + ORM açık filtre, AuthN/AuthZ (IDOR), hesap yaşam döngüsü, XSS/CSRF/SSRF, **CORS kilidi**, webhook imzası, **hata kanal ayrımı**, sır katmanı, **hız sınırı + maliyet DoS + önbellek**, **sunucu tarafı doğrulama** |
 | **C** BaaS/RLS | T7 evet | **RLS kapalı tablo taraması**, politika doğruluğu (`USING`/`WITH CHECK`), anon vs service_role, storage, RPC, realtime, Firebase karşılıkları |
-| **D** yapay zekâ/LLM | T8 evet | doğrudan + **dolaylı istem enjeksiyonu**, **araç yetkisi**, çıktı güveni (model çıktısı = güvenilmeyen girdi), veri akışı, maliyet kötüye kullanımı |
+| **D** yapay zekâ/LLM + ajan yapılandırması | T8 evet; **D9** YZ olmasa da depo ajan yapılandırması taşıdığında (`.claude/`, `.mcp.json`, `.cursor/`, `.vscode/`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, …) | doğrudan + **dolaylı istem enjeksiyonu**, **araç yetkisi**, çıktı güveni (model çıktısı = güvenilmeyen girdi), veri akışı, maliyet kötüye kullanımı; **D9 depo içi ajan yapılandırması** — hook'lar, proje MCP otomatik onayı + pinsiz `npx -y`, uç nokta/ortam yönlendirme, izin atlatma (CI'da `--dangerously-skip-permissions` dahil), ajanın kendi yapılandırmasına yazabilmesi, talimat dosyasında gizli Unicode, `folderOpen`/`postCreateCommand`; kanıt okuyarak, asla çalıştırarak değil (D9 yalnız fixture'da ölçüldü — yukarı bakın) |
 | **E** sevk edilen artefakt | T9 evet | artefaktta **sızan sır**, debug bayrağı, **source map ile kaynak yeniden inşası**, test/staging kalıntısı, geniş yetki (Electron/container/eklenti/mobil), **artefakt↔kaynak eşleşmesi**, gömülü bağımlılık ayak izi |
 | **Test paketi mutasyonu** | T10 evet | zehirlenmiş test taraması + on mutantlık katalog; **M6 (yetki kaldırma) ve M7 (doğrulama atlama) zorunlu** — kaçan mutant = ölü bölge |
 | **Kod incelemesi** | kaynak varsa | güvenlik etkili doğruluk hataları, bağımlılık/CVE, sırrın yanlış katmanda kullanımı |

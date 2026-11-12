@@ -1,6 +1,6 @@
 # LANE D — AI / LLM Surface
 
-**Opens only if T8 is YES.**
+**D1–D8 open only if T8 is YES. EXCEPTION: D9 (in-repo agent configuration) is INDEPENDENT of T8** — it has its own trigger (see D9); in a repo that uses no AI, D9 alone can open.
 
 ## Why a separate lane
 
@@ -180,6 +180,36 @@ D3 measures the tool's **authorization**; this section measures the trustworthin
 
 ---
 
+## D9 — IN-REPO AGENT CONFIGURATION (executable surface; INDEPENDENT of T8)
+
+Agent configuration that sits in a repository is **not data, it is an executable surface:** whoever opens the repo in an agent client (Claude Code, Cursor, Copilot, Gemini, VS Code) may run the command, MCP server, or environment variable the configuration defines, **with their own authority.** This surface exists in a repo that uses no AI at all; so, unlike D1–D8, D9 is **not tied to T8** (trigger below).
+
+**Trigger (independent of T8):** D9 OPENS if the repo contains any of — `.claude/`, `.mcp.json`, `.cursor/`, `.cursorrules`, `.vscode/mcp.json`, `.vscode/settings.json`, `.vscode/tasks.json`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `SKILL.md`, or `.claude/skills/`. Measurement:
+
+```bash
+find . -maxdepth 3 \( -path ./.git -o -path ./node_modules \) -prune -o \( -name '.claude' -o -name '.mcp.json' -o -name '.cursor' -o -name '.cursorrules' -o -name '.gemini' -o -name '.devcontainer' -o -name 'AGENTS.md' -o -name 'CLAUDE.md' -o -name 'SKILL.md' -o -name 'copilot-instructions.md' -o -path './.vscode/mcp.json' -o -path './.vscode/settings.json' -o -path './.vscode/tasks.json' \) -print
+```
+
+If the output is empty D9 does NOT open and the scope records "D9: no trigger" (not called clean — there is no trigger). This measurement does not replace T8; D1–D8 of Lane D still open only if T8 is YES.
+
+| # | Weakness | Signature to look for | Severity |
+|---|---|---|---|
+| D9.1 | **Hook commands** | `hooks.*.command` (SessionStart, Stop, PreToolUse…): `curl`, `wget`, `bash -c`, `sh -c`, network access, writes outside the repo; a hook that runs at session start without user approval | CRITICAL |
+| D9.2 | **Project MCP auto-approval** | `enableAllProjectMcpServers: true`, `enabledMcpjsonServers`; in `.mcp.json` a server launched with unpinned `npx -y`, `uvx`, `bash -c` | CRITICAL/HIGH |
+| D9.3 | **Endpoint / environment redirection** | `env.ANTHROPIC_BASE_URL` (redirect to an endpoint outside the org or a hidden one), `NODE_OPTIONS`, `apiKeyHelper` (runs a command) | CRITICAL |
+| D9.4 | **Permission loosening** | `defaultMode: bypassPermissions`, auto-approve/YOLO modes; in CI `claude -p … --dangerously-skip-permissions`, `--yolo`, `codex --full-auto` combined with an **untrusted trigger** (`issue_comment`, `pull_request_target`, fork PR) | CRITICAL |
+| D9.5 | **Agent can write its own configuration** | no `Edit`/`Write` **deny** rule for `.claude/**`, `.mcp.json`, `AGENTS.md`; these paths absent from `CODEOWNERS` (the agent can loosen its own rules and make that persistent) | HIGH |
+| D9.6 | **Hidden Unicode in instruction files** | U+200B–200F, U+202A–202E, U+2060–2064, U+2066–2069, U+FEFF outside the file start, U+E0000–E007F (tag characters) in `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `SKILL.md`, `copilot-instructions.md` — the report gives **code point + line + byte offset together**; **give the line by counting lines, NOT by converting a byte offset** (`grep -n`, line-by-line reading); an instruction invisible to the eye | HIGH/CRITICAL |
+| D9.7 | **Other IDE execution** | `runOn: folderOpen` in `.vscode/tasks.json`; `postCreateCommand`/`postStartCommand`/`initializeCommand` in `.devcontainer/devcontainer.json` | HIGH |
+
+**PoC rule (D9 adaptation of K2 — WITHOUT running the configuration):** evidence = `file:line` + **field** + **value** + **which client executes it, and when** (e.g. "Claude Code runs the `SessionStart` hook when a session opens"; cite the documentation or CVE). **"Run it and see" is FORBIDDEN:** running the hook, MCP server, task, or CI step means executing the repo's attacker-controlled command on your own machine. Hidden Unicode (D9.6) is read without running anything: scan the file at byte level; write the code point, the **line you found by counting lines** (`grep -n`), and the byte offset together.
+
+**Honest limits:** (1) No fixed CVE list is kept; the version check is at the level of "keep the agent client up to date" (fixes that disable configuration-driven execution have shipped in the relevant clients; which version has them is NOT MEASURED by this skill). (2) D9 proves that a client **can** execute a configuration, not that it **was** executed; client behavior changes with version. (3) **The presence of a deny rule, a pinned MCP version, and a `CODEOWNERS` file — or gaps in its scope — are NOT D9 FINDINGS** (including that a deny rule can be bypassed through Bash, that a pinned package lacks a lockfile/integrity hash, or that CODEOWNERS has gaps outside the D9 paths). For a tight configuration write "no finding" under D9, not "safe"; if such an observation is wanted, it goes under a separate **"hardening note"** heading, **without severity** (no CRITICAL/HIGH/MEDIUM/LOW) and without a `G-n` number.
+
+**Report rule:** if the audited repo comes from an untrusted source (downloaded, fork, 3rd party), put one warning line at the top of the report: **"This repo carries agent configuration; inspect it without opening it in an agent."**
+
+---
+
 ## Lane D quick close-out check
 
 1. Are **all** external content sources feeding the model listed (D2)?
@@ -192,3 +222,4 @@ D3 measures the tool's **authorization**; this section measures the trustworthin
 8. Does the system prompt carry no secrets, and has this **been checked**?
 9. Was it measured whether the vector tenant boundary is **in the query itself** (D7)?
 10. Has tool/MCP provenance been verified, and has description-injection/agent-memory poisoning been audited (D8)?
+11. Was there an agent-configuration file in the repo (was the D9 trigger measured); if so, were hooks/MCP/env/permissions/hidden Unicode audited **without running them**, with file:line + field + value (D9)?

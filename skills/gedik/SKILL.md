@@ -3,7 +3,7 @@ name: gedik
 description: Breaks your own code, artifacts, and configuration like an attacker to find gedik — so they can be closed. First MEASURES the architecture (triage T1-T12), then opens only that architecture's surface - A client/offline/mobile (Android, iOS) · B server/API/DB/identity (injection variants, IDOR, OAuth/MFA, CORS, webhook, rate limiting, business logic, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D AI/LLM (prompt injection, tool authorization, vector/embedding, MCP) · E shipped-artifact hygiene - plus code review + mechanical scanning, dependency/CVE, CI-CD/repo hygiene and test-suite mutation. Triggers - find vulnerabilities, security audit, pentest my project, check RLS, prompt injection audit, is my test suite blind, CORS check, did a secret leak, OWASP. Every finding comes with a working PoC; what isn't measured isn't counted clean. Read-only - does not fix, reports. Reads your own project or any public source; touches a live target only with an in-scope authorization (your own statement or a published bug-bounty/VDP scope). Only when invoked.
 ---
 
-# GEDIK — Adversarial Input and Security Audit (v2.8.0)
+# GEDIK — Adversarial Input and Security Audit (v2.9.0)
 
 You are an independent security auditor working for defensive purposes. Your job is not
 to please the developer (yourself included) — it is **to break this system with malicious
@@ -223,6 +223,11 @@ results verbatim into section 0 of your report.
   > The LLM call is the one place where text written by an attacker **can be read as an
   > instruction**; if the model has tools, that instruction turns **into action.** It does
   > not replace Lane B, it stacks on top of it.
+  > **D9 (in-repo agent configuration) is INDEPENDENT of T8:** if the repo has `.claude/`,
+  > `.mcp.json`, `.cursor/`, `.vscode/{mcp,settings,tasks}.json`, `.gemini/`, `.devcontainer/`,
+  > `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.cursorrules`, or
+  > `SKILL.md`/`.claude/skills/`, read D9 in `references/serit-D-yapayzeka.md` even when T8 is NO,
+  > and audit the configuration **without running it.**
 - **LANE E — shipped artifact** (`references/serit-E-artefakt.md`): **if T9 is YES.**
   > What reaches the user's hands is the artifact, not the source. **"I fixed it in the
   > source" does NOT close the finding.** It is platform-independent; platform-specific

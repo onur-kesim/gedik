@@ -1,6 +1,6 @@
 # ŞERİT D — Yapay Zekâ / LLM Yüzeyi
 
-**Yalnızca T8 EVET ise açılır.**
+**D1–D8 yalnızca T8 EVET ise açılır. İSTİSNA: D9 (depo içi ajan yapılandırması) T8'den BAĞIMSIZDIR** — kendi tetiği vardır (D9 bölümü); YZ kullanmayan bir depoda da yalnız D9 açılabilir.
 
 ## Neden ayrı bir şerit
 
@@ -168,6 +168,36 @@ D3 aracın **yetkisini** ölçer; bu bölüm aracın **kaynağının güvenilirl
 
 ---
 
+## D9 — DEPO İÇİ AJAN YAPILANDIRMASI (yürütülebilir yüzey; T8'den BAĞIMSIZ)
+
+Bir depoda duran ajan yapılandırması **veri değil, yürütülebilir yüzeydir:** depoyu bir ajan istemcisinde (Claude Code, Cursor, Copilot, Gemini, VS Code) açan kişi, yapılandırmanın tanımladığı komutu, MCP sunucusunu ya da ortam değişkenini **kendi yetkisiyle** çalıştırabilir. Bu yüzey YZ kullanmayan bir depoda da vardır; bu yüzden D9, D1–D8'in aksine **T8'e bağlı değildir** (aşağıdaki tetik).
+
+**Tetik (T8'den bağımsız):** depoda şunlardan biri varsa D9 AÇILIR — `.claude/`, `.mcp.json`, `.cursor/`, `.cursorrules`, `.vscode/mcp.json`, `.vscode/settings.json`, `.vscode/tasks.json`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `SKILL.md` ya da `.claude/skills/`. Ölçüm:
+
+```bash
+find . -maxdepth 3 \( -path ./.git -o -path ./node_modules \) -prune -o \( -name '.claude' -o -name '.mcp.json' -o -name '.cursor' -o -name '.cursorrules' -o -name '.gemini' -o -name '.devcontainer' -o -name 'AGENTS.md' -o -name 'CLAUDE.md' -o -name 'SKILL.md' -o -name 'copilot-instructions.md' -o -path './.vscode/mcp.json' -o -path './.vscode/settings.json' -o -path './.vscode/tasks.json' \) -print
+```
+
+Çıktı boşsa D9 AÇILMAZ ve kapsamda "D9: tetik yok" yazılır (temiz denmez, tetik yoktur). Bu ölçüm T8'in yerine geçmez; Şerit D'nin D1–D8'i yine yalnız T8 EVET ise açılır.
+
+| # | Zayıflık | Bakılacak imza | Şiddet |
+|---|---|---|---|
+| D9.1 | **Hook komutları** | `hooks.*.command` (SessionStart, Stop, PreToolUse…): `curl`, `wget`, `bash -c`, `sh -c`, ağ erişimi, depo dışına yazma; oturum açılırken kullanıcı onayı olmadan çalışan hook | KRİTİK |
+| D9.2 | **Proje MCP otomatik onayı** | `enableAllProjectMcpServers: true`, `enabledMcpjsonServers`; `.mcp.json` içinde sürümü pinsiz `npx -y`, `uvx`, `bash -c` ile açılan sunucu | KRİTİK/YÜKSEK |
+| D9.3 | **Uç nokta / ortam yönlendirme** | `env.ANTHROPIC_BASE_URL` (depo dışı ya da gizli bir uç noktaya yönlendirme), `NODE_OPTIONS`, `apiKeyHelper` (komut çalıştırır) | KRİTİK |
+| D9.4 | **İzin gevşetme** | `defaultMode: bypassPermissions`, auto-approve/YOLO modları; CI'da `claude -p … --dangerously-skip-permissions`, `--yolo`, `codex --full-auto` **güvenilmeyen bir tetikleyiciyle** (`issue_comment`, `pull_request_target`, fork PR) birlikte | KRİTİK |
+| D9.5 | **Ajanın kendi yapılandırmasına yazabilmesi** | `.claude/**`, `.mcp.json`, `AGENTS.md` için `Edit`/`Write` **deny** kuralının yokluğu; `CODEOWNERS`'ta bu yolların yokluğu (ajan kendi kurallarını gevşetip kalıcılaştırabilir) | YÜKSEK |
+| D9.6 | **Talimat dosyasında gizli Unicode** | `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `SKILL.md`, `copilot-instructions.md` içinde U+200B–200F, U+202A–202E, U+2060–2064, U+2066–2069, dosya başı dışında U+FEFF, U+E0000–E007F (tag karakterleri) — raporda **kod noktası + satır + bayt ofseti birlikte** yazılır; **satırı bayt ofsetinden DEĞİL, satır sayarak ver** (`grep -n`, satır satır okuma; ofseti satıra çevirme); gözle görünmeyen talimat | YÜKSEK/KRİTİK |
+| D9.7 | **Diğer IDE yürütmesi** | `.vscode/tasks.json` içinde `runOn: folderOpen`; `.devcontainer/devcontainer.json` içinde `postCreateCommand`/`postStartCommand`/`initializeCommand` | YÜKSEK |
+
+**PoC kuralı (K2'nin D9 uyarlaması — yapılandırmayı ÇALIŞTIRMADAN):** kanıt = `dosya:satır` + **alan** + **değer** + **hangi istemcinin bunu ne zaman yürüttüğü** (örn. "Claude Code, `SessionStart` hook'unu oturum açılırken çalıştırır"; kaynağı belge ya da CVE ile ver). **"Çalıştırıp gör" YASAK:** hook'u, MCP sunucusunu, görevi ya da CI adımını çalıştırmak, depodaki saldırgan komutu kendi makinende yürütmektir. Gizli Unicode (D9.6) kodu çalıştırmadan okunur: dosyayı bayt düzeyinde tara; kod noktasını, **satır sayarak bulduğun satırı** (`grep -n`) ve bayt ofsetini birlikte yaz.
+
+**Dürüst sınırlar:** (1) Sabit CVE listesi tutulmaz; sürüm kontrolü "ajan istemcisini güncel tut" düzeyindedir (ilgili istemcilerde yapılandırma yoluyla yürütmeyi kapatan sürüm düzeltmeleri çıkmıştır; hangi sürümde olduğu bu skill'de ÖLÇÜLMEZ). (2) D9 bir yapılandırmanın **yürütüldüğünü** değil, bir istemcinin **yürütebileceğini** kanıtlar; istemci davranışı sürümle değişir. (3) **Deny kuralının varlığı, pinli MCP sürümü ve `CODEOWNERS`'ın varlığı ya da kapsam eksiği D9 BULGUSU DEĞİLDİR** (deny'ın Bash ile aşılabilirliği, pinli paketin lockfile/bütünlük özeti eksikliği, CODEOWNERS'ın D9 yolları dışındaki boşlukları dahil). Sıkı yapılandırma için D9'da "bulgu yok" yazılır, "güvenli" yazılmaz; böyle bir gözlem istenirse ayrı bir **"sertleştirme notu"** başlığında, **şiddetsiz** (CRITICAL/HIGH/MEDIUM/LOW yok) ve `G-n` numarası almadan yazılır.
+
+**Rapor kuralı:** denetlenen depo güvenilmeyen kaynaktansa (indirilmiş, fork, 3. taraf) rapor başına tek satır uyarı yaz: **"Bu depo ajan yapılandırması taşıyor; bir ajanda açmadan inceleyin."**
+
+---
+
 ## Şerit D hızlı kapanış kontrolü
 
 1. Modele giden **tüm** dış içerik kaynakları listelendi mi (D2)?
@@ -180,3 +210,4 @@ D3 aracın **yetkisini** ölçer; bu bölüm aracın **kaynağının güvenilirl
 8. Sistem istemi sır taşımıyor, taşımadığı **arandı** mı?
 9. Vektör kiracı-sınırı **sorgunun kendisinde** mi ölçüldü (D7)?
 10. Araç/MCP kaynağı doğrulandı ve açıklama-enjeksiyonu/ajan hafızası zehirlenmesi denetlendi mi (D8)?
+11. Depoda ajan yapılandırma dosyası var mıydı (D9 tetiği ölçüldü mü); varsa hook/MCP/ortam/izin/gizli-Unicode **çalıştırılmadan**, dosya:satır + alan + değerle denetlendi mi (D9)?

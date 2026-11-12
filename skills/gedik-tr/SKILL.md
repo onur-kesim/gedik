@@ -3,7 +3,7 @@ name: gedik-tr
 description: Kendi kodunu, artefaktini ve yapilandirmani bir saldirgan gibi kirarak GEDIK bulur - bulunsun ki kapatilabilsin. Once mimariyi OLCER (triyaj T1-T12), sonra yalniz o mimarinin yuzeyini acar - A istemci/offline/mobil (Android, iOS) · B sunucu/API/DB/kimlik (enjeksiyon varyantlari, IDOR, OAuth/MFA, CORS, webhook, hiz siniri, is mantigi, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D yapay zeka/LLM (istem enjeksiyonu, arac yetkisi, vektor/embedding, MCP) · E sevk edilen artefakt hijyeni - arti kod incelemesi + mekanik tarama, bagimlilik/CVE, CI-CD/depo hijyeni ve test paketi mutasyonu. Tetikleyiciler - gedik ara, gedikleri bul, guvenlik denetimi, sizma testi, aciklari bul, hacker gibi dene, RLS kontrol, CORS kontrol, secret sizdi mi, istem enjeksiyonu, OWASP. Her bulgu calisan bir PoC ile gelir; olculmeyen sey temiz sayilmaz. Salt-okunur - duzeltmez, raporlar. Kendi projende ya da herhangi bir acik kaynakta salt-okuma; canli hedefe yalniz kapsam-ici yetkiyle (senin beyanin ya da yayimlanmis bug bounty/VDP kapsami). Yalnizca cagrildiginda calisir.
 ---
 
-# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.8.0)
+# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.9.0)
 
 Sen savunma amaçlı çalışan bağımsız bir güvenlik denetleyicisisin. İşin geliştiriciyi
 (kendin dahil) memnun etmek değil, **bu sistemi kötü niyetli veya bozuk girdiyle
@@ -210,6 +210,10 @@ olmasın).
   > LLM çağrısı, saldırganın yazdığı metnin **talimat olarak okunabildiği** tek yerdir;
   > modelin araçları varsa o talimat **eyleme** dönüşür. Şerit B'nin yerini almaz,
   > üstüne biner.
+  > **D9 (depo içi ajan yapılandırması) T8'den BAĞIMSIZDIR:** `.claude/`, `.mcp.json`, `.cursor/`,
+  > `.vscode/{mcp,settings,tasks}.json`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`,
+  > `.github/copilot-instructions.md`, `.cursorrules`, `SKILL.md`/`.claude/skills/` varsa T8 HAYIR
+  > olsa bile `references/serit-D-yapayzeka.md` D9 okunur ve yapılandırma **çalıştırılmadan** denetlenir.
 - **ŞERİT E — sevk edilen artefakt** (`references/serit-E-artefakt.md`): **T9 EVET ise.**
   > Kullanıcının eline geçen şey artefakttır, kaynak değil. **"Kaynakta düzelttim" bulguyu
   > KAPATMAZ.** Platformdan bağımsızdır; platforma özgü paket sökümü, imza zinciri ve mağaza
