@@ -1,5 +1,14 @@
 # DURUM — gedik
 
+## DEVİR O25 · 2026-11-14 · O24 → O25 · yazan: Cowork — v2.10.0 YAYINDA; dilim kapandı, yeni dilim AÇILMADI
+Aşama: YAPIM · açık dilim YOK (v2.10.0 TESLİM 3/3). Sebep: oturum 10 mesajı geçti, bağlam ÖLÇÜLEMEDİ → kural gereği DEVİR.
+Son yapılan: v2.10.0 hakemlik (D5 4/4) + README×2 + CHANGELOG bilinen sınırlar (1a37f25); push Onur; `ls-remote` main = `v2.10.0^{}` = 1a37f25; Release v2.10.0 2026-11-14T04:45:26Z; CI kapilar #26/#27 + surum #5 success.
+Yarım kalan: yok.
+Sıradaki ilk iş (Onur kararı 2026-11-12: "o bitince başkalarının sayfalarını denetlemeye başlayalım"): 1) yeni DILIM v2.11.0 yaz — iki parça: (a) ÖN KOŞUL düzeltmeler: izin reddini kabukla dolanma yasağı (kilitli cümle, TR+EN; ölçüm: yazma reddi fixture'ı ×2, heredoc 0/2) + C1 ayırt edici ölçüm (`git archive` ile eklenti kopyası `_calisma/eklenti/`, hedef onun dışında, 1 Write koşusu; sonra C1 ×2); (b) URL ile başkasının sitesini denetleme: §0.1 yetki kapısının üçüncü taraf siteye genişletilmesi — site sahibinin yazılı yetki belgesi (kapsam: alan adları, tarih aralığı, yasak testler, iletişim kişisi, imza), hız sınırı, yalnız pasif/yetkili aktif test ayrımı, rapor teslimi; hukuki çerçeve TCK 243–245 + KVKK (araştırma ve şablon güncel kaynakla, Cowork). 2) DILIM Onur onayıyla kilitlenir, YAP Code'a devredilir.
+Açık karar (Onur): yetki belgesi şablonu — önceki (O10–O14) müşteri yetki belgesi şablonu bulunup güncellenecek mi, sıfırdan mı; ücretli hizmet mi, ücretsiz mi (sözleşme/fatura etkisi).
+Uyarı: test depoları (`_calisma/saha_2100/hedef/*`) ajan yapılandırması ve kötü bağımlılık bildirimleri taşır; ajanda proje ayarıyla AÇMA. Hedef dizinlerde Bash ile yazılmış 5 izlenmeyen `gedik-bulgular.json` kanıt olarak duruyor (silinmedi).
+Yeni oturumda yaz: `gedik · O25 · başla`
+
 ## DEVİR O24 · 2026-11-12 · O23 → O24 · yazan: Claude Code — v2.10.0 DÜZELT turu BİTTİ (skill değişmedi; commit/push YOK)
 Aşama: YAPIM · sürüm dilimi (2.10.0), K2 son gün 2026-11-19. DILIM: YAP + DOĞRULA + DÜZELT [x]; TESLİM 0/3. Üçüncü tur YOK (K5).
 Son yapılan: osv-scanner v2.7.1 portable (KAYIT.md); 8 koşu `ham_d1/`: A5/B3 tarayıcıdan 3/4 (1/4 ezber CVE: `--offline` yanlış bayrak); C1 0/4 (Write "sensitive file" reddi = harness, ÖLÇÜLEMEDİ); C2 yeniden koşulmadı.
@@ -246,6 +255,7 @@ Yeni oturumda yaz:  gedik · O4 · başla
 | 2026-10-01 | 1 (son ürün-deseni commit e45c8a3 = README benchmark, 2026-09-30; skills/araclar kodu: 2026-09-29, 2 gün) | 1 (fix dilimi 2026-09-30 açıldı; benchmark H1 yeniden koşum tamam) | 0 (kapilar 7/0) | 0 yıldız / 0 fork (gh api, 2026-10-01) |
 | 2026-10-22 | 18 (son ürün-deseni commit'i d70f79e = README, 2026-10-04; skills/araclar kodu 2026-09-29 → 23 gün) — KIRMIZI, bu dilimin commit'i atılınca kapanır | 0 (v2.7.0 dilimi bugün açıldı, YAP+DOĞRULA bugün bitti) | 1 (kapilar: yalnız `ürün nabzı`; diğer 6 kapı + çeviri + kilit + iç ad + bulgu_kapisi + php öz-test YEŞİL) | 1 yıldız / 0 fork (`gh api`, 2026-10-22) |
 | 2026-11-12 | 0 (f446be7 = v2.9.0, bugün) | 0 (v2.9.0 dilimi bugün açıldı ve teslim edildi) | 0 (CI kapilar #23 main + #24 etiket success, surum #4 success; yerel kapilar öz-test + çeviri + iç ad yeşil) | 1 yıldız / 0 fork (GitHub API, 2026-11-12) |
+| 2026-11-14 | 0 (1a37f25 = v2.10.0, bugün) | 2 (v2.10.0 dilimi 2026-11-12 açıldı) | 0 (CI kapilar #26 main + #27 etiket success, surum #5 success; yerel kapılar yeşil) | 1 yıldız / 0 fork (GitHub API, 2026-11-14) |
 
 ## KARAR GÜNLÜĞÜ (sona eklenir, silinmez; tek satır, tarihli)
 - 2026-09-29 — proje-sablonu'ndan (onur-kesim/proje-sablonu, `main`) klonsuz kuruldu; `gh repo create onur-kesim/gedik --template onur-kesim/proje-sablonu --public`.

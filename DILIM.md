@@ -38,7 +38,7 @@ Kurallar: skill salt-okur · YENİ PYTHON KAPISI YOK (kabul ham rapor okumasıyl
 ## TESLİM
 - [x] Cowork hakemlik — O24 Cowork: 22/22 jsonl mekanik çapraz kontrol (end_turn 22/22; rapordaki CVE/GHSA ↔ tarayıcı çıktısı; Write reddi metni) + 4 beyan bağımsız doğrulandı (C3 G-n 0/2 ✓, C5 sabit cümle 2/2 ✓, A5 next-kotu-d ID'leri tarayıcı çıktısında ✓, cicd-kotu-d ezber 3 CVE ✓). SAPMA: 22 raporun tamamı elle okunmadı. YENİ BULGU: yazma reddi sonrası Bash heredoc ile yazma ≥5/22
 - [x] README×2: Lanes (CI/CD satırı + B'ye RSC), What's not delivered (yalnız fixture'da ölçüldü + tutmayan kabuller), D9 bölümündeki iki sınırın yeni sonucu
-- [ ] `v2.10.0` etiketi + Release + dört sayı; push: Onur
+- [x] `v2.10.0` etiketi + Release + dört sayı; push: Onur — 2026-11-14: main = v2.10.0^{} = 1a37f25; Release 04:45:26Z; CI kapilar #26/#27 + surum #5 success
 
 ## DÜZELT (2026-11-12 · tek tur, skill değişmez; `ham_d1/`, 8 koşu)
 - [x] (1) C1 yeniden ölç (4 koşu, Write allowedTools'ta): TUTMADI 0/4 JSON yazılmadı — `Write` "sensitive file" izin reddi (harness); C1 skill etkisi ÖLÇÜLEMEDİ
