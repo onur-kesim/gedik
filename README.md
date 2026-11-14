@@ -15,6 +15,19 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   is real, the delivery edge is account-dependent.
 - **iOS lane (A8) is a checklist, not validated on a real system.** It has not yet been
   run against a real iOS / Capacitor-iOS app.
+- **v2.10 (CI/CD supply chain + Next.js/RSC) is measured only on synthetic fixtures**
+  (2026-11-12; one model, one prompt, CVP account, n=2 runs per fixture; 22 runs, all completed,
+  no network or DNS attempt). Planted items were found with `file:line` in every run (CI/CD 4 of
+  4, Next.js 2 of 2); the clean fixtures got no finding in those classes. Known limits:
+  (1) **version matching needs a scanner.** With `osv-scanner` on PATH the advisory IDs came from
+  the scanner in 3 of 4 runs; in 1 run the agent used the wrong flag (`--offline`, 0 results) and
+  listed three lodash CVEs from memory, labelled as unverified. Without a scanner gedik writes
+  NOT MEASURED. (2) **Placing `gedik-bulgular.json` next to the `.md` report could not be
+  tested:** in the test setup Claude Code refused writes into the target folder as a "sensitive
+  file". (3) **When a write was refused, the agent wrote the file through a shell heredoc in at
+  least 5 of 22 runs.** gedik does not forbid this yet; grant only the permissions you intend.
+  (4) Hidden-Unicode line numbers: v2.10 tells the agent to run a fixed `grep` and copy its
+  output; 1 of 2 runs did not run it and gave a wrong line — verify with the command below.
 - **D9 (in-repo agent configuration, v2.9) is measured only on synthetic fixtures**
   (2026-11-12; one model, one prompt, CVP account, n=2 runs per fixture × 2 rounds). On the bad
   fixture all 5 items (hook, project-MCP auto-approval + unpinned `npx -y`, `ANTHROPIC_BASE_URL`,
@@ -127,13 +140,13 @@ Only on your own project, and only when invoked.
 | Lane | When | Scope |
 |---|---|---|
 | **A** client/offline/mobile | always | prototype pollution, type confusion, migration exploits, sink inventory, platform configuration, intent surface, iOS/Capacitor surface (A8, checklist-only — see above) |
-| **B** server/API/DB/identity | T2/T3/T4 yes | injection + ORM open-filter, AuthN/AuthZ (IDOR), account lifecycle, XSS/CSRF/SSRF, **CORS lock**, webhook signatures, **error-channel separation**, secret layering, **rate limits + cost-DoS + cache**, **server-side validation** |
+| **B** server/API/DB/identity | T2/T3/T4 yes | injection + ORM open-filter, AuthN/AuthZ (IDOR), account lifecycle, XSS/CSRF/SSRF, **CORS lock**, webhook signatures, **error-channel separation**, secret layering, **rate limits + cost-DoS + cache**, **server-side validation**; **Next.js/RSC add-on (v2.10, `serit-B-rsc.md`)** — server functions as public endpoints (session + ownership + schema, mass assignment), authorization only in middleware, `next`/`react-server-dom-*` version matched by a scanner (never from memory), `use cache` keys, config SSRF |
 | **C** BaaS/RLS | T7 yes | **RLS-disabled table scan**, policy correctness (`USING`/`WITH CHECK`), anon vs. service_role, storage, RPC, realtime, Firebase equivalents |
 | **D** AI/LLM + agent config | T8 yes; **D9** also without AI, whenever the repo carries agent config (`.claude/`, `.mcp.json`, `.cursor/`, `.vscode/`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, …) | direct + **indirect prompt injection**, **tool authorization**, output trust (model output = untrusted input), data flow, cost abuse; **D9 in-repo agent configuration** — hooks, project-MCP auto-approval + unpinned `npx -y`, endpoint/env redirection, permission bypass (incl. CI `--dangerously-skip-permissions`), agent able to write its own config, hidden Unicode in instruction files, `folderOpen`/`postCreateCommand`; evidence by reading, never by running (D9 measured on fixtures only — see above) |
 | **E** shipped artifact | T9 yes | **leaked secrets** in artifacts, debug flags, **source-map reconstruction**, test/staging leftovers, over-broad permissions (Electron/container/extension/mobile), **artifact↔source matching**, embedded dependency footprint |
 | **Test-suite mutation** | T10 yes | poisoned-test scan + a ten-item mutant catalog; **M6 (authorization removal) and M7 (validation bypass) are mandatory** — an escaping mutant is a dead zone |
 | **Code review** | source available | security-impact correctness bugs, dependency/CVE, secrets used in the wrong layer |
-| **CI/CD + repo** | repo/CI available | git-history secret scanning, `pull_request_target`, action pinning, **post-leak recovery sequence** |
+| **CI/CD + repo** | repo/CI available | git-history secret scanning, `pull_request_target`, action pinning, **post-leak recovery sequence**; **supply chain (v2.10)** — `issue_comment` pwn request, `workflow_run` artifact hand-off, git/URL dependencies, loosened package-manager defaults (`.npmrc`, pnpm, Dependabot cooldown, `npm install` in CI), malicious versions via `osv-scanner`/`npm audit` (else NOT MEASURED) |
 
 ## Benchmark (measured — 2026-09-30)
 

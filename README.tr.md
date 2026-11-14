@@ -15,6 +15,19 @@ ve yama önerisiyle gelir.
   teslim üstünlüğü hesaba bağlı.
 - **iOS şeridi (A8) bir kontrol listesidir, gerçek bir sistemde doğrulanmadı.** Henüz
   gerçek bir iOS/Capacitor-iOS uygulamasında koşmadı.
+- **v2.10 (CI/CD tedarik zinciri + Next.js/RSC) yalnız sentetik fixture'da ölçüldü**
+  (2026-11-12; tek model, tek istem, CVP hesabı, fixture başına n=2 koşu; 22 koşu, hepsi
+  tamamlandı, ağ ya da DNS girişimi yok). Ekili maddeler her koşuda `dosya:satır` ile bulundu
+  (CI/CD 4/4, Next.js 2/2); temiz fixture'larda bu sınıflarda bulgu çıkmadı. Bilinen sınırlar:
+  (1) **sürüm eşleşmesi tarayıcı ister.** `osv-scanner` PATH'teyken danışma kimlikleri 4 koşunun
+  3'ünde tarayıcıdan geldi; 1 koşuda ajan yanlış bayrak kullandı (`--offline`, 0 sonuç) ve üç
+  lodash CVE'sini ezberden, "doğrulanmadı" etiketiyle yazdı. Tarayıcı yoksa gedik ÖLÇÜLEMEDİ yazar.
+  (2) **`gedik-bulgular.json`'ın `.md` raporun yanına yazılması sınanamadı:** test kurulumunda
+  Claude Code hedef klasöre yazmayı "hassas dosya" diye reddetti. (3) **Yazma reddedildiğinde ajan
+  dosyayı en az 22 koşunun 5'inde kabuk heredoc'u ile yazdı.** gedik bunu henüz yasaklamıyor;
+  yalnız niyet ettiğiniz izinleri verin. (4) Gizli-Unicode satır numarası: v2.10 ajana sabit bir
+  `grep` komutunu koşup çıktısını kopyalamasını söylüyor; 2 koşunun 1'i komutu koşmadı ve yanlış
+  satır verdi — aşağıdaki komutla doğrulayın.
 - **D9 (depo içi ajan yapılandırması, v2.9) yalnız sentetik fixture'da ölçüldü** (2026-11-12;
   tek model, tek istem, CVP hesabı, fixture başına n=2 koşu × 2 tur). Kötü fixture'da 5 maddenin
   5'i (hook, proje MCP otomatik onayı + pinsiz `npx -y`, `ANTHROPIC_BASE_URL`, CI
@@ -122,13 +135,13 @@ Yalnız kendi projende, yalnız çağrıldığında.
 | Şerit | Ne zaman | Kapsam |
 |---|---|---|
 | **A** istemci/offline/mobil | her zaman | prototip kirletme, tip karışıklığı, göç istismarı, sink envanteri, platform yapılandırması, intent yüzeyi, iOS/Capacitor yüzeyi (A8, yalnız kontrol listesi — yukarı bakın) |
-| **B** sunucu/API/DB/kimlik | T2/T3/T4 evet | enjeksiyon + ORM açık filtre, AuthN/AuthZ (IDOR), hesap yaşam döngüsü, XSS/CSRF/SSRF, **CORS kilidi**, webhook imzası, **hata kanal ayrımı**, sır katmanı, **hız sınırı + maliyet DoS + önbellek**, **sunucu tarafı doğrulama** |
+| **B** sunucu/API/DB/kimlik | T2/T3/T4 evet | enjeksiyon + ORM açık filtre, AuthN/AuthZ (IDOR), hesap yaşam döngüsü, XSS/CSRF/SSRF, **CORS kilidi**, webhook imzası, **hata kanal ayrımı**, sır katmanı, **hız sınırı + maliyet DoS + önbellek**, **sunucu tarafı doğrulama**; **Next.js/RSC eki (v2.10, `serit-B-rsc.md`)** — herkese açık uç nokta olarak server function (oturum + sahiplik + şema, mass assignment), yalnız middleware'de yetki, `next`/`react-server-dom-*` sürümü tarayıcıyla eşlenir (asla ezberden), `use cache` anahtarı, yapılandırma kaynaklı SSRF |
 | **C** BaaS/RLS | T7 evet | **RLS kapalı tablo taraması**, politika doğruluğu (`USING`/`WITH CHECK`), anon vs service_role, storage, RPC, realtime, Firebase karşılıkları |
 | **D** yapay zekâ/LLM + ajan yapılandırması | T8 evet; **D9** YZ olmasa da depo ajan yapılandırması taşıdığında (`.claude/`, `.mcp.json`, `.cursor/`, `.vscode/`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, …) | doğrudan + **dolaylı istem enjeksiyonu**, **araç yetkisi**, çıktı güveni (model çıktısı = güvenilmeyen girdi), veri akışı, maliyet kötüye kullanımı; **D9 depo içi ajan yapılandırması** — hook'lar, proje MCP otomatik onayı + pinsiz `npx -y`, uç nokta/ortam yönlendirme, izin atlatma (CI'da `--dangerously-skip-permissions` dahil), ajanın kendi yapılandırmasına yazabilmesi, talimat dosyasında gizli Unicode, `folderOpen`/`postCreateCommand`; kanıt okuyarak, asla çalıştırarak değil (D9 yalnız fixture'da ölçüldü — yukarı bakın) |
 | **E** sevk edilen artefakt | T9 evet | artefaktta **sızan sır**, debug bayrağı, **source map ile kaynak yeniden inşası**, test/staging kalıntısı, geniş yetki (Electron/container/eklenti/mobil), **artefakt↔kaynak eşleşmesi**, gömülü bağımlılık ayak izi |
 | **Test paketi mutasyonu** | T10 evet | zehirlenmiş test taraması + on mutantlık katalog; **M6 (yetki kaldırma) ve M7 (doğrulama atlama) zorunlu** — kaçan mutant = ölü bölge |
 | **Kod incelemesi** | kaynak varsa | güvenlik etkili doğruluk hataları, bağımlılık/CVE, sırrın yanlış katmanda kullanımı |
-| **CI/CD + depo** | repo/CI varsa | git geçmişi sır taraması, `pull_request_target`, action sabitleme, **sızıntı sonrası kurtarma sırası** |
+| **CI/CD + depo** | repo/CI varsa | git geçmişi sır taraması, `pull_request_target`, action sabitleme, **sızıntı sonrası kurtarma sırası**; **tedarik zinciri (v2.10)** — `issue_comment` pwn request, `workflow_run` artifact devri, git/URL bağımlılığı, gevşetilmiş paket yöneticisi varsayılanları (`.npmrc`, pnpm, Dependabot cooldown, CI'da `npm install`), kötü amaçlı sürüm `osv-scanner`/`npm audit` ile (yoksa ÖLÇÜLEMEDİ) |
 
 ## Benchmark (ölçülmüş — 2026-09-30)
 

@@ -20,6 +20,12 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 - **C5** sabit ret cümlesi rapor şablonunda sabit satır (`ÖLÇÜLMEDİ — yetki yok` / `NOT MEASURED — no authorization`, aynen kopyalanır; birebir 1/6'ydı).
 ### Sınır
 - Yeni Python kapısı yok; kabul ham rapor okumasıyla (bkz. KRITER "v2.10.0 ÖLÇÜMÜ").
+### Bilinen sınırlar (KRITER "v2.10.0 ÖLÇÜMÜ" + "DÜZELT"; claude-sonnet-5-5, tek model, sentetik fixture, n=2; 22 koşu)
+- Ekili maddeler her koşuda `dosya:satır` ile bulundu (CI/CD 4/4, Next.js 2/2); temiz fixture'larda bu sınıflarda bulgu yok.
+- A5/B3: `osv-scanner` PATH'teyken eşleşme 3/4 koşuda tarayıcıdan; 1/4'te yanlış bayrak (`--offline`) + ezberden 3 CVE ("doğrulanmadı" etiketli). Tarayıcı yoksa ÖLÇÜLEMEDİ.
+- C1 (JSON konumu) sınanamadı: test kurulumunda hedef klasöre yazma "sensitive file" diye reddedildi (`--plugin-dir` hedefin üst dizini; neden TAHMİN).
+- Yazma reddinde ajan en az 5/22 koşuda dosyayı kabuk heredoc'u ile yazdı; skill bunu yasaklamıyor (sonraki dilim adayı).
+- C2: sabit `grep` komutu 1/2 koşuda koşulmadı, satır yanlış.
 
 ## [2.9.0] — 2026-11-12
 ### Eklendi
