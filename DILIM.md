@@ -16,7 +16,7 @@ Kurallar: skill salt-okur · TR kanonik + EN birebir, çeviri kapısı · yeni k
 - [ ] Sürüm 2.11.0 dört yerde + CHANGELOG [2.11.0]; çeviri + kapilar + iç ad yeşil
 
 ## YAP — C: hukuk ve şablon (Cowork; ayrı commit, `belgeler/yetki/`)
-- [ ] C1 güncel kaynakla araştırma: TCK 243–245 (rızanın hukuka aykırılığı kaldırması, pasif inceleme), KVKK (test sırasında görülen kişisel veri, veri işleyen sayılma, md. 12), sorumluluk reddi sınırı. Her iddia kaynak + tarih + GÜVEN; NE ÖLÇÜLEMEDİ dolu
+- [ ] C1 güncel kaynakla araştırma: **7545 s. Siber Güvenlik Kanunu** (m. 7, 16/2, geçici 1/4 — yetkilendirme/sertifikasyon gerçek kişiye ve ücretsiz pasif incelemeye uygulanır mı; zafiyet bildirimi kimin yükü) + TCK 243–245 (rızanın hukuka aykırılığı kaldırması, pasif inceleme), KVKK (test sırasında görülen kişisel veri, veri işleyen sayılma, md. 12), sorumluluk reddi sınırı. Her iddia kaynak + tarih + GÜVEN; NE ÖLÇÜLEMEDİ dolu
 - [ ] C2 yetki belgesi şablonu, iki sürüm: **(i) ücretsiz** — yetki + kapsam + pasif test listesi + yasaklar + pencere + token + sorumluluk reddi + KVKK maddesi + imza; **(ii) ücretli** — (i) + hizmet/ücret/fatura/sorumluluk sınırı. (ii) aşağıdaki BLOKER kapanmadan KULLANILMAZ
 - [ ] BLOKER (ii): TSK personeli olarak ücretli hizmet verme (926 s. Kanun / ek iş yasağı) ayrıca araştırılır; sonuç Onur'a, karar günlüğüne
 
@@ -35,7 +35,7 @@ Kurallar: skill salt-okur · TR kanonik + EN birebir, çeviri kapısı · yeni k
 - [ ] Cowork hakemlik: istek günlüğü ↔ rapor beyanı çapraz kontrol + D5 rastgele 1 beyan
 - [ ] README×2: (c) yetki yolu, pasif kapsam, "bu sürümde HAYIR: aktif test, ücretli hizmet şablonu (bloker)", gerçek siteye hiç denenmedi
 - [ ] `v2.11.0` etiketi + Release + dört sayı; push: Onur
-- [ ] İLK GERÇEK SİTE (dilim dışı, T5'ten sonra): bir başvuru sahibiyle C2(i) imzalanır, token yerleştirilir, tek pasif koşu
+- [ ] İLK GERÇEK SİTE (dilim dışı, T5'ten sonra; BLOKER: C1'de 7545 yetkilendirme sorusu kapanmadan YOK — avukat görüşü ya da Siber Güvenlik Başkanlığı yanıtı): bir başvuru sahibiyle C2(i) imzalanır, token yerleştirilir, tek pasif koşu
 
 ## Sonuç
 (boş)
