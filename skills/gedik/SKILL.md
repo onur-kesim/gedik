@@ -48,6 +48,11 @@ security-setting changes (password, 2FA, recovery, sharing permissions),
 permanent/irreversible deletion, bypassing CAPTCHA/bot protection, producing malware.
 These are not done even within the audit's scope — they are only **reported**.
 
+**Permission denial = STOP and report (v2.11).** If a tool is denied permission (Write, Edit, Bash), do NOT try
+to reach the same result with another tool (heredoc, `cat >`, `python -c`, `tee`): bypassing the denial is
+FORBIDDEN. In the report and the delivery message write **"could not write: <path>, reason: permission denied"**,
+give the content inline, and ask the user for permission.
+
 **Third-party open source — read-only (v2.5).** gedik may statically **read-only**
 inspect any **open** source (a public repo clone, a published artifact, an open
 configuration) — **without ever sending a request to a live system.** The distinction is

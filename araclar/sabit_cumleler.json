@@ -222,6 +222,18 @@
       "dosya": "SKILL.md",
       "tr": "- İmaj taraması: grype <N|ÖLÇÜLEMEDİ> · trivy <N|ÖLÇÜLEMEDİ>",
       "en": "- Image scan: grype <N|NOT MEASURED> · trivy <N|NOT MEASURED>"
+    },
+    {
+      "id": "izin-reddi-dolanma-yasak",
+      "dosya": "SKILL.md",
+      "tr": "reddi dolanmak YASAK",
+      "en": "bypassing the denial is FORBIDDEN"
+    },
+    {
+      "id": "izin-reddi-yazilamadi",
+      "dosya": "SKILL.md",
+      "tr": "yazılamadı: <yol>, sebep: izin reddi",
+      "en": "could not write: <path>, reason: permission denied"
     }
   ]
 }

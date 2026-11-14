@@ -45,6 +45,10 @@ ayarı değişikliği (parola, 2FA, kurtarma, paylaşım izinleri), kalıcı/ger
 silme, CAPTCHA/bot-koruması atlatma, kötü amaçlı yazılım üretimi. Bunlar denetim
 kapsamında da yapılmaz — yalnızca **raporlanır**.
 
+**İzin reddi = DUR ve bildir (v2.11).** Bir araç izin reddi verirse (Write, Edit, Bash), aynı sonuca başka
+araçla (heredoc, `cat >`, `python -c`, `tee`) ulaşmaya ÇALIŞMA: reddi dolanmak YASAK. Raporda ve teslim
+mesajında **"yazılamadı: <yol>, sebep: izin reddi"** yaz, içeriği satır içi ver ve kullanıcıdan izin iste.
+
 **Üçüncü taraf açık kaynak — salt-okuma (v2.5).** gedik, herhangi bir **açık** kaynağı
 (public repo klonu, yayımlanmış artefakt, açık yapılandırma) **salt-okuma statik**
 inceleyebilir — canlı sisteme **hiç istek atmadan.** Ayrım nettir: açık kaynağı
