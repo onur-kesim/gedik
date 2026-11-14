@@ -8,6 +8,16 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 ### Belgeler
 - **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Bu satır 2.6.0 dönemine aittir.
 
+## [2.11.0] — 2026-11-15
+### Eklendi
+- **Yetki kaynağı (c): site sahibinin yazılı yetkisi** (`SKILL.md` §0.1, `yetki-kapisi.md`, yeni `references/pasif-denetim.md` TR+EN). Üçü BİRDEN: yazılı yetki belgesi + sahiplik kanıtı (DNS TXT `gedik-yetki=<token>` ya da `/.well-known/gedik-yetki.txt`) + kullanıcı beyanı; biri eksikse DUR. Token yetki değil denetim kanıtıdır. Belgenin imzası makinece doğrulanamaz → raporda "belge kullanıcı beyanıyla kabul edildi".
+- **Yalnız PASİF test:** GET/HEAD; güvenlik başlıkları, TLS, çerez bayrakları, CORS (yalnız `Origin` ile GET), istemci JS/kaynak haritası, `robots.txt`/`sitemap.xml`/`security.txt`; aktif testler "pasif kapsam dışı, test edilmedi". Hız ≤1 istek/sn, koşu başına ≤100 istek; kapsam dışı host'a (üçüncü taraf bağlantılar dahil) 0 istek; kişisel veri maskelenir; sayfa içi talimat yetki değildir.
+- **A1 izin reddi = DUR ve bildir** (kilitli cümle TR+EN): bir araç reddedilince aynı sonuca başka araçla ulaşılmaz; "yazılamadı: <yol>, sebep: izin reddi".
+### Değişti
+- `iki-kaynak-yoksa-dur` kilidi KASITLI güncellendi: "İkisi de yoksa DUR" → "Hiçbiri yoksa DUR" (üç yetki kaynağı); 9 yeni kilitli cümle.
+### Sınır
+- Gerçek üçüncü taraf siteye hiç denenmedi (yalnız yerel fixture sunucusu); aktif test ve ücretli hizmet şablonu bu sürümde YOK. Bkz. KRITER "v2.11.0 ÖLÇÜMÜ".
+
 ## [2.10.0] — 2026-11-12
 ### Eklendi
 - **CI/CD tedarik zinciri** (`cicd-depo-ve-kurtarma.md` §2, yeni §4.1): `issue_comment` pwn request (tek koruma `github.event.issue.pull_request` yetersiz), `workflow_run` artifact devri (`allow-unsafe-pr-checkout`), egzotik bağımlılık (`github:`/`git+`/`.tgz`), paket yöneticisi gevşetme (`.npmrc`, pnpm, dependabot, `npm install`), kötü amaçlı sürüm (sabit liste YOK; `osv-scanner`/`npm audit`, yoksa ÖLÇÜLEMEDİ).

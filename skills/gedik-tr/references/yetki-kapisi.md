@@ -11,7 +11,9 @@ asla; üçüncü taraf açık kaynak okumak serbest kalsın ama saldırıya dön
    - (a) Kullanıcı bu sohbette "sistem benim, hedef şu host(lar)" dedi mi? → EVET: geç.
    - (b) Kullanıcı "şu yayımlanmış programın kapsamındayım" dedi ve program kapsam
      sayfası okunabiliyor mu? → EVET: geç.
-   - İkisi de yoksa → **DUR**, "yetki yok, canlı test edilmedi" yaz, salt-okumaya dön.
+   - (c) Site sahibinin yazılı belgesi + sahiplik kanıtı (token) + kullanıcı beyanı, üçü birden var mı? → EVET: geç,
+     **yalnız PASİF** (`pasif-denetim.md`); biri eksikse DUR.
+   - Hiçbiri yoksa → **DUR**, "yetki yok, canlı test edilmedi" yaz, salt-okumaya dön.
 3. `YETKI.md` var mı / güncel mi? Yoksa kullanıcının beyanından + program sayfasından
    oluştur, kullanıcıya doğrulat, sonra başla.
 4. Her canlı istekten önce: hedef host `YETKI.md` listesinde mi? Değilse dokunma.
@@ -47,6 +49,24 @@ gecerlilik: <tarih araligi / sinirsiz>
 
 gedik yalnız `kapsam_ici` satırlarına canlı istek atar; `kapsam_disi` ve listede
 olmayan her şey "test edilmedi."
+
+### (c) için `YETKI.md` alanları (yalnız pasif; ayrıntı `pasif-denetim.md` §1)
+
+```
+# YETKI.md — (c) site sahibinin yazili yetkisi (yalniz PASIF)
+kaynak: (c) site-sahibi-yazili-belge
+belge_tarihi: <YYYY-AA-GG>
+gecerlilik: <baslangic> .. <bitis>
+kapsam_ici:
+  - <alan adi>            # alt alan OTOMATIK DEGIL, ayri satir
+yasak_testler:
+  - <belgede yazan ek yasaklar>
+iletisim: <rol>           # ad degil rol (ornek: guvenlik-sorumlusu)
+token: <gedik-yetki degeri>
+hiz_siniri: <en fazla istek/sn, istek/kosu>   # belge <=1/sn ve <=100'den dusukse belge gecerli
+```
+
+Pencere dışı = DUR. Alt alan adı otomatik kapsam DEĞİLDİR. Belge hız sınırı <=1/sn ve <=100'den düşükse belge geçerlidir.
 
 ## 4. CANLI TEST DAVRANIŞI (§0.1 sınırlarının uygulaması)
 

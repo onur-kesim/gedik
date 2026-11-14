@@ -13,7 +13,9 @@ turns into an attack.
      → YES: proceed.
    - (b) Did the user say "I'm working within scope of published program X" and is the
      program's scope page readable? → YES: proceed.
-   - Neither → **STOP**, write "no authorization, live testing not performed," return to
+   - (c) Is there the site owner's written document + proof of ownership (token) + the user's statement, all three? → YES:
+     proceed, **PASSIVE only** (`pasif-denetim.md`); if one is missing, STOP.
+   - None → **STOP**, write "no authorization, live testing not performed," return to
      read-only.
 3. Does `YETKI.md` exist / is it current? If not, build it from the user's statement +
    the program page, have the user confirm it, then start.
@@ -55,6 +57,24 @@ gedik sends live requests only to `kapsam_ici` (in-scope) lines; `kapsam_disi`
 (out-of-scope) and anything not on the list is "not tested." (The file name `YETKI.md`
 and its field names are kept as literal keys the tool reads — do not rename them even in
 the English-language flow.)
+
+### `YETKI.md` fields for (c) (passive only; details in `pasif-denetim.md` §1)
+
+```
+# YETKI.md — (c) site sahibinin yazili yetkisi (yalniz PASIF)
+kaynak: (c) site-sahibi-yazili-belge
+belge_tarihi: <YYYY-AA-GG>
+gecerlilik: <baslangic> .. <bitis>
+kapsam_ici:
+  - <alan adi>            # alt alan OTOMATIK DEGIL, ayri satir
+yasak_testler:
+  - <belgede yazan ek yasaklar>
+iletisim: <rol>           # ad degil rol (ornek: guvenlik-sorumlusu)
+token: <gedik-yetki degeri>
+hiz_siniri: <en fazla istek/sn, istek/kosu>   # belge <=1/sn ve <=100'den dusukse belge gecerli
+```
+
+Outside the window = STOP. A subdomain is NOT automatically in scope. If the document's rate limit is lower than <=1/s and <=100, the document governs.
 
 ## 4. LIVE TEST BEHAVIOR (§0.1's limits in practice)
 
