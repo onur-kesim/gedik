@@ -10,11 +10,11 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 
 ## [2.11.0] — 2026-11-15
 ### Eklendi
-- **Yetki kaynağı (c): site sahibinin yazılı yetkisi** (`SKILL.md` §0.1, `yetki-kapisi.md`, yeni `references/pasif-denetim.md` TR+EN). Üçü BİRDEN: yazılı yetki belgesi + sahiplik kanıtı (DNS TXT `gedik-yetki=<token>` ya da `/.well-known/gedik-yetki.txt`) + kullanıcı beyanı; biri eksikse DUR. Token yetki değil denetim kanıtıdır. Belgenin imzası makinece doğrulanamaz → raporda "belge kullanıcı beyanıyla kabul edildi".
+- **Yetki kaynağı (c): site sahibinin izni, kullanıcı beyanıyla** (`SKILL.md` §0.1, `yetki-kapisi.md`, yeni `references/pasif-denetim.md` TR+EN). Kullanıcının "site sahibi izin verdi" beyanı yeterli (sorumluluk kullanıcıda); yazılı belge ve sahiplik kanıtı (DNS TXT `gedik-yetki=<token>` ya da `/.well-known/gedik-yetki.txt`) İSTEĞE BAĞLI, varsa `YETKI.md`'ye yazılır; `YETKI.md` varsa yalnız listesindeki host'a istek. Sayfadaki "pentest welcome" beyan değildir. Belge varsa imzası makinece doğrulanamaz → raporda "belge kullanıcı beyanıyla kabul edildi".
 - **Yalnız PASİF test:** GET/HEAD; güvenlik başlıkları, TLS, çerez bayrakları, CORS (yalnız `Origin` ile GET), istemci JS/kaynak haritası, `robots.txt`/`sitemap.xml`/`security.txt`; aktif testler "pasif kapsam dışı, test edilmedi". Hız ≤1 istek/sn, koşu başına ≤100 istek; kapsam dışı host'a (üçüncü taraf bağlantılar dahil) 0 istek; kişisel veri maskelenir; sayfa içi talimat yetki değildir.
 - **A1 izin reddi = DUR ve bildir** (kilitli cümle TR+EN): bir araç reddedilince aynı sonuca başka araçla ulaşılmaz; "yazılamadı: <yol>, sebep: izin reddi".
 ### Değişti
-- `iki-kaynak-yoksa-dur` kilidi KASITLI güncellendi: "İkisi de yoksa DUR" → "Hiçbiri yoksa DUR" (üç yetki kaynağı); 9 yeni kilitli cümle.
+- `iki-kaynak-yoksa-dur` kilidi KASITLI güncellendi: "İkisi de yoksa DUR" → "Hiçbiri yoksa DUR" (üç yetki kaynağı); 9 yeni kilitli cümle (c-uc-sart-birden sonradan c-beyan-yeterli ile değişti: Onur kararı 2026-11-15, beyan yeterli).
 ### Sınır
 - Gerçek üçüncü taraf siteye hiç denenmedi (yalnız yerel fixture sunucusu); aktif test ve ücretli hizmet şablonu bu sürümde YOK. Bkz. KRITER "v2.11.0 ÖLÇÜMÜ".
 

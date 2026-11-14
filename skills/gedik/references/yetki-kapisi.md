@@ -13,8 +13,8 @@ turns into an attack.
      → YES: proceed.
    - (b) Did the user say "I'm working within scope of published program X" and is the
      program's scope page readable? → YES: proceed.
-   - (c) Is there the site owner's written document + proof of ownership (token) + the user's statement, all three? → YES:
-     proceed, **PASSIVE only** (`pasif-denetim.md`); if one is missing, STOP.
+   - (c) Did the user say "the site owner gave permission" (document/token optional)? → YES: proceed, **PASSIVE only**
+     (`pasif-denetim.md`); if `YETKI.md` exists, only to hosts on its list.
    - None → **STOP**, write "no authorization, live testing not performed," return to
      read-only.
 3. Does `YETKI.md` exist / is it current? If not, build it from the user's statement +
@@ -61,14 +61,16 @@ the English-language flow.)
 ### `YETKI.md` fields for (c) (passive only; details in `pasif-denetim.md` §1)
 
 ```
-# YETKI.md — (c) site sahibinin yazili yetkisi (yalniz PASIF)
-kaynak: (c) site-sahibi-yazili-belge
-belge_tarihi: <YYYY-AA-GG>
-gecerlilik: <baslangic> .. <bitis>
+# YETKI.md — (c) site sahibinin izni (yalniz PASIF); belge/token ISTEGE BAGLI
+kaynak: (c) kullanici-beyani            # beyan yeterli; asagidakiler varsa yazilir
+beyan: "site sahibi izin verdi" — <kullanici>, <tarih>
 kapsam_ici:
   - <alan adi>            # alt alan OTOMATIK DEGIL, ayri satir
 yasak_testler:
-  - <belgede yazan ek yasaklar>
+  - <varsa belgede yazan ek yasaklar>
+# --- istege bagli (yazili belge / sahiplik kaniti varsa) ---
+belge_tarihi: <YYYY-AA-GG>
+gecerlilik: <baslangic> .. <bitis>
 iletisim: <rol>           # ad degil rol (ornek: guvenlik-sorumlusu)
 token: <gedik-yetki degeri>
 hiz_siniri: <en fazla istek/sn, istek/kosu>   # belge <=1/sn ve <=100'den dusukse belge gecerli

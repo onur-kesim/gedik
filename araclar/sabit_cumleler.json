@@ -236,12 +236,6 @@
       "en": "could not write: <path>, reason: permission denied"
     },
     {
-      "id": "c-uc-sart-birden",
-      "dosya": "SKILL.md",
-      "tr": "Üçü BİRDEN gerekir",
-      "en": "All three are required"
-    },
-    {
       "id": "token-yetki-degildir",
       "dosya": "SKILL.md",
       "tr": "Token bir yetki değil, alan üzerinde denetim kanıtıdır",
@@ -280,8 +274,26 @@
     {
       "id": "token-tek-istek",
       "dosya": "references/pasif-denetim.md",
-      "tr": "Bu 1 sorgu, kanıt bulunmadan atılabilen TEK istektir",
-      "en": "This 1 query is the ONLY request that may be sent before proof is found"
+      "tr": "Bu 1 sorgu, token kontrolü için atılabilen TEK ek istektir",
+      "en": "This 1 query is the ONLY extra request allowed for the token check"
+    },
+    {
+      "id": "c-beyan-yeterli",
+      "dosya": "SKILL.md",
+      "tr": "Kullanıcının sohbetteki kendi beyanı yeterlidir",
+      "en": "The user's own statement in chat is sufficient"
+    },
+    {
+      "id": "c-sorumluluk-kullanicida",
+      "dosya": "SKILL.md",
+      "tr": "Sorumluluk kullanıcıdadır",
+      "en": "Responsibility lies with the user"
+    },
+    {
+      "id": "c-belge-token-istege-bagli",
+      "dosya": "SKILL.md",
+      "tr": "Yazılı belge ve sahiplik kanıtı İSTEĞE BAĞLIDIR",
+      "en": "A written document and proof of ownership are OPTIONAL"
     }
   ]
 }

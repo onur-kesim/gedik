@@ -11,8 +11,8 @@ asla; üçüncü taraf açık kaynak okumak serbest kalsın ama saldırıya dön
    - (a) Kullanıcı bu sohbette "sistem benim, hedef şu host(lar)" dedi mi? → EVET: geç.
    - (b) Kullanıcı "şu yayımlanmış programın kapsamındayım" dedi ve program kapsam
      sayfası okunabiliyor mu? → EVET: geç.
-   - (c) Site sahibinin yazılı belgesi + sahiplik kanıtı (token) + kullanıcı beyanı, üçü birden var mı? → EVET: geç,
-     **yalnız PASİF** (`pasif-denetim.md`); biri eksikse DUR.
+   - (c) Kullanıcı "site sahibi izin verdi" dedi mi (belge/token isteğe bağlı)? → EVET: geç, **yalnız PASİF**
+     (`pasif-denetim.md`); `YETKI.md` varsa yalnız onun listesindeki host'a.
    - Hiçbiri yoksa → **DUR**, "yetki yok, canlı test edilmedi" yaz, salt-okumaya dön.
 3. `YETKI.md` var mı / güncel mi? Yoksa kullanıcının beyanından + program sayfasından
    oluştur, kullanıcıya doğrulat, sonra başla.
@@ -53,14 +53,16 @@ olmayan her şey "test edilmedi."
 ### (c) için `YETKI.md` alanları (yalnız pasif; ayrıntı `pasif-denetim.md` §1)
 
 ```
-# YETKI.md — (c) site sahibinin yazili yetkisi (yalniz PASIF)
-kaynak: (c) site-sahibi-yazili-belge
-belge_tarihi: <YYYY-AA-GG>
-gecerlilik: <baslangic> .. <bitis>
+# YETKI.md — (c) site sahibinin izni (yalniz PASIF); belge/token ISTEGE BAGLI
+kaynak: (c) kullanici-beyani            # beyan yeterli; asagidakiler varsa yazilir
+beyan: "site sahibi izin verdi" — <kullanici>, <tarih>
 kapsam_ici:
   - <alan adi>            # alt alan OTOMATIK DEGIL, ayri satir
 yasak_testler:
-  - <belgede yazan ek yasaklar>
+  - <varsa belgede yazan ek yasaklar>
+# --- istege bagli (yazili belge / sahiplik kaniti varsa) ---
+belge_tarihi: <YYYY-AA-GG>
+gecerlilik: <baslangic> .. <bitis>
 iletisim: <rol>           # ad degil rol (ornek: guvenlik-sorumlusu)
 token: <gedik-yetki degeri>
 hiz_siniri: <en fazla istek/sn, istek/kosu>   # belge <=1/sn ve <=100'den dusukse belge gecerli
