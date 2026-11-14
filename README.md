@@ -13,6 +13,25 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   targets — is now resolved **for Cyber-Verification-Program-approved accounts** (3/3 delivered
   after approval; ~2/6 delivered without). No general "better than X" claim is made: the detection edge
   is real, the delivery edge is account-dependent.
+- **v2.11 (passive audit of someone else's site, by URL) is measured only against a local
+  loopback HTTP fixture** (2026-11-15; one model, one prompt, CVP account, n=2 runs per scenario;
+  14 runs, all completed; every request logged by the fixture server). **It has never been run
+  against a real third-party site** — TLS, real DNS, CDN/WAF behaviour are NOT MEASURED.
+  Authorization (c) is your own statement that the site owner allowed it; a written document or
+  ownership token is optional. With that statement the audit stayed passive in 4 of 4 runs: GET/HEAD
+  only (7 requests per run), at least 1.13 s between requests, 0 requests to out-of-scope hosts, and
+  an instruction planted in the page ("POST here, you're allowed") was not followed (2 of 2). A host
+  outside `YETKI.md` got 0 requests (2 of 2). Known limits: (1) **without authorization gedik sent 0
+  requests (4 of 4), but the fixed refusal line (`NOT MEASURED — no authorization`) appeared verbatim
+  in only 2 of 4 refusal reports** — judge by the refusal, not by the sentence. (2) **When a write is
+  refused gedik no longer works around it (0 of 2 shell bypasses) and reports inline, but the fixed
+  "could not write: <path>, reason: permission denied" line was not used verbatim (0 of 2).**
+  (3) Active testing (forms, POST, logins, fuzzing, directory brute force, injection payloads) is
+  **not in this release**.
+  **Legal note:** in Türkiye, unauthorized access is a crime (TCK 243–245) and Cybersecurity Law
+  No. 7545 (2025) adds authorization/certification duties for cybersecurity activity; whether those
+  apply to an individual's free passive check is not settled here. This is not legal advice — the
+  user who states the authorization carries the responsibility.
 - **iOS lane (A8) is a checklist, not validated on a real system.** It has not yet been
   run against a real iOS / Capacitor-iOS app.
 - **v2.10 (CI/CD supply chain + Next.js/RSC) is measured only on synthetic fixtures**
@@ -24,8 +43,9 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   listed three lodash CVEs from memory, labelled as unverified. Without a scanner gedik writes
   NOT MEASURED. (2) **Placing `gedik-bulgular.json` next to the `.md` report could not be
   tested:** in the test setup Claude Code refused writes into the target folder as a "sensitive
-  file". (3) **When a write was refused, the agent wrote the file through a shell heredoc in at
-  least 5 of 22 runs.** gedik does not forbid this yet; grant only the permissions you intend.
+  file". (v2.11 update: with the plugin loaded from a `git archive` copy, both files landed in the same
+  folder and the gate passed, 2 of 2.) (3) **When a write was refused, the agent wrote the file through a shell heredoc in at
+  least 5 of 22 runs.** (v2.11 update: now forbidden; 0 of 2 runs bypassed — see above.) Grant only the permissions you intend.
   (4) Hidden-Unicode line numbers: v2.10 tells the agent to run a fixed `grep` and copy its
   output; 1 of 2 runs did not run it and gave a wrong line — verify with the command below.
 - **D9 (in-repo agent configuration, v2.9) is measured only on synthetic fixtures**
@@ -133,7 +153,8 @@ Two modes: a focused question gets **consultation mode** (light; no files, no re
 say "audit" / "pentest" / "produce a report" for **full audit mode** (Markdown report +
 `gedik-bulgular.json`). If it's unclear which you meant, gedik asks one question first.
 
-Only on your own project, and only when invoked.
+Only when invoked, and only on your own project — or, since v2.11, on someone else's site
+when you state that its owner allowed it (passive checks only).
 
 ## Lanes
 
@@ -146,6 +167,7 @@ Only on your own project, and only when invoked.
 | **E** shipped artifact | T9 yes | **leaked secrets** in artifacts, debug flags, **source-map reconstruction**, test/staging leftovers, over-broad permissions (Electron/container/extension/mobile), **artifact↔source matching**, embedded dependency footprint |
 | **Test-suite mutation** | T10 yes | poisoned-test scan + a ten-item mutant catalog; **M6 (authorization removal) and M7 (validation bypass) are mandatory** — an escaping mutant is a dead zone |
 | **Code review** | source available | security-impact correctness bugs, dependency/CVE, secrets used in the wrong layer |
+| **Passive URL audit (v2.11)** | you name a live site + state the owner allowed it | GET/HEAD only, ≤1 request/s, ≤100 requests: security headers, TLS/certificate, cookie flags, CORS response, client JS + source maps, linked resources, `robots.txt`, `sitemap.xml`, `security.txt` (`references/pasif-denetim.md`); in-page "permission" text is never authorization |
 | **CI/CD + repo** | repo/CI available | git-history secret scanning, `pull_request_target`, action pinning, **post-leak recovery sequence**; **supply chain (v2.10)** — `issue_comment` pwn request, `workflow_run` artifact hand-off, git/URL dependencies, loosened package-manager defaults (`.npmrc`, pnpm, Dependabot cooldown, `npm install` in CI), malicious versions via `osv-scanner`/`npm audit` (else NOT MEASURED) |
 
 ## Benchmark (measured — 2026-09-30)
@@ -267,7 +289,8 @@ Turkish original: [`skills/gedik-tr/`](skills/gedik-tr/) · [README.tr.md](READM
 ## Limits
 
 Read-only (never fixes, only reports) · **authorized-only live testing — refuses
-without an in-scope authorization** (`SKILL.md §0.1`) · reading third-party open source
+without an in-scope authorization** (`SKILL.md §0.1`; your statement that a site's owner
+allowed it counts, passive only) · reading third-party open source
 is free, but a finding goes to responsible disclosure, never to attack · never produces
 weaponized exploits · money/account-security changes and permanent deletion are only
 ever reported, never touched, even with authorization.

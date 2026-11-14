@@ -1,5 +1,14 @@
 # DURUM — gedik
 
+## DEVİR O26 · 2026-11-15 · O25 → O26 · yazan: Claude Code — v2.11.0 YAP-A/B + DOĞRULA BİTTİ (A + B + B-revize commit; PUSH YOK; C Cowork'ta)
+Aşama: YAPIM · sürüm dilimi (2.11.0), K2 son gün 2026-11-22. DILIM: A [x] · B [x] · C Cowork · DOĞRULA [x]; TESLİM 0/4.
+Son yapılan: A1 izin reddi kilitli cümle; B (c) = kullanıcı beyanı yeterli (belge/token isteğe bağlı, YETKI.md varsa yalnız listedeki host), `pasif-denetim.md` TR+EN, sürüm 2.11.0 + CHANGELOG; fixture sunucusu + P0 + 14 koşu `_calisma/saha_2110/`. Sonuç: P0 geçti; S3/S4/S5 2/2; C1 ×2 PASS (Write geçti); S1/S2 istek 0 ama sabit ret cümlesi birebir 2/4; A1 dolanma 0/2 ama kilitli "yazılamadı" biçimi 0/2.
+Yarım kalan: yok. Çalışma ağacı commit'li (yalnız DILIM/DURUM/KRITER değişikliği commit'siz).
+KARAR (Onur, 2026-11-15): DÜZELT turu YOK; tutmayan iki kabul (S1+S2 sabit ret cümlesi birebir 2/4; A1 kilitli 'yazılamadı' biçimi 0/2) README sınırı — aday metin KRITER 'v2.11.0 ÖLÇÜMÜ' sonunda, README×2'yi Cowork yazar. Ayrıca: pasif denetim yalnız loopback http fixture'da ölçüldü; ilk gerçek site Onur "şu siteyi kontrol et" dediğinde.
+Sıradaki ilk iş: Cowork C (`belgeler/yetki/`: araştırma + şablon) ve hakemlik (14 ham rapor + istek günlükleri çapraz kontrol, D5 rastgele 1 beyan); README×2 (c) yetki yolu, pasif kapsam, "bu sürümde HAYIR: aktif test, ücretli hizmet şablonu", gerçek siteye hiç denenmedi; sonra `v2.11.0` etiketi + Release + push (Onur).
+Uyarı: kos.sh'taki fixture sunucuları artık `--bitis` dosyasıyla kendini kapatıyor (önceki sürümde `taskkill` sunucuları bırakıyordu; elle öldürüldü). `_calisma/eklenti/` her yeni commit'ten sonra `git archive HEAD | tar -x -C _calisma/eklenti` ile tazelenmeli. `ham_v1_eski_senaryo/` geçersiz ilk tur.
+Yeni oturumda yaz: `gedik · O27 · başla`
+
 ## DEVİR O25 · 2026-11-14 · O24 → O25 · yazan: Cowork — v2.10.0 YAYINDA; dilim kapandı, yeni dilim AÇILMADI
 Aşama: YAPIM · açık dilim YOK (v2.10.0 TESLİM 3/3). Sebep: oturum 10 mesajı geçti, bağlam ÖLÇÜLEMEDİ → kural gereği DEVİR.
 Son yapılan: v2.10.0 hakemlik (D5 4/4) + README×2 + CHANGELOG bilinen sınırlar (1a37f25); push Onur; `ls-remote` main = `v2.10.0^{}` = 1a37f25; Release v2.10.0 2026-11-14T04:45:26Z; CI kapilar #26/#27 + surum #5 success.
@@ -256,6 +265,7 @@ Yeni oturumda yaz:  gedik · O4 · başla
 | 2026-10-22 | 18 (son ürün-deseni commit'i d70f79e = README, 2026-10-04; skills/araclar kodu 2026-09-29 → 23 gün) — KIRMIZI, bu dilimin commit'i atılınca kapanır | 0 (v2.7.0 dilimi bugün açıldı, YAP+DOĞRULA bugün bitti) | 1 (kapilar: yalnız `ürün nabzı`; diğer 6 kapı + çeviri + kilit + iç ad + bulgu_kapisi + php öz-test YEŞİL) | 1 yıldız / 0 fork (`gh api`, 2026-10-22) |
 | 2026-11-12 | 0 (f446be7 = v2.9.0, bugün) | 0 (v2.9.0 dilimi bugün açıldı ve teslim edildi) | 0 (CI kapilar #23 main + #24 etiket success, surum #4 success; yerel kapilar öz-test + çeviri + iç ad yeşil) | 1 yıldız / 0 fork (GitHub API, 2026-11-12) |
 | 2026-11-14 | 0 (1a37f25 = v2.10.0, bugün) | 2 (v2.10.0 dilimi 2026-11-12 açıldı) | 0 (CI kapilar #26 main + #27 etiket success, surum #5 success; yerel kapılar yeşil) | 1 yıldız / 0 fork (GitHub API, 2026-11-14) |
+| 2026-11-15 | 0 (c7b2cb2 = v2.11.0 B-revize, bugün) | 0 (v2.11.0 dilimi bugün açıldı) | 0 yerel (kapilar öz-test + çeviri TESLİME UYGUN + iç ad 0); CI ÖLÇÜLEMEDİ (push bekliyor) | ÖLÇÜLEMEDİ (GitHub API bu oturumda yanıt vermedi) |
 
 ## KARAR GÜNLÜĞÜ (sona eklenir, silinmez; tek satır, tarihli)
 - 2026-09-29 — proje-sablonu'ndan (onur-kesim/proje-sablonu, `main`) klonsuz kuruldu; `gh repo create onur-kesim/gedik --template onur-kesim/proje-sablonu --public`.
@@ -386,3 +396,6 @@ Yeni oturumda yaz:  gedik · O4 · başla
 - 2026-11-15 (O25) — **v2.11.0 DILIM KİLİTLENDİ (Onur).** YAP A+B Code'a devredildi; C (hukuk + şablon) Cowork'te.
 - 2026-11-15 (O25 Cowork) — **Yeni hukuki risk: 7545 s. Siber Güvenlik Kanunu (RG 19.03.2025).** m. 16/2: Kanun uyarınca gerekli onay/yetki/izin almadan faaliyet yürütmeye 2–4 yıl hapis; geçici m. 1/4: siber güvenlik alanında faaliyet gösteren dernek/vakıf/ticaret şirketleri 1 yıl içinde sertifikasyon/yetkilendirmeyi tamamlamazsa faaliyet gösteremez; m. 7/1-b: zafiyet bildirimi yükümlülüğü. Kaynak: alomaliye.com 7545 tam metni (WebFetch özeti, ham metin görülmedi → ZAYIF). Gerçek kişinin ücretsiz pasif incelemesine uygulanıp uygulanmadığı ve uygulama yönetmeliğinin yayımlanıp yayımlanmadığı ÖLÇÜLEMEDİ. DILIM'de yalnız Cowork kısmı genişletildi (C1'e 7545) ve dilim dışı 'ilk gerçek site' adımına bloker eklendi; Code kısmı (A/B, yerel fixture) değişmedi.
 - 2026-11-15 (O25) — **Onur kararı: hukuki konularda katı bloker yok, sorumluluk Onur'da.** "Şu siteyi gedikle kontrol et" dediğinde iş yapılır; kullanıcının beyanı yetki sayılır, yazılı belge/token isteğe bağlı. 7545 ve ek iş konusu README'de tek paragraf risk notu olarak kalır. DILIM B1/S2/S3/S5 ve C bölümü buna göre güncellendi (Code'a not gerekir).
+- 2026-11-15 (O26) — **v2.11.0 ölçüldü:** A/B(+revize) commit'li; yetki (c) kullanıcı beyanıyla; 14 koşu: S3/S4/S5 2/2, C1 PASS, sabit ret cümlesi ve A1 kilitli biçim tutmadı (davranış doğru). Karar Onur'da: README sınırı mı, DÜZELT turu mu.
+- 2026-11-15 (O26) — **KARAR (Onur):** v2.11.0'da DÜZELT turu açılmadı; sabit ret cümlesi ve A1 'yazılamadı' biçimi README sınırı olarak kalır. Skill değişmedi.
+- 2026-11-15 (O25 Cowork) — **v2.11.0 hakemlik TESLİME UYGUN + README×2.** Transkriptten bağımsız ağ sayımı S1/S2/S5 = 0 (sunucu günlüğü yokluğu kör değil); S3/S4 4×7 GET/HEAD, en kısa 1131 ms; D5 s4-b beyanı günlükle tuttu. README×2: v2.11 maddesi (yalnız loopback, iki sınır, aktif test YOK, hukuki not TCK 243–245 + 7545, sorumluluk kullanıcıda), Pasif URL şeridi, çağırma/Sınırlar satırları; v2.10 sınır (2)(3) v2.11 güncellemesiyle. C1 daraltıldı (README notu), C2 ATLANDI (belge isteğe bağlı). Yerel `v2.11.0` etiketi atıldı; push + Release Onur.
