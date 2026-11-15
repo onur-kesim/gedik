@@ -127,6 +127,7 @@ File name: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 - **Etki:** <mimarinin izin verdiği tavana göre, şişirmesiz>
 - **Yama:** <somut, uygulanabilir düzeltme>
 - **Kanıt türü:** KOŞULDU / STATİK / ÖLÇÜLMEDİ
+- **Kaynak:** kaynak-kod / yerel-kopya / canli-pasif / canli-aktif (canlı denetimde ve yerel kopyada ZORUNLU; kural `aktif-denetim.md` §5)
 - **Doğrulayan:** alt-ajan / ayrı tur — bağımsız çürütme turunu yapan (JSON: `dogrulayan`)
 
 ### 2.1 ŞÜPHE (ÇALIŞTIRILMADI) — `needs_validation`, şiddet YOK

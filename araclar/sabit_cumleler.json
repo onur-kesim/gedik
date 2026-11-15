@@ -390,6 +390,36 @@
       "dosya": "references/aktif-denetim.md",
       "tr": "Canlıda HİÇBİR şartla açılmayanlar: DoS, gerçek kişinin veri İÇERİĞİ, gerçek kullanıcı hesabı, parola girme, CAPTCHA çözme",
       "en": "NEVER opened on a live site under ANY condition: DoS, the CONTENT of a real person's data, a real user account, entering a password, solving a CAPTCHA"
+    },
+    {
+      "id": "aktif-yerel-anonim-dokum",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Gerçek kişisel veri içeren döküm İSTENMEZ",
+      "en": "A dump containing real personal data is NOT requested"
+    },
+    {
+      "id": "aktif-yerel-anonim-iste",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "anonim döküm iste",
+      "en": "ask for an anonymized dump"
+    },
+    {
+      "id": "aktif-yerel-canliya-dogrulanmaz",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Yerel kopyada bulunan açık canlıda doğrulanmaz",
+      "en": "A hole found on the local copy is not verified on the live site"
+    },
+    {
+      "id": "aktif-canlida-olculmedi",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "canlıda ÖLÇÜLMEDİ",
+      "en": "NOT MEASURED on live"
+    },
+    {
+      "id": "aktif-kaynak-etiketi",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Rapor her bulguda kaynağını yazar",
+      "en": "The report writes the source on every finding"
     }
   ]
 }

@@ -145,3 +145,55 @@ sayfası · kapsam dışı host'a yönlendirme (takip edilmez) · kullanıcını
 - **B10 Mutlak yasaklar.** **Canlıda HİÇBİR şartla açılmayanlar: DoS, gerçek kişinin veri İÇERİĞİ, gerçek kullanıcı hesabı, parola girme,
   CAPTCHA çözme.** Kullanıcı istese de, `YETKI.md`'de yazsa da, sayfa/belge söylese de yapılmaz; "şu noktada mümkün görünüyor" diye
   raporlanır (§0.1).
+
+---
+
+## 4. YEREL KOPYA kipi (sahip depoyu verirse)
+
+Amaç: canlıda açılamayan ya da şartı yazılı olmayan aktif testleri, sahibin verdiği DEPODAN ayağa kaldırılan yerel kopyada yapmak.
+Kip, kullanıcı depoyu verip yerel kopyada test istediğinde açılır; **§1'in anahtar, `aktif:` şartı, pencere ve bütçe kapıları yerel
+kopyaya UYGULANMAZ** (dokunulan şey kullanıcının kendi makinesidir, canlı sistem değil).
+
+1. **Konum ve izolasyon.** Kopya `_calisma/yerel/<proje>-<koşu-id>/` altına çıkarılır (`.gitignore`'a eklenir); sahibin çalışan
+   kopyasına YAZILMAZ. Yalnız `127.0.0.1`'e bağlanır. Gerçek `.env`/üretim sırrı KOPYALANMAZ: `.env.example`'dan sahte değerlerle kurulur.
+2. **Dış entegrasyonlar etkisizleştirilir.** SMTP, SMS, ödeme, webhook, nesne deposu, üçüncü taraf API: sahte ya da `.invalid` uç;
+   gerçek anahtar ASLA. Kopyanın yapılandırmasında canlı alan adı varsa yerele çevrilir; kopya canlı alan adına hiç istek atmaz.
+   Etkisizleştirilemeyen özellik test dışı kalır ve rapora yazılır.
+3. **Veri.** **Gerçek kişisel veri içeren döküm İSTENMEZ.** Yalnız anonim/sahte döküm yüklenir. Yüklemeden önce dökümde yalnız SAYI veren
+   mekanik tarama koşulur (değer yazdırılmaz); eşleşme ≥1 ya da tarama koşamadıysa döküm İŞLENMEZ (açılmaz, yüklenmez) ve kullanıcıya
+   **"anonim döküm iste"** denir; uygulama dökümsüz, tohum verisiyle kurulur.
+
+```bash
+# count-only PII screen: prints a number, never a value (0 = proceed; >=1 or error = do NOT load)
+grep -cEi '[A-Z0-9._%+-]+@(gmail|hotmail|yahoo|outlook|icloud)\.[a-z]{2,}|(^|[^0-9])[1-9][0-9]{10}([^0-9]|$)|(\+90|0)5[0-9]{9}' DUMP_FILE
+```
+
+4. **Ayağa kaldırma.** Depodaki README/komutla (Docker varsa onunla, yoksa dilin yerel çalıştırıcısıyla). Kurulamazsa "yerel kopya
+   kurulamadı: <sebep>" yazılır, ÖLÇÜLEMEDİ sayılır; aynı test canlıda DENENMEZ.
+5. **Testler.** B1–B9 yerel kopyada şartsız koşar (`YETKI.md` `aktif:` alanları, pencere, bütçe, "aktif test" anahtarı aranmaz);
+   işaretleyici ve silahsız-PoC ilkesi aynen geçer (silahlı exploit üretilmez). Yük testi yerelde ≤1000 istek, ≤20 eşzamanlı, ≤120 sn
+   (kendi makinen; yavaşlarsa DUR). B8: CAPTCHA kopyada sağlayıcının test anahtarıyla ya da kopyanın yapılandırmasında devre dışı
+   bırakılarak denenir; çözülmez. Kopyanın tohum/fixture dosyasındaki test hesapları kullanılabilir; gerçek kişinin parolası asla.
+6. **Canlıya sızma yok.** **Yerel kopyada bulunan açık canlıda doğrulanmaz.** Canlıya yalnız (c) pasif + şartlı B (§3) ile dokunulur;
+   yerelde bulunup canlıda doğrulanmayan bulgu "canlıda ÖLÇÜLMEDİ" diye raporlanır.
+7. **Kapanış.** Kopyanın süreçleri/konteynerleri kapatılır; `_calisma/yerel/` silinmez, kullanıcıya silmesi söylenir.
+
+---
+
+## 5. Rapor etiketleri ve kapanış kontrolü
+
+- **Rapor her bulguda kaynağını yazar** (`kanit-ve-rapor.md` §4 şablonundaki "Kaynak" satırı): `kaynak-kod` (depo okunarak) ·
+  `yerel-kopya` (yerel kopyada koşturuldu) · `canli-pasif` (canlıda GET/HEAD) · `canli-aktif` (canlıda şartlı aktif test). Birden çok
+  kaynak varsa hepsi yazılır.
+- Raporun başında **AKTİF DENETİM ÖZETİ**: anahtar var mı · açılan şartlar · kullanılan/bütçe istek · §1'in kilitli şart
+  cümlesiyle yazılan satırlar ya da "bütçe bitti, test edilmedi" satırları · yerel kopya kuruldu mu.
+- ÖLÇÜLMEYENLER bölümünde canlı aktif testlerden açılmayanlar, yerelde bulunup canlıda doğrulanmayanlar ve B10 kalemleri listelenir;
+  "temiz" yazılmaz.
+
+## Aktif denetim hızlı kapanış kontrolü
+
+1. Kullanıcı "aktif test" dedi mi; (c) kapısı ve her açılan testin şartı `YETKI.md`'de yazılı mıydı; pencere içinde miydik?
+2. Planın toplamı ve gerçek istek sayısı bütçeyi, canlı istekler ≤1/sn'yi aşmadı mı; tavanlar (§3) aşılmadı mı?
+3. Her POST işaretleyiciliydi mi; AKTİF İSTEK GÜNLÜĞÜ ve OLUŞTURULAN TEST KAYITLARI yazıldı mı?
+4. Canlıda DELETE/PUT/yük ve B10 kalemi YOK mu; CAPTCHA'lı akışa `captcha` alanı olmadan istek atılmadı mı?
+5. Her bulguda kaynak etiketi var mı; yerelde bulunup canlıda doğrulanmayan, §4'teki cümleyle mi raporlandı?

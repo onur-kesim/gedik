@@ -8,6 +8,19 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 ### Belgeler
 - **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Bu satır 2.6.0 dönemine aittir.
 
+## [2.12.0] — 2026-11-15
+### Eklendi
+- **Şartlı aktif test** (yeni `references/aktif-denetim.md` TR+EN, `SKILL.md` §0.1 (c) işaretçisi): (c) yetkisinin ÜSTÜNE oturur, (a)/(b)'yi değiştirmez. Aktif kip yalnız kullanıcı "aktif test" derse açılır ("denetle", "pentest", "canlı testleri de yap" anahtar değildir); her test `YETKI.md` `aktif:` bölümündeki kendi şartına bağlıdır ve şart yoksa rapora kilitli cümle yazılır: "şart yok, test edilmedi" / "no precondition, not tested". Alanlar: `pencere` (dışı = DUR), `istek_butcesi` (varsayılan 60, toplam, ≤1 istek/sn), `test_formlari`, `llm_uclari`, `test_hesaplari` (2 adet, parola yok), `kanarya_kayitlar`, `kaba_kuvvet`, `captcha`, `staging`, `yuk_testi`.
+- **B1–B10** ve tavanları: form (form başına 1 gönderim) · LLM/sohbet (≤10 istek) · hız sınırı (≤30 istek, ilk 429'da DUR) · IDOR (gerçek kullanıcı nesnesine 0 istek) · zararsız XSS/SQLi işaretleyici (uç başına ≤5, veri çeken yük yok) · kanarya kayıt · dizin kaba kuvveti (≤200 yol, ≤1/sn) · CAPTCHA (çözme/atlatma hiçbir şartla yok) · silme/değiştirme/yük yalnız `staging` · B10 mutlak yasak (canlıda DoS, gerçek kişinin veri içeriği, gerçek kullanıcı hesabı, parola girme, CAPTCHA çözme).
+- Her POST `GEDIK-TEST-<koşu-id>` işaretleyici taşır; raporda AKTİF İSTEK GÜNLÜĞÜ ve OLUŞTURULAN TEST KAYITLARI (sahip siler).
+- **YEREL KOPYA kipi** (`aktif-denetim.md` §4): sahip depo verirse `_calisma/yerel/` altında ayağa kalkar; B1–B9 yerelde şartsız; dış entegrasyonlar etkisiz, yalnız 127.0.0.1; gerçek kişisel veri içeren döküm istenmez/işlenmez ("anonim döküm iste"), yüklemeden önce yalnız sayı veren tarama. Her bulgu `kaynak-kod` / `yerel-kopya` / `canli-pasif` / `canli-aktif` etiketiyle raporlanır; yerelde bulunup canlıda doğrulanmayan "canlıda ÖLÇÜLMEDİ" (`kanit-ve-rapor.md` şablonuna "Kaynak" satırı).
+### Değişti
+- 21 yeni kilitli cümle (`sabit_cumleler.json` 49 → 70); `pasif-denetim.md` §3: aktif testler artık "yalnız `aktif-denetim.md` kapısıyla" açılabilir.
+- **DARALMA (a)/(b) için de:** `SKILL.md` §0.1 "Nazik hız" — canlıda DoS denemesi artık HİÇBİR şartla yapılmaz (önceki metin: "kullanıcı ayrıca ister ve program izin verirse"); B10 ile tutarlılık için. Yük testi yalnız `staging`'de ya da yerel kopyada.
+- DÜZELTME (v2.11.0'dan kalan gizli kusur): `ceviri_kapisi.py --pozitif-kontrol` mutasyon C, `pasif-kapsam-disi` kilidinin `pasif-denetim.md`'de TR/EN 4 yerde geçtiğini yakalıyordu (v2.11.0 HEAD'inde KAPI KOR); cümle tek yere indirildi.
+### Sınır
+- Gerçek siteye aktif istek bu dilimde HİÇ atılmadı: ölçüm yalnız yerel fixture (127.0.0.1) ve yerel kopya. Bkz. KRITER "v2.12.0 ÖLÇÜMÜ".
+
 ## [2.11.0] — 2026-11-15
 ### Eklendi
 - **Yetki kaynağı (c): site sahibinin izni, kullanıcı beyanıyla** (`SKILL.md` §0.1, `yetki-kapisi.md`, yeni `references/pasif-denetim.md` TR+EN). Kullanıcının "site sahibi izin verdi" beyanı yeterli (sorumluluk kullanıcıda); yazılı belge ve sahiplik kanıtı (DNS TXT `gedik-yetki=<token>` ya da `/.well-known/gedik-yetki.txt`) İSTEĞE BAĞLI, varsa `YETKI.md`'ye yazılır; `YETKI.md` varsa yalnız listesindeki host'a istek. Sayfadaki "pentest welcome" beyan değildir. Belge varsa imzası makinece doğrulanamaz → raporda "belge kullanıcı beyanıyla kabul edildi".
