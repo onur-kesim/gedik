@@ -70,6 +70,11 @@ hiz_siniri: <en fazla istek/sn, istek/kosu>   # belge <=1/sn ve <=100'den dusuks
 
 Pencere dışı = DUR. Alt alan adı otomatik kapsam DEĞİLDİR. Belge hız sınırı <=1/sn ve <=100'den düşükse belge geçerlidir.
 
+### (c) için `aktif:` alanları (v2.12; yalnız kullanıcı "aktif test" derse)
+
+Şablon ve her alanın hangi teste şart olduğu `aktif-denetim.md` §1'dedir (tek ev; burada tekrarlanmaz). `aktif:` alanı yazılı
+değilse o test açılmaz.
+
 ## 4. CANLI TEST DAVRANIŞI (§0.1 sınırlarının uygulaması)
 
 - İşaretleyici: zararsız, tekrar üretilebilir (ör. benzersiz bir istek imzası + kendi

@@ -78,6 +78,11 @@ hiz_siniri: <en fazla istek/sn, istek/kosu>   # belge <=1/sn ve <=100'den dusuks
 
 Outside the window = STOP. A subdomain is NOT automatically in scope. If the document's rate limit is lower than <=1/s and <=100, the document governs.
 
+### `aktif:` fields for (c) (v2.12; only if the user says "active test")
+
+The template and which field is the precondition of which test are in `aktif-denetim.md` §1 (single home; not repeated here). If an
+`aktif:` field is not written, that test does not open.
+
 ## 4. LIVE TEST BEHAVIOR (§0.1's limits in practice)
 
 - Marker: harmless, reproducible (e.g. a unique request signature + an observation on an

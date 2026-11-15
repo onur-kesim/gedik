@@ -294,6 +294,48 @@
       "dosya": "SKILL.md",
       "tr": "Yazılı belge ve sahiplik kanıtı İSTEĞE BAĞLIDIR",
       "en": "A written document and proof of ownership are OPTIONAL"
+    },
+    {
+      "id": "aktif-ayri-anahtar",
+      "dosya": "SKILL.md",
+      "tr": "aktif test AYRI bir anahtardır",
+      "en": "active testing is a SEPARATE switch"
+    },
+    {
+      "id": "aktif-anahtar-kullanici",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Aktif kip yalnız kullanıcı \"aktif test\" derse açılır",
+      "en": "Active mode opens only when the user says \"active test\""
+    },
+    {
+      "id": "aktif-sart-yazili-degilse-acilmaz",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Şartı `YETKI.md`'de yazılı olmayan test AÇILMAZ",
+      "en": "A test whose precondition is not written in `YETKI.md` does NOT open"
+    },
+    {
+      "id": "aktif-sart-yok",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "şart yok, test edilmedi",
+      "en": "no precondition, not tested"
+    },
+    {
+      "id": "aktif-pencere-disi-dur",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Pencere dışı = DUR",
+      "en": "Outside the window = STOP"
+    },
+    {
+      "id": "aktif-isaretleyici",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Her POST zararsız işaretleyici `GEDIK-TEST-<koşu-id>` taşır",
+      "en": "Every POST carries the harmless marker `GEDIK-TEST-<koşu-id>`"
+    },
+    {
+      "id": "aktif-test-kaydi-sahip-siler",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Test kayıtlarını sahip siler; gedik yalnız kendi oluşturduğunu ve yalnız kullanıcı isterse siler",
+      "en": "The owner deletes the test records; gedik deletes only what it created itself, and only if the user asks"
     }
   ]
 }
