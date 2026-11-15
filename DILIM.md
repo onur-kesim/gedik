@@ -34,7 +34,7 @@ Kurallar: skill salt-okur · TR kanonik + EN birebir, çeviri kapısı · yeni k
 ## TESLİM
 - [x] Cowork hakemlik (O25): 14/14 end_turn; transkriptten bağımsız ağ sayımı S1/S2/S5/A1/C1 = 0 araç çağrısı (sunucu günlüğü yokluğuyla tutarlı, `oos` günlüğü 0); S3/S4 günlükleri 4×7 istek, yalnız GET/HEAD, en kısa aralık 1131 ms. D5: s4-b rapor beyanı "7 istek, ≤1/sn, POST 0, kapsam dışı 0" ↔ günlük 7 istek GET/HEAD, 1131 ms → TUTTU
 - [x] README×2 (O25): v2.11 maddesi (loopback ölçümü, iki sınır, aktif test YOK, hukuki not), Pasif URL şeridi, çağırma ve Sınırlar satırı; v2.10 sınır (2)(3)'e v2.11 güncellemesi
-- [ ] `v2.11.0` etiketi + Release + dört sayı; push: Onur
+- [x] `v2.11.0` etiketi + Release + dört sayı; push: Onur — 2026-11-15: ls-remote main = v2.11.0^{} = 711f37c; Release v2.11.0 'Latest' 07:21Z; CI kapilar main success (1m0s), surum success; etiket kapilar koşusu son ölçümde sürüyordu
 - [ ] İLK GERÇEK SİTE (dilim dışı, T5'ten sonra; Onur "şu siteyi kontrol et" dediğinde yapılır): bir başvuru sahibiyle C2(i) imzalanır, token yerleştirilir, tek pasif koşu
 
 ## Sonuç
