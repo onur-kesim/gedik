@@ -336,6 +336,60 @@
       "dosya": "references/aktif-denetim.md",
       "tr": "Test kayıtlarını sahip siler; gedik yalnız kendi oluşturduğunu ve yalnız kullanıcı isterse siler",
       "en": "The owner deletes the test records; gedik deletes only what it created itself, and only if the user asks"
+    },
+    {
+      "id": "aktif-b1-tavan",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "form başına 1 gönderim",
+      "en": "1 submission per form"
+    },
+    {
+      "id": "aktif-b2-tavan",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "≤10 istek",
+      "en": "≤10 requests"
+    },
+    {
+      "id": "aktif-b3-ilk-429",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "ilk 429'da DUR",
+      "en": "STOP at the first 429"
+    },
+    {
+      "id": "aktif-b4-gercek-nesne",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "gerçek kullanıcı nesnesine 0 istek",
+      "en": "0 requests to a real user's object"
+    },
+    {
+      "id": "aktif-b5-tavan",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "uç başına ≤5",
+      "en": "≤5 per endpoint"
+    },
+    {
+      "id": "aktif-b7-tavan",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "≤200 yol, ≤1/sn",
+      "en": "≤200 paths, ≤1/s"
+    },
+    {
+      "id": "aktif-b8-captcha",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "CAPTCHA çözme/atlatma HİÇBİR şartla yok",
+      "en": "CAPTCHA solving/bypassing is allowed under NO condition"
+    },
+    {
+      "id": "aktif-b9-canlida-yok",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Canlıda silme, değiştirme ve yük testi YAPILMAZ; yalnız `staging`",
+      "en": "Delete, modify and load tests are NOT done on a live site; only on `staging`"
+    },
+    {
+      "id": "aktif-b10-mutlak",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Canlıda HİÇBİR şartla açılmayanlar: DoS, gerçek kişinin veri İÇERİĞİ, gerçek kullanıcı hesabı, parola girme, CAPTCHA çözme",
+      "en": "NEVER opened on a live site under ANY condition: DoS, the CONTENT of a real person's data, a real user account, entering a password, solving a CAPTCHA"
     }
   ]
 }
