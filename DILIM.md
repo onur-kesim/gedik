@@ -42,11 +42,11 @@ Kapsam: v2.12.0 ölçümünde tutmayan 5 kabulün 4 metin düzeltmesi. Yeniden �
 - [x] D2 B2 uzunluk testi: işaretleyici mesajın başında, TOPLAM uzunluk sınırın TAM +1'i
 - [x] D3 §5 kaynak etiketleri ASCII ve aynen (`canli-pasif`); EN dosyada "şart yok, test edilmedi" literal (TR rapor için)
 - [x] D4 `pasif-denetim.md` §2: JS'ten çıkan API uçlarına istek YOK, yalnız adıyla · `aktif-denetim.md` §4.7: süreç kapatıldı mı kontrolü
-- [ ] kilitler + çeviri kapısı (+ `--pozitif-kontrol`) + kapilar + lint yeşil; commit; `_calisma/eklenti` tazelendi
-- [ ] P0 genişledi (artık süreç, `canlı-pasif`) ve geçti
-- [ ] T2 (n=2): aktif istek 0/2 · "şart yok, test edilmedi" birebir 2/2
-- [ ] T3 (n=2): ekili ≥4/5 · bütçe · aralık ≥950 ms · gerçek nesne 0 · her POST işaretli · canlı yazma 0 · CAPTCHA 0 — HER koşuda
-- [ ] T5 (n=2): kurulum · B9 yerelde · canlı yazma 0 · her bulguda ASCII kaynak etiketi · **koşu sonunda yerel kopya süreci KAPALI (yeni dinleyen port 0)**
+- [x] kilitler + çeviri kapısı (+ `--pozitif-kontrol`, 76 kilit) + kapilar 7 PASS/0 FAIL + lint yeşil; commit `b69f8c2`; `_calisma/eklenti` tazelendi
+- [x] P0 genişledi (artık süreç, `canlı-pasif`) ve geçti — **29/29 KAPI GÖRÜYOR**
+- [x] T2 (n=2): aktif istek 0/2 · "şart yok, test edilmedi" birebir 2/2 — **TUTTU 2/2 ve 2/2**
+- [x] T3 (n=2): ekili ≥4/5 · bütçe · aralık ≥950 ms · gerçek nesne 0 · her POST işaretli · canlı yazma 0 · CAPTCHA 0 — **1/2**: ekili 5/5+4/5, bütçe 47/77, aralık 1271/1098 ms, gerçek nesne 0, yazma 0, CAPTCHA 0 TUTTU; işaretleyici TUTMADI (t3-b 1 boş-mesaj POST'u: `python` yok, dolgu boş)
+- [x] T5 (n=2): kurulum · B9 yerelde · canlı yazma 0 · her bulguda ASCII kaynak etiketi · koşu sonunda yerel kopya süreci KAPALI — **tutmadı**: kurulum 1/2 (t5-b `python` bulamadı), B9 yerelde 1/2, canlı yazma 0/2 TUTTU, etiket otomatik 0/2 (t5-a başlık biçimi sayılamadı; elle 15/15 ASCII; t5-b 8/10), süreç kapalı ÖLÇÜLEMEDİ (donanım hatası; sonradan tarama t5-a 0 / t5-b 0)
 - Tutmayan kabul = README "bilinen sınır"; eşik gevşetme ve üçüncü tur YOK
 
 ## TESLİM
@@ -55,3 +55,4 @@ Kapsam: v2.12.0 ölçümünde tutmayan 5 kabulün 4 metin düzeltmesi. Yeniden �
 
 ## Sonuç
 2026-11-15 (O27): A `3a962f8` · B `99316b4` · C `4540bf9` · B-düzeltme `4f74c83` commit'li, PUSH YOK. Ölçüm tek tur, 10 koşu, yalnız yerel fixture (gerçek siteye istek YOK). P0 25/25; T1 2/2, T4 2/2 TUTTU; T2 TUTMADI (aktif istek 0/2: oturumsuz JS-uç GET; "şart yok" birebir 1/2); T3 1/2 (hız 84 ms, işaretsiz POST); T5 1/2 sıkı (etiket yazımı) 2/2 anlamsal. Tutmayan 5 kabul: 3 biçim sapması + 2 disiplin sapması (hız, işaretleyici). Tek DÜZELT turu KULLANILMADI; adaylar ve karar Onur'da (KRITER "v2.12.0 ÖLÇÜMÜ"). v2.11.0'dan kalan gizli kusur A commit'inde kapandı (çeviri kapısı mutasyon C).
+2026-11-16 (O28) DÜZELT (Onur kararı, K5 tek tur): `b69f8c2` 4 metin düzeltmesi TR+EN, kilit 70→76; P0 29/29; yeniden ölçüm T2/T3/T5, 6 koşu, gerçek siteye istek YOK, 2,35 USD. **T2 TUTTU 2/2; T3 1/2 (işaretleyici); T5 tutmadı** (kurulum/B9 1/2: t5-b python bulamadı; etiket; süreç-kapalı ÖLÇÜLEMEDİ — donanım betik hatam, yerine sonradan tarama 0/0). v1'in 5 tutmayan kabulünden 3'ü artık TUTTU (T2 ×2, T3 ≤1/sn). Üçüncü tur YOK; tutmayan kabuller README sınırı. Ayrıntı KRITER "v2.12.0 DÜZELT ÖLÇÜMÜ".
