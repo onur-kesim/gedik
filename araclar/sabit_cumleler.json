@@ -420,6 +420,42 @@
       "dosya": "references/aktif-denetim.md",
       "tr": "Rapor her bulguda kaynağını yazar",
       "en": "The report writes the source on every finding"
+    },
+    {
+      "id": "aktif-tek-istek-adim",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Her Bash çağrısı TEK istek atar ya da `sleep 1`'li sayaçlı bir akıştır",
+      "en": "Every Bash call sends ONE request or is a counted flow with `sleep 1`"
+    },
+    {
+      "id": "aktif-b2-uzunluk-toplam",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "mesajın TOPLAM uzunluğu (işaretleyici dahil) TAM L+1 karakterdir",
+      "en": "the TOTAL length of the message (marker included) is EXACTLY L+1 characters"
+    },
+    {
+      "id": "aktif-b2-isaretleyici-basta",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "işaretleyici mesajın BAŞINDADIR",
+      "en": "the marker is at the START of the message"
+    },
+    {
+      "id": "aktif-etiket-aynen",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Etiketler YALNIZ bu dört ASCII yazımla yazılır ve aynen kopyalanır",
+      "en": "The labels are written ONLY in these four ASCII spellings and copied verbatim"
+    },
+    {
+      "id": "aktif-yerel-surec-kapat",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "dinleyen port kapalı mı DOĞRULANIR",
+      "en": "that the listening port is closed is VERIFIED"
+    },
+    {
+      "id": "pasif-js-uc-istek-yok",
+      "dosya": "references/pasif-denetim.md",
+      "tr": "JS'ten çıkan API uçlarına İSTEK ATILMAZ",
+      "en": "NO request is sent to API endpoints found in JS"
     }
   ]
 }

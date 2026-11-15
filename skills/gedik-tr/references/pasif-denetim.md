@@ -54,6 +54,11 @@ Yalnız `GET` ve `HEAD`. Her kontrol bir sonuç satırı üretir (değer + hangi
 | `robots.txt`, `sitemap.xml`, `security.txt` | her biri 1 GET | sızan yol, iletişim ve bildirim politikası |
 | Açıkça bağlanmış kaynaklar | sayfadaki `<link>`/`<script>`/`<a>` (yalnız KAPSAM İÇİ host) | yukarıdaki kontroller |
 
+**JS'ten çıkan API uçlarına İSTEK ATILMAZ.** İstemci JS'inde bulunan ve sayfanın HTML'inde `<link>`/`<script>`/`<a>` ile açıkça
+bağlı olmayan uç yolları (`/api/...`) yalnız ADIYLA ve bulundukları dosyayla raporlanır ("JS'ten çıkarıldı, istek atılmadı");
+oturumsuz ya da sorgusuz GET bile atılmaz. CORS kontrolü yalnız `/` ve açıkça bağlı kaynaklara yapılır; API uçlarındaki CORS
+davranışı ÖLÇÜLMEDİ diye listelenir (aktif ölçüm: `aktif-denetim.md`).
+
 ## 3. YASAK — raporda "pasif kapsam dışı, test edilmedi"
 
 `POST`/`PUT`/`PATCH`/`DELETE`; form gönderimi; kimlik denemesi (parola/oturum); parametre fuzz'ı; dizin kaba kuvveti

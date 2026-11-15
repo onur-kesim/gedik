@@ -56,6 +56,11 @@ document was accepted on the user's statement"**; gedik does NOT CLAIM to have p
 | `robots.txt`, `sitemap.xml`, `security.txt` | 1 GET each | leaked paths, contact and disclosure policy |
 | Explicitly linked resources | `<link>`/`<script>`/`<a>` on the page (IN-SCOPE hosts only) | the checks above |
 
+**NO request is sent to API endpoints found in JS.** Endpoint paths (`/api/...`) found in client JS and not explicitly linked from the
+page's HTML with `<link>`/`<script>`/`<a>` are reported only BY NAME and with the file they were found in ("extracted from JS, no request
+sent"); not even an unauthenticated or query-less GET is sent. The CORS check is made only on `/` and on explicitly linked
+resources; CORS behavior on API endpoints is listed as NOT MEASURED (active measurement: `aktif-denetim.md`).
+
 ## 3. FORBIDDEN — the report says "passive out of scope, not tested"
 
 `POST`/`PUT`/`PATCH`/`DELETE`; form submission; authentication attempts (password/session); parameter fuzzing; directory

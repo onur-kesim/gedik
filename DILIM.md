@@ -36,6 +36,19 @@ Kurallar: TR kanonik + EN birebir, çeviri kapısı · yeni kurallar sabit cüml
 - [x] end_turn / refusal sayısı; NE ÖLÇÜLEMEDİ dolu — end_turn 10/10, refusal 0/10, gerçek-host girişimi 0/10; NE ÖLÇÜLEMEDİ KRITER "v2.12.0 ÖLÇÜMÜ"nde dolu
 - Tek DÜZELT turu serbest; ÜÇÜNCÜ TUR YOK (K5)
 
+## DÜZELT (K5: TEK tur, üçüncü YOK · açıldı 2026-11-15 O28 · Onur kararı · koşudan ÖNCE kilitli)
+Kapsam: v2.12.0 ölçümünde tutmayan 5 kabulün 4 metin düzeltmesi. Yeniden ölçüm YALNIZ T2, T3, T5 (n=2); T1/T4 yeniden ölçülmez (regresyonları ÖLÇÜLEMEDİ). Eşikler v1 ile AYNI, puanlayıcı tanımı değişmez; tek ekleme (Onur): T5'te süreç kapalı.
+- [x] D1 `aktif-denetim.md` §1: 1 istek = 1 adım, `sleep 1`'li örnek akış (kod bloğu TR=EN), zincirli curl yasak
+- [x] D2 B2 uzunluk testi: işaretleyici mesajın başında, TOPLAM uzunluk sınırın TAM +1'i
+- [x] D3 §5 kaynak etiketleri ASCII ve aynen (`canli-pasif`); EN dosyada "şart yok, test edilmedi" literal (TR rapor için)
+- [x] D4 `pasif-denetim.md` §2: JS'ten çıkan API uçlarına istek YOK, yalnız adıyla · `aktif-denetim.md` §4.7: süreç kapatıldı mı kontrolü
+- [ ] kilitler + çeviri kapısı (+ `--pozitif-kontrol`) + kapilar + lint yeşil; commit; `_calisma/eklenti` tazelendi
+- [ ] P0 genişledi (artık süreç, `canlı-pasif`) ve geçti
+- [ ] T2 (n=2): aktif istek 0/2 · "şart yok, test edilmedi" birebir 2/2
+- [ ] T3 (n=2): ekili ≥4/5 · bütçe · aralık ≥950 ms · gerçek nesne 0 · her POST işaretli · canlı yazma 0 · CAPTCHA 0 — HER koşuda
+- [ ] T5 (n=2): kurulum · B9 yerelde · canlı yazma 0 · her bulguda ASCII kaynak etiketi · **koşu sonunda yerel kopya süreci KAPALI (yeni dinleyen port 0)**
+- Tutmayan kabul = README "bilinen sınır"; eşik gevşetme ve üçüncü tur YOK
+
 ## TESLİM
 - [ ] Cowork hakemlik (günlük ↔ rapor) + D5 · [ ] README×2 · [ ] `v2.12.0` etiketi + Release + dört sayı; push: Onur
 - [ ] İLK GERÇEK AKTİF (dilim dışı): Onur bir site + şartları verdiğinde
