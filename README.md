@@ -13,6 +13,24 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   targets — is now resolved **for Cyber-Verification-Program-approved accounts** (3/3 delivered
   after approval; ~2/6 delivered without). No general "better than X" claim is made: the detection edge
   is real, the delivery edge is account-dependent.
+- **v2.12 (conditional active testing + local-copy mode) is measured only on a local fixture
+  server** (2026-11-15/16; one model, one prompt, CVP account, n=2 per scenario; 16 runs incl. one fix
+  round, all completed; every request logged). **No active request has ever been sent to a real site.**
+  Active mode opens only when you say "active test", and each test only if its precondition is written
+  in `YETKI.md` (`aktif:` block: window, request budget, test forms, LLM endpoints, two test accounts
+  — never passwords —, canary records, brute-force list, CAPTCHA disabled, staging); otherwise the
+  report says `no precondition, not tested`. Across 16 runs: 0 requests to real user objects, 0 to
+  out-of-scope hosts, 0 live PUT/PATCH/DELETE, 0 CAPTCHA posts or solving attempts. Never allowed,
+  under any condition: DoS on a live site, reading real people's data content, real user accounts,
+  entering passwords, solving CAPTCHA. If you give the repository, gedik can run the app locally and
+  run the otherwise-forbidden tests (delete, load, brute force) on that copy; each finding is tagged
+  `kaynak-kod` / `yerel-kopya` / `canli-pasif` / `canli-aktif`. Known limits: (1) **one unmarked
+  test POST in 4 active runs** — the shell had no `python`, the padding command returned empty and an
+  empty message was sent; gedik does not yet verify the body before sending. (2) **The local copy
+  started in only 1 of 2 runs** (no `python` found; the agent reported it instead of working around
+  it) — check that the runtime exists before an active audit. (3) In one run 2 of 10 findings lacked
+  the source tag. (4) The final text was not re-measured on the "no keyword" and "no CAPTCHA/staging"
+  scenarios (those passed 2/2 on the previous text).
 - **v2.11 (passive audit of someone else's site, by URL) is measured only against a local
   loopback HTTP fixture** (2026-11-15; one model, one prompt, CVP account, n=2 runs per scenario;
   14 runs, all completed; every request logged by the fixture server). **It has never been run
@@ -154,7 +172,8 @@ say "audit" / "pentest" / "produce a report" for **full audit mode** (Markdown r
 `gedik-bulgular.json`). If it's unclear which you meant, gedik asks one question first.
 
 Only when invoked, and only on your own project — or, since v2.11, on someone else's site
-when you state that its owner allowed it (passive checks only).
+when you state that its owner allowed it (passive checks; since v2.12 also active tests you
+explicitly ask for, each behind its written precondition).
 
 ## Lanes
 
@@ -167,6 +186,7 @@ when you state that its owner allowed it (passive checks only).
 | **E** shipped artifact | T9 yes | **leaked secrets** in artifacts, debug flags, **source-map reconstruction**, test/staging leftovers, over-broad permissions (Electron/container/extension/mobile), **artifact↔source matching**, embedded dependency footprint |
 | **Test-suite mutation** | T10 yes | poisoned-test scan + a ten-item mutant catalog; **M6 (authorization removal) and M7 (validation bypass) are mandatory** — an escaping mutant is a dead zone |
 | **Code review** | source available | security-impact correctness bugs, dependency/CVE, secrets used in the wrong layer |
+| **Conditional active test (v2.12)** | you say "active test" + preconditions in `YETKI.md` `aktif:` | marked form posts (1/form), LLM prompt-injection (≤10), rate-limit probe (≤30, stop at first 429), IDOR with two owner test accounts, harmless XSS/SQLi markers (≤5/endpoint), canary-record access proof, brute force (≤200 paths); delete/load only on staging or a **local copy built from the repo** (`references/aktif-denetim.md`) |
 | **Passive URL audit (v2.11)** | you name a live site + state the owner allowed it | GET/HEAD only, ≤1 request/s, ≤100 requests: security headers, TLS/certificate, cookie flags, CORS response, client JS + source maps, linked resources, `robots.txt`, `sitemap.xml`, `security.txt` (`references/pasif-denetim.md`); in-page "permission" text is never authorization |
 | **CI/CD + repo** | repo/CI available | git-history secret scanning, `pull_request_target`, action pinning, **post-leak recovery sequence**; **supply chain (v2.10)** — `issue_comment` pwn request, `workflow_run` artifact hand-off, git/URL dependencies, loosened package-manager defaults (`.npmrc`, pnpm, Dependabot cooldown, `npm install` in CI), malicious versions via `osv-scanner`/`npm audit` (else NOT MEASURED) |
 

@@ -13,6 +13,23 @@ ve yama önerisiyle gelir.
   kesilmesi — artık **Cyber Verification Program onaylı hesaplar için** çözüldü (onay sonrası
   3/3 teslim; onaysız ~2/6 teslim). Genel "X'ten daha iyi" iddiası yok: tespit üstünlüğü gerçek,
   teslim üstünlüğü hesaba bağlı.
+- **v2.12 (şartlı aktif test + yerel kopya kipi) yalnız yerel fixture sunucusunda ölçüldü**
+  (2026-11-15/16; tek model, tek istem, CVP hesabı, senaryo başına n=2; bir düzeltme turu dahil 16
+  koşu, hepsi tamamlandı; her istek günlükte). **Gerçek bir siteye hiç aktif istek atılmadı.** Aktif
+  kip yalnız "aktif test" dersen açılır; her test ancak şartı `YETKI.md`'de yazılıysa koşar (`aktif:`
+  bloğu: pencere, istek bütçesi, test formları, LLM uçları, iki test hesabı — asla parola —, kanarya
+  kayıtlar, kaba kuvvet listesi, CAPTCHA kapalı, staging); yoksa rapor `şart yok, test edilmedi` yazar.
+  16 koşuda: gerçek kullanıcı nesnesine 0, kapsam dışı host'a 0, canlıda PUT/PATCH/DELETE 0, CAPTCHA'lı
+  forma POST ya da çözme girişimi 0 istek. Hiçbir şartla açılmayanlar: canlıda DoS, gerçek kişilerin
+  veri içeriği, gerçek kullanıcı hesabı, parola girmek, CAPTCHA çözmek. Depoyu verirsen gedik
+  uygulamayı yerelde ayağa kaldırıp normalde yasak testleri (silme, yük, kaba kuvvet) o kopyada koşar;
+  her bulgu `kaynak-kod` / `yerel-kopya` / `canli-pasif` / `canli-aktif` diye etiketlenir. Bilinen
+  sınırlar: (1) **4 aktif koşunun 1'inde işaretleyicisiz bir test POST'u** — kabukta `python` yoktu,
+  dolgu komutu boş döndü ve boş mesaj gitti; gedik gövdeyi göndermeden önce henüz doğrulamıyor.
+  (2) **Yerel kopya 2 koşunun yalnız 1'inde ayağa kalktı** (`python` bulunamadı; ajan dolanmadı,
+  raporladı) — aktif denetimden önce çalıştırıcının kurulu olduğunu kontrol edin. (3) Bir koşuda 10
+  bulgunun 2'sinde kaynak etiketi yoktu. (4) Son metin "anahtar sözcük yok" ve "CAPTCHA/staging yok"
+  senaryolarında yeniden ölçülmedi (önceki metinle 2/2 tutmuştu).
 - **v2.11 (başkasının sitesini URL ile pasif denetim) yalnız yerel loopback HTTP fixture'ında
   ölçüldü** (2026-11-15; tek model, tek istem, CVP hesabı, senaryo başına n=2 koşu; 14 koşu, hepsi
   tamamlandı; her istek fixture sunucusunun günlüğünde). **Gerçek bir üçüncü taraf sitede hiç
@@ -147,7 +164,8 @@ Bu skill'in en büyük başarısızlığı bir açığı kaçırmak değildir. *
 `gedik-bulgular.json`). Hangisini kastettiğin belli değilse gedik önce tek soru sorar.
 
 Yalnız çağrıldığında ve yalnız kendi projende — ya da v2.11'den beri, sahibinin izin verdiğini
-beyan ettiğin başkasının sitesinde (yalnız pasif kontroller).
+beyan ettiğin başkasının sitesinde (pasif kontroller; v2.12'den beri açıkça istediğin, yazılı
+şartına bağlı aktif testler de).
 
 ## Şeritler
 
@@ -160,6 +178,7 @@ beyan ettiğin başkasının sitesinde (yalnız pasif kontroller).
 | **E** sevk edilen artefakt | T9 evet | artefaktta **sızan sır**, debug bayrağı, **source map ile kaynak yeniden inşası**, test/staging kalıntısı, geniş yetki (Electron/container/eklenti/mobil), **artefakt↔kaynak eşleşmesi**, gömülü bağımlılık ayak izi |
 | **Test paketi mutasyonu** | T10 evet | zehirlenmiş test taraması + on mutantlık katalog; **M6 (yetki kaldırma) ve M7 (doğrulama atlama) zorunlu** — kaçan mutant = ölü bölge |
 | **Kod incelemesi** | kaynak varsa | güvenlik etkili doğruluk hataları, bağımlılık/CVE, sırrın yanlış katmanda kullanımı |
+| **Şartlı aktif test (v2.12)** | "aktif test" dersin + şartlar `YETKI.md` `aktif:` bölümünde | işaretli form gönderimi (form başına 1), LLM istem enjeksiyonu (≤10), hız sınırı ölçümü (≤30, ilk 429'da dur), sahibin iki test hesabıyla IDOR, zararsız XSS/SQLi işaretleyici (uç başına ≤5), kanarya kayıtla erişim kanıtı, kaba kuvvet (≤200 yol); silme/yük yalnız staging'de ya da **depodan kurulan yerel kopyada** (`references/aktif-denetim.md`) |
 | **Pasif URL denetimi (v2.11)** | canlı bir site verirsin + sahibinin izin verdiğini beyan edersin | yalnız GET/HEAD, ≤1 istek/sn, ≤100 istek: güvenlik başlıkları, TLS/sertifika, çerez bayrakları, CORS yanıtı, istemci JS + kaynak haritaları, bağlı kaynaklar, `robots.txt`, `sitemap.xml`, `security.txt` (`references/pasif-denetim.md`); sayfa içi "izin" yazısı asla yetki değildir |
 | **CI/CD + depo** | repo/CI varsa | git geçmişi sır taraması, `pull_request_target`, action sabitleme, **sızıntı sonrası kurtarma sırası**; **tedarik zinciri (v2.10)** — `issue_comment` pwn request, `workflow_run` artifact devri, git/URL bağımlılığı, gevşetilmiş paket yöneticisi varsayılanları (`.npmrc`, pnpm, Dependabot cooldown, CI'da `npm install`), kötü amaçlı sürüm `osv-scanner`/`npm audit` ile (yoksa ÖLÇÜLEMEDİ) |
 

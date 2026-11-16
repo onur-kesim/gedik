@@ -50,7 +50,9 @@ Kapsam: v2.12.0 ölçümünde tutmayan 5 kabulün 4 metin düzeltmesi. Yeniden �
 - Tutmayan kabul = README "bilinen sınır"; eşik gevşetme ve üçüncü tur YOK
 
 ## TESLİM
-- [ ] Cowork hakemlik (günlük ↔ rapor) + D5 · [ ] README×2 · [ ] `v2.12.0` etiketi + Release + dört sayı; push: Onur
+- [x] Cowork hakemlik (O25, 2026-11-16): 16 istek günlüğü Cowork'ün kendi betiğiyle yeniden sayıldı (v1 10 + DÜZELT 6): istek sayısı, en kısa aralık, POST/işaretsiz POST, `r10x` gerçek nesne 0/16, canlı PUT/PATCH/DELETE 0/16, `/destek` POST 0/16, 127.0.0.2 günlüğü hiç oluşmadı (0/16) — Code'un tüm sayılarıyla birebir (ör. v1 t3-b 84 ms, DÜZELT t3-b işaretsiz 1, t5-a işaretsiz 1). D5: t3-a "B3 /api/ara 5. istekte 429" ↔ günlük gdk1–gdk4 200, gdk5 429 → TUTTU. SAPMA: 16 raporun tamamı elle okunmadı.
+- [x] README×2 (O25): v2.12 maddesi (şartlı aktif + yerel kopya, hiç gerçek siteye aktif istek yok, 4 sınır + python ön kontrolü), Şartlı aktif test şerit satırı, çağırma satırı
+- [ ] `v2.12.0` etiketi + Release + dört sayı; push: Onur — yerel etiket atıldı
 - [ ] İLK GERÇEK AKTİF (dilim dışı): Onur bir site + şartları verdiğinde
 
 ## Sonuç
