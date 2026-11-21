@@ -17,7 +17,7 @@ Bu şerit `ŞERİT B`'yi değiştirmez, üstüne biner: LLM ucu da bir API ucudu
 
 ---
 
-## D1 — İSTEM ENJEKSİYONU (doğrudan)
+## D1 — İSTEM ENJEKSİYONU (doğrudan; OWASP LLM01:2026)
 
 Kullanıcının yazdığı metin sistem talimatını ezebiliyor mu?
 
@@ -42,7 +42,7 @@ Kullanıcının yazdığı metin sistem talimatını ezebiliyor mu?
 
 ---
 
-## D2 — DOLAYLI ENJEKSİYON (en tehlikelisi)
+## D2 — DOLAYLI ENJEKSİYON (en tehlikelisi; OWASP LLM01:2026)
 
 Model, saldırganın kontrol ettiği bir **içeriği okuyorsa** talimat oradan gelir:
 web sayfası, PDF, e-posta, yorum, ürün açıklaması, kod deposu README'si, RAG'e alınmış
@@ -61,7 +61,7 @@ satırını göm; model işaretleyiciyi yazıyorsa **dolaylı enjeksiyon kanıtl
 
 ---
 
-## D3 — ARAÇ YETKİSİ (asıl savunma hattı)
+## D3 — ARAÇ YETKİSİ (asıl savunma hattı; OWASP LLM03:2026 Excessive Agency)
 
 Enjeksiyon önlenemez; **enjeksiyonun kazanabileceği şey** sınırlanır.
 
@@ -81,7 +81,7 @@ Enjeksiyon önlenemez; **enjeksiyonun kazanabileceği şey** sınırlanır.
 
 ---
 
-## D4 — ÇIKTI GÜVENİ (model çıktısı = güvenilmeyen girdi)
+## D4 — ÇIKTI GÜVENİ (model çıktısı = güvenilmeyen girdi; OWASP LLM10:2026 Improper Output Handling)
 
 Model çıktısı nereye gidiyor? Her sink klasik enjeksiyon kuralına tabidir:
 
@@ -100,7 +100,7 @@ gönderir.** Çıktıda dış kaynak yüklemesine izin veriliyor mu? CSP `img-sr
 
 ---
 
-## D5 — VERİ AKIŞI VE GİZLİLİK
+## D5 — VERİ AKIŞI VE GİZLİLİK (OWASP LLM02:2026 Sensitive Information Disclosure; LLM08:2026 Hidden Context Exposure)
 
 - Modele **hangi veri gidiyor?** PII, sır, başka kullanıcıların içeriği?
 - Sağlayıcı sözleşmesi: gönderilen veri eğitimde kullanılıyor mu, ne kadar saklanıyor?
@@ -109,10 +109,21 @@ gönderir.** Çıktıda dış kaynak yüklemesine izin veriliyor mu? CSP `img-sr
 - Log'lara tam istem/yanıt yazılıyor mu — içinde sır/PII var mı?
 - Çok kiracılı sistemde bir kullanıcının verisi diğerinin bağlamına sızıyor mu
   (paylaşılan konuşma geçmişi, paylaşılan önbellek, paylaşılan vektör indeksi)?
+- **Gizli bağlam ifşası (OWASP LLM08:2026 Hidden Context Exposure).** Sistem istemi, geliştirici talimatı, RAG/yapılandırma/profil servisinden gelen
+  politika metni, modele verilen araç ve fonksiyon şemaları ile uygulamanın bağlama kattığı diğer kurallar kullanıcıya gösterilmez ama modelin
+  erişimindedir. **Gizli bağlamın ifşa edilebileceğini varsay;** bağlamdaki hiçbir şey sır sayılmaz. Bak: (a) bağlamda kimlik bilgisi, bağlantı
+  dizesi, token ya da iç uç var mı → YÜKSEK; (b) yetkilendirme, rol ayrımı, politika ya da içerik filtresi yalnız bağlamdaki metne ve onun
+  gizliliğine dayanıyor mu → YÜKSEK (bu denetimler modelin DIŞINDA, deterministik olmalı); (c) iç kural, filtre ölçütü, rol/izin açıklaması ya da araç
+  şeması **yanıt yoluna akıyor mu** (yanıt gövdesine serileştirilen `prompt`/`messages`/`tools` alanı, hata ayıklama bayrağı, hata mesajı, sağlayıcının
+  ham yanıtını dönen uç, log) → ORTA; (d) bağlamda sır ve güvenlik mantığı yoksa ve gizliliğine güvenilmiyorsa BİLGİ. Şiddet bağlama NE konduğuna ve
+  uygulamanın ona NASIL güvendiğine göre belirlenir; ifşa tek başına sır içermiyorsa KRİTİK yazılmaz. PoC (kendi test kurulumunda): bağlama zararsız
+  işaretleyici (`__GEDIK_CTXMARK__`) koy; işaretleyici yanıt gövdesinde, hatada ya da ham sağlayıcı yanıtında dönüyorsa ifşa yolu **kanıtlanmıştır**.
+  Kapsamı dışında kalanlar başka maddelerdedir: kullanıcı/eğitim verisi sızıntısı (yukarıdaki maddeler), ajan hafızası (D8), sunucu log sızıntısı ve istemci
+  paketi incelemesi (Şerit B/A). Kaynak: OWASP GenAI LLM Top 10 2026 (yayım 2026-08-04), LLM08 ham metni 2026-11-22'de okundu.
 
 ---
 
-## D6 — MALİYET VE KÖTÜYE KULLANIM
+## D6 — MALİYET VE KÖTÜYE KULLANIM (OWASP LLM06:2026 Unbounded Consumption)
 
 - Kimliksiz kullanıcı model çağırabiliyor mu → **doğrudan fatura DoS** (B9.2).
 - İstem/çıktı token üst sınırı var mı; kullanıcı başına kota var mı?
@@ -122,7 +133,7 @@ gönderir.** Çıktıda dış kaynak yüklemesine izin veriliyor mu? CSP `img-sr
 
 ---
 
-## D7 — VEKTÖR & EMBEDDING ZAYIFLIKLARI (OWASP LLM08:2025)
+## D7 — VEKTÖR & EMBEDDING ZAYIFLIKLARI (OWASP LLM09:2026; 2025 listesinde LLM08:2025)
 
 RAG'in vektör katmanı ayrı bir yüzeydir; klasik enjeksiyon kontrolleri buraya değmez.
 
@@ -145,7 +156,7 @@ RAG'in vektör katmanı ayrı bir yüzeydir; klasik enjeksiyon kontrolleri buray
 
 ---
 
-## D8 — ARAÇ / MCP TEDARİK GÜVENİ & AJAN HAFIZASI (OWASP LLM06 üstü)
+## D8 — ARAÇ / MCP TEDARİK GÜVENİ & AJAN HAFIZASI (OWASP LLM04:2026 Supply Chain; LLM03:2026'nın üstü)
 
 D3 aracın **yetkisini** ölçer; bu bölüm aracın **kaynağının güvenilirliğini** ve ajan hafızasını ölçer. Güvenilmeyen bir araç tanımı, modele **talimat** taşıyabilir (tool poisoning).
 
@@ -177,10 +188,11 @@ D3 aracın **yetkisini** ölçer; bu bölüm aracın **kaynağının güvenilirl
 
 Bir depoda duran ajan yapılandırması **veri değil, yürütülebilir yüzeydir:** depoyu bir ajan istemcisinde (Claude Code, Cursor, Copilot, Gemini, VS Code) açan kişi, yapılandırmanın tanımladığı komutu, MCP sunucusunu ya da ortam değişkenini **kendi yetkisiyle** çalıştırabilir. Bu yüzey YZ kullanmayan bir depoda da vardır; bu yüzden D9, D1–D8'in aksine **T8'e bağlı değildir** (aşağıdaki tetik).
 
-**Tetik (T8'den bağımsız):** depoda şunlardan biri varsa D9 AÇILIR — `.claude/`, `.mcp.json`, `.cursor/`, `.cursorrules`, `.vscode/mcp.json`, `.vscode/settings.json`, `.vscode/tasks.json`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `SKILL.md` ya da `.claude/skills/`. Ölçüm:
+**Tetik (T8'den bağımsız):** depoda şunlardan biri varsa D9 AÇILIR — `.claude/`, `.mcp.json`, `.cursor/`, `.cursorrules`, `.vscode/mcp.json`, `.vscode/settings.json`, `.vscode/tasks.json`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `SKILL.md`, `.claude/skills/`, `.claude-plugin/` ya da `.github/workflows/` içinde bir kod ajanı adımı (`claude-code-action`, `run-gemini-cli`, `claude -p`, `gemini -p`). Ölçüm:
 
 ```bash
-find . -maxdepth 3 \( -path ./.git -o -path ./node_modules \) -prune -o \( -name '.claude' -o -name '.mcp.json' -o -name '.cursor' -o -name '.cursorrules' -o -name '.gemini' -o -name '.devcontainer' -o -name 'AGENTS.md' -o -name 'CLAUDE.md' -o -name 'SKILL.md' -o -name 'copilot-instructions.md' -o -path './.vscode/mcp.json' -o -path './.vscode/settings.json' -o -path './.vscode/tasks.json' \) -print
+find . -maxdepth 3 \( -path ./.git -o -path ./node_modules \) -prune -o \( -name '.claude' -o -name '.mcp.json' -o -name '.cursor' -o -name '.cursorrules' -o -name '.gemini' -o -name '.devcontainer' -o -name 'AGENTS.md' -o -name 'CLAUDE.md' -o -name 'SKILL.md' -o -name 'copilot-instructions.md' -o -name '.claude-plugin' -o -path './.vscode/mcp.json' -o -path './.vscode/settings.json' -o -path './.vscode/tasks.json' \) -print
+grep -rlE 'claude-code-action|run-gemini-cli|claude -p|gemini -p' .github/workflows 2>/dev/null
 ```
 
 Çıktı boşsa D9 AÇILMAZ ve kapsamda "D9: tetik yok" yazılır (temiz denmez, tetik yoktur). Bu ölçüm T8'in yerine geçmez; Şerit D'nin D1–D8'i yine yalnız T8 EVET ise açılır.
@@ -194,6 +206,8 @@ find . -maxdepth 3 \( -path ./.git -o -path ./node_modules \) -prune -o \( -name
 | D9.5 | **Ajanın kendi yapılandırmasına yazabilmesi** | `.claude/**`, `.mcp.json`, `AGENTS.md` için `Edit`/`Write` **deny** kuralının yokluğu; `CODEOWNERS`'ta bu yolların yokluğu (ajan kendi kurallarını gevşetip kalıcılaştırabilir) | YÜKSEK |
 | D9.6 | **Talimat dosyasında gizli Unicode** | `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `SKILL.md`, `copilot-instructions.md` içinde U+200B–200F, U+202A–202E, U+2060–2064, U+2066–2069, dosya başı dışında U+FEFF, U+E0000–E007F (tag karakterleri) — raporda **kod noktası + satır + bayt ofseti birlikte** yazılır; **SATIR SAYMA YOK:** aşağıdaki komut koşulur, çıktıdaki `satır:ofset:` sayıları **aynen kopyalanır** (kendin sayma, ofseti satıra çevirme); gözle görünmeyen talimat | YÜKSEK/KRİTİK |
 | D9.7 | **Diğer IDE yürütmesi** | `.vscode/tasks.json` içinde `runOn: folderOpen`; `.devcontainer/devcontainer.json` içinde `postCreateCommand`/`postStartCommand`/`initializeCommand` | YÜKSEK |
+| D9.8 | **CI'da koşan kod ajanı** | `.github/workflows/*` içinde `anthropics/claude-code-action`, `google-github-actions/run-gemini-cli` ya da `claude -p`/`gemini -p` adımı. (a) **Sürüm kapısı:** action/CLI sürümü advisory/tarayıcı eşleşmesiyle; sınıf örneği (2026-11-22'de advisory'den okunan eşikler, BAYATLAR, liste DEĞİL; hüküm advisory'den): `claude-code-action` 0.2.54–2.1.162 (CVE-2026-54316, 2.1.163'te düzeldi), `run-gemini-cli` <0.1.22 ve Gemini CLI <0.39.1 (CVE-2026-12537): dış kullanıcının issue/PR/yorum metniyle sır sızdırma. (b) **Tetikleyici:** ajanı dış kullanıcı başlatabiliyor mu (`issues`, `issue_comment`, `pull_request_target`, fork `pull_request`) ve ajanın ortamında sır ya da yazma yetkili jeton (`permissions: write`) var mı | YÜKSEK; dış tetik + sır = KRİTİK |
+| D9.9 | **Plugin/marketplace SHA sabitleme** | `.claude-plugin/marketplace.json` ya da plugin kaynağında `ref`/`sha` 40-hex **ve** git host'u GitHub DEĞİL (GitHub 40-hex dal adını reddediyor; başka host'ta hash biçimli dal adı kabul edilebilir): "SHA pin var = PASS" burada yanlış güven verir, **pin tek başına güvence değildir**; istemci sürüm eşiği (Claude Code <2.1.179, Codex <0.146.0) YALNIZ tek ikincil kaynaktan (Help Net Security, 2026-09-18; GÜVEN ZAYIF, mekanizma ayrıntısı doğrulanmadı), hüküm advisory'den. Kaynak `"."` (aynı depo) ise bu yol uygulanmaz | ORTA |
 
 **PoC kuralı (K2'nin D9 uyarlaması — yapılandırmayı ÇALIŞTIRMADAN):** kanıt = `dosya:satır` + **alan** + **değer** + **hangi istemcinin bunu ne zaman yürüttüğü** (örn. "Claude Code, `SessionStart` hook'unu oturum açılırken çalıştırır"; kaynağı belge ya da CVE ile ver). **"Çalıştırıp gör" YASAK:** hook'u, MCP sunucusunu, görevi ya da CI adımını çalıştırmak, depodaki saldırgan komutu kendi makinende yürütmektir. Gizli Unicode (D9.6) kodu çalıştırmadan okunur: dosyayı bayt düzeyinde tara: aşağıdaki komutu koş; çıktının her satırı `satır:bayt-ofseti:bayt-dizisi` biçimindedir. Satır ve ofset **çıktıdan aynen** kopyalanır; kod noktası bayt dizisinden çözülür (`cat -A` gösterimi: `M-bM-^@M-^K` = U+200B, `M-bM-^@M-.` = U+202E, `M-bM-^@M-,` = U+202C, `M-sM- M-^A…` = U+E00xx tag). `grep -P` yoksa ya da çıktı alınamıyorsa D9.6 için **ÖLÇÜLEMEDİ (grep -P yok)** yazılır; satır tahmin edilmez.
 
@@ -201,7 +215,7 @@ find . -maxdepth 3 \( -path ./.git -o -path ./node_modules \) -prune -o \( -name
 LC_ALL=C.UTF-8 grep -nobaP '[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2064}\x{2066}-\x{2069}\x{FEFF}\x{E0000}-\x{E007F}]' DOSYA | cat -A
 ```
 
-**Dürüst sınırlar:** (1) Sabit CVE listesi tutulmaz; sürüm kontrolü "ajan istemcisini güncel tut" düzeyindedir (ilgili istemcilerde yapılandırma yoluyla yürütmeyi kapatan sürüm düzeltmeleri çıkmıştır; hangi sürümde olduğu bu skill'de ÖLÇÜLMEZ). (2) D9 bir yapılandırmanın **yürütüldüğünü** değil, bir istemcinin **yürütebileceğini** kanıtlar; istemci davranışı sürümle değişir. (3) **Deny kuralının varlığı, pinli MCP sürümü ve `CODEOWNERS`'ın varlığı ya da kapsam eksiği D9 BULGUSU DEĞİLDİR** (deny'ın Bash ile aşılabilirliği, pinli paketin lockfile/bütünlük özeti eksikliği, CODEOWNERS'ın D9 yolları dışındaki boşlukları dahil). Sıkı yapılandırma için D9'da "bulgu yok" yazılır, "güvenli" yazılmaz; böyle bir gözlem istenirse rapor şablonundaki sabit **"## Sertleştirme notları (bulgu değil)"** bölümünde, **şiddetsiz** (CRITICAL/HIGH/MEDIUM/LOW yok) ve `G-n` numarası almadan yazılır (`kanit-ve-rapor.md` §4).
+**Dürüst sınırlar:** (1) Sabit CVE listesi tutulmaz; sürüm kontrolü "ajan istemcisini güncel tut" düzeyindedir (ilgili istemcilerde yapılandırma yoluyla yürütmeyi kapatan sürüm düzeltmeleri çıkmıştır; hangi sürümde olduğu bu skill'de ÖLÇÜLMEZ; tek istisna D9.8–D9.9'daki tek tarihli örnek eşiklerdir). (2) D9 bir yapılandırmanın **yürütüldüğünü** değil, bir istemcinin **yürütebileceğini** kanıtlar; istemci davranışı sürümle değişir. (3) **Deny kuralının varlığı, pinli MCP sürümü ve `CODEOWNERS`'ın varlığı ya da kapsam eksiği D9 BULGUSU DEĞİLDİR** (deny'ın Bash ile aşılabilirliği, pinli paketin lockfile/bütünlük özeti eksikliği, CODEOWNERS'ın D9 yolları dışındaki boşlukları dahil). Sıkı yapılandırma için D9'da "bulgu yok" yazılır, "güvenli" yazılmaz; böyle bir gözlem istenirse rapor şablonundaki sabit **"## Sertleştirme notları (bulgu değil)"** bölümünde, **şiddetsiz** (CRITICAL/HIGH/MEDIUM/LOW yok) ve `G-n` numarası almadan yazılır (`kanit-ve-rapor.md` §4).
 
 **Rapor kuralı:** denetlenen depo güvenilmeyen kaynaktansa (indirilmiş, fork, 3. taraf) rapor başına tek satır uyarı yaz: **"Bu depo ajan yapılandırması taşıyor; bir ajanda açmadan inceleyin."**
 
@@ -219,4 +233,4 @@ LC_ALL=C.UTF-8 grep -nobaP '[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2064}
 8. Sistem istemi sır taşımıyor, taşımadığı **arandı** mı?
 9. Vektör kiracı-sınırı **sorgunun kendisinde** mi ölçüldü (D7)?
 10. Araç/MCP kaynağı doğrulandı ve açıklama-enjeksiyonu/ajan hafızası zehirlenmesi denetlendi mi; MCP SDK sürümü tarayıcıdan, token `aud`'u, kimlik bilgisi–issuer bağı ve `Host`/`Origin` denetlendi mi (D8.1–D8.8)?
-11. Depoda ajan yapılandırma dosyası var mıydı (D9 tetiği ölçüldü mü); varsa hook/MCP/ortam/izin/gizli-Unicode **çalıştırılmadan**, dosya:satır + alan + değerle denetlendi mi (D9)?
+11. Depoda ajan yapılandırma dosyası var mıydı (D9 tetiği ölçüldü mü); varsa hook/MCP/ortam/izin/gizli-Unicode **çalıştırılmadan**, dosya:satır + alan + değerle denetlendi mi; CI ajan adımının sürümü advisory eşleşmesiyle, tetikleyicisi ve plugin SHA pin'inin host'u denetlendi mi (D9.1–D9.9)?

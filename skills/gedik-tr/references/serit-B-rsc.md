@@ -57,7 +57,7 @@ export const config = { matcher: ['/admin/:path*'] }
 `next` ve `react-server-dom-*` sürümü ve **kaynağı** (`dosya:satır`: `package.json`, lockfile) raporda
 yazılır. Sürümün açıklı olup olmadığı **tarayıcıdan** gelir (`npm audit`, `osv-scanner`, trivy/grype); tarayıcı
 yoksa ya da ağ yoksa **"ÖLÇÜLEMEDİ — sürüm eşlemesi tarayıcı ister"**. Ezberden "X altı açıklı" ya da
-"güncel, temiz" hükmü YASAK: sabit CVE listesi bu skill'de tutulmaz.
+"güncel, temiz" hükmü YASAK: sabit CVE listesi bu skill'de tutulmaz. Kayıt kimliği CVE ile sınırlı DEĞİLDİR: CVE'si olmayan bir advisory'nin GHSA kimliği de eşleşme sayılır (yalnız CVE'ye bakan bir tarayıcı çıktısı bu yüzden eksik olabilir; GHSA kimliği de çıktıdan okunur).
 
 ## R4 — `use cache` anahtarı ve yapılandırma SSRF'si (ORTA, tek satır imza)
 

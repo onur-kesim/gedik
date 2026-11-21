@@ -20,11 +20,11 @@ Kurallar (v2.12 ile aynı): TR kanonik + EN birebir, çeviri kapısı · yeni ku
 - [x] C3 T11/T12 + T2 PHP: `nginx.conf` `http2` + imaj etiketi; WordPress `wp-includes/version.php` `$wp_version` alanı PHP bloğuna
 
 ## YAP — D: metin güncellemeleri
-- [ ] D1 OWASP LLM Top 10 2026 numaraları (D3/D4/D5/D6/D7/D8 başlıkları) + D5'e "Hidden Context Exposure (LLM08:2026)" maddesi (desen: araç şeması/sistem istemi/RAG politika metni yanıt yoluna akıyor mu)
-- [ ] D2 CI/CD §2: 2026-12-02 public depoda `pull_request_target` varsayılan engelli; event policy ile açılmışsa pwn request kontrolü aynen; `issue_comment`/`workflow_run` engel kapsamında değil
-- [ ] D3 D9: CI ajan action sürüm kapısı (`claude-code-action` <2.1.163, `run-gemini-cli` <0.1.22) + dış kullanıcı tetikleyebiliyor mu; plugin SHA pin'i 40-hex + GitHub dışı host ise "pin tek başına güvence değil" (Plugin4Shell, istemci sürümü)
-- [ ] D4 R3: GHSA kimliği de eşleşme sayılır (CVE'siz advisory)
-- [ ] Sürüm 2.13.0 dört yerde + CHANGELOG; çeviri + kapılar + iç ad yeşil
+- [x] D1 OWASP LLM Top 10 2026 numaraları (D3/D4/D5/D6/D7/D8 başlıkları) + D5'e "Hidden Context Exposure (LLM08:2026)" maddesi (desen: araç şeması/sistem istemi/RAG politika metni yanıt yoluna akıyor mu)
+- [x] D2 CI/CD §2: 2026-12-02 public depoda `pull_request_target` varsayılan engelli; event policy ile açılmışsa pwn request kontrolü aynen; `issue_comment`/`workflow_run` engel kapsamında değil
+- [x] D3 D9: CI ajan action sürüm kapısı (`claude-code-action` <2.1.163, `run-gemini-cli` <0.1.22) + dış kullanıcı tetikleyebiliyor mu; plugin SHA pin'i 40-hex + GitHub dışı host ise "pin tek başına güvence değil" (Plugin4Shell, istemci sürümü)
+- [x] D4 R3: GHSA kimliği de eşleşme sayılır (CVE'siz advisory)
+- [x] Sürüm 2.13.0 dört yerde + CHANGELOG; çeviri + kapılar + iç ad yeşil
 
 ## DOĞRULA (eşikler koşudan ÖNCE Onur kilitler; `_calisma/saha_2130/`; senaryo başına n=2)
 - [ ] P0 puanlayıcı pozitif kontrolü: engel sonrası istek, `.pth` kaçırma, `aud`'suz sunucuyu temiz sayma, `Server` sürümünü "doğrulandı" diye yazma KIRMIZI

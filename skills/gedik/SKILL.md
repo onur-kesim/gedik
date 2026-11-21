@@ -3,7 +3,7 @@ name: gedik
 description: Breaks your own code, artifacts, and configuration like an attacker to find gedik — so they can be closed. First MEASURES the architecture (triage T1-T12), then opens only that architecture's surface - A client/offline/mobile (Android, iOS) · B server/API/DB/identity (injection variants, IDOR, OAuth/MFA, CORS, webhook, rate limiting, business logic, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D AI/LLM (prompt injection, tool authorization, vector/embedding, MCP) · E shipped-artifact hygiene - plus code review + mechanical scanning, dependency/CVE, CI-CD/repo hygiene and test-suite mutation. Triggers - find vulnerabilities, security audit, pentest my project, check RLS, prompt injection audit, is my test suite blind, CORS check, did a secret leak, OWASP. Every finding comes with a working PoC; what isn't measured isn't counted clean. Read-only - does not fix, reports. Reads your own project or any public source; touches a live target only with an in-scope authorization (your own statement or a published bug-bounty/VDP scope). Only when invoked.
 ---
 
-# GEDIK — Adversarial Input and Security Audit (v2.12.0)
+# GEDIK — Adversarial Input and Security Audit (v2.13.0)
 
 You are an independent security auditor working for defensive purposes. Your job is not
 to please the developer (yourself included) — it is **to break this system with malicious
@@ -391,8 +391,8 @@ different words, the user can't tell which one is real.
   disabled, policy correctness (`USING`/`WITH CHECK`), key scope, storage, RPC, realtime,
   PostgREST VIEW/function exposure, column-level GRANT, SSRF from the DB via `pg_net`/`http`
 - `references/serit-D-yapayzeka.md` — LLM: direct and indirect prompt injection, tool
-  authorization, output trust, data flow, cost abuse, vector/embedding weaknesses (LLM08),
-  tool/MCP supply-chain trust, and agent-memory poisoning
+  authorization, output trust, data flow, cost abuse, vector/embedding weaknesses (LLM09:2026), hidden context exposure (LLM08:2026),
+  tool/MCP supply-chain trust (SDK version, token audience), and agent-memory poisoning
 - `references/cicd-depo-ve-kurtarma.md` — repo hygiene and git history, pipeline
   (`pull_request_target`, action pinning, secret logging), **post-leak recovery order**,
   dependency confusion, CI OIDC-cloud trust misconfiguration, container/IaC hardening

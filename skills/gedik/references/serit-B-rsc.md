@@ -61,7 +61,7 @@ The `next` and `react-server-dom-*` version and its **source** (`file:line`: `pa
 written in the report. Whether the version is vulnerable comes **from a scanner** (`npm audit`,
 `osv-scanner`, trivy/grype); with no scanner or no network write **"NOT MEASURED — version matching needs a
 scanner"**. A from-memory "below X is vulnerable" or "current, clean" verdict is FORBIDDEN: this skill keeps no
-fixed CVE list.
+fixed CVE list. The record id is NOT limited to a CVE: the GHSA id of an advisory that has no CVE also counts as a match (scanner output that looks only at CVEs can therefore be incomplete; the GHSA id is read from the output too).
 
 ## R4 — `use cache` key and configuration SSRF (MEDIUM, one-line signature)
 

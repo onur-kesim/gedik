@@ -24,6 +24,12 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 - **C2 pasif sunucu sürüm ifşası** (`pasif-denetim.md` §2 yeni tablo satırı + kurallar): `Server`, `X-Powered-By`, ana sayfa `meta generator`, ALPN `h2` yalnız zaten yapılmış isteklerin yanıtından; satır "sürüm başlığından, doğrulanmadı" etiketiyle; eşleşme yalnız advisory/tarayıcıdan, yoksa ÖLÇÜLEMEDİ; sürüm için ek yola (`readme.html`, `license.txt`, `wp-login.php`, `/nginx_status`…) istek YOK.
 - **C3** `triyaj-ve-kapsam.md` T11 (`nginx.conf` `http2` + `nginx:<sürüm>` imaj etiketi, kaynağıyla; yüzen etikette ÖLÇÜLEMEDİ) ve T2 PHP (WordPress `wp-includes/version.php` `$wp_version`, `kod-inceleme-guvenlik.md` §2.1); `SKILL.md` PHP bloğuna İSTEĞE BAĞLI `WordPress çekirdek` satırı (mekanik kapı bu satırı doğrulamaz).
 - 7 yeni kilitli cümle (`sabit_cumleler.json` 87 → 94).
+### Değişti (D — metin güncellemeleri; sürüm 2.13.0 `plugin.json`, `marketplace.json`, `SKILL.md` TR+EN)
+- **D1 OWASP LLM Top 10 2026** (resmî kaynak, 2026-08-04 yayımı; liste ve LLM08 ham metni 2026-11-22'de okundu): `serit-D-yapayzeka.md` başlıkları 2026 numaralarıyla (D1/D2 LLM01 · D3 LLM03 Excessive Agency · D4 LLM10 Improper Output Handling · D5 LLM02 + LLM08 · D6 LLM06 Unbounded Consumption · D7 LLM09 (2025'te LLM08) · D8 LLM04 Supply Chain); D5'e yeni madde **Gizli bağlam ifşası (LLM08:2026 Hidden Context Exposure)**: bağlamdaki sır, bağlamın gizliliğine dayanan yetki/filtre, araç şeması/iç kuralın yanıt yoluna akması; "ifşa edilebileceğini varsay"; işaretleyici PoC'si; `SKILL.md` TR+EN başvurusu.
+- **D2 CI/CD §2:** 2026-12-02'den itibaren public depolarda `pull_request_target` varsayılan engelli (GitHub Changelog 2026-11-02; platform davranışı ÖLÇÜLMEZ); event policy ile açılmışsa pwn request kontrolü AYNEN sürer; `issue_comment`/`workflow_run` engel kapsamında değil; private/internal değişmedi.
+- **D3 D9:** D9.8 CI'da koşan kod ajanı (action/CLI sürüm kapısı advisory'den, tek tarihli örnek eşikler `claude-code-action` <2.1.163, `run-gemini-cli` <0.1.22 — BAYATLAR, hüküm advisory'den; dış kullanıcı tetikleyebiliyor mu + sır/yazma jetonu); D9.9 plugin SHA pin'i 40-hex + GitHub dışı host → "pin tek başına güvence değildir" (Plugin4Shell; istemci sürüm eşiği tek ikincil kaynak, GÜVEN ZAYIF). D9 tetiği `.claude-plugin/` ve CI'daki kod ajanı adımını da kapsar.
+- **D4 R3:** CVE'si olmayan advisory'nin GHSA kimliği de eşleşme sayılır.
+- 6 yeni kilitli cümle (`sabit_cumleler.json` 94 → 100).
 
 ## [2.12.0] — 2026-11-15
 ### Eklendi

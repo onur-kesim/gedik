@@ -18,7 +18,7 @@ an API endpoint (auth, rate limiting, cost → B2/B9).
 
 ---
 
-## D1 — PROMPT INJECTION (direct)
+## D1 — PROMPT INJECTION (direct; OWASP LLM01:2026)
 
 Can text the user wrote override the system prompt?
 
@@ -46,7 +46,7 @@ Can text the user wrote override the system prompt?
 
 ---
 
-## D2 — INDIRECT INJECTION (the most dangerous)
+## D2 — INDIRECT INJECTION (the most dangerous; OWASP LLM01:2026)
 
 If the model **reads content the attacker controls**, the instruction comes from
 there: a web page, a PDF, an email, a comment, a product description, a code
@@ -68,7 +68,7 @@ proven.**
 
 ---
 
-## D3 — TOOL AUTHORIZATION (the real line of defense)
+## D3 — TOOL AUTHORIZATION (the real line of defense; OWASP LLM03:2026 Excessive Agency)
 
 Injection cannot be prevented; **what injection can win** is limited.
 
@@ -91,7 +91,7 @@ Injection cannot be prevented; **what injection can win** is limited.
 
 ---
 
-## D4 — OUTPUT TRUST (model output = untrusted input)
+## D4 — OUTPUT TRUST (model output = untrusted input; OWASP LLM10:2026 Improper Output Handling)
 
 Where does model output go? Every sink is subject to the classic injection rule:
 
@@ -111,7 +111,7 @@ output? Is CSP `img-src` restrictive?
 
 ---
 
-## D5 — DATA FLOW AND PRIVACY
+## D5 — DATA FLOW AND PRIVACY (OWASP LLM02:2026 Sensitive Information Disclosure; LLM08:2026 Hidden Context Exposure)
 
 - **What data goes to the model?** PII, secrets, other users' content?
 - Provider agreement: is the submitted data used for training, how long is it
@@ -121,10 +121,20 @@ output? Is CSP `img-src` restrictive?
 - Are full prompts/responses written to logs — do they contain secrets/PII?
 - In a multi-tenant system, does one user's data leak into another's context
   (shared conversation history, shared cache, shared vector index)?
+- **Hidden context exposure (OWASP LLM08:2026 Hidden Context Exposure).** The system prompt, developer instructions, policy text coming from RAG/configuration/profile services,
+  the tool and function schemas given to the model and the other rules the application adds to the context are not shown to the user but are within the model's reach.
+  **Assume hidden context can be disclosed;** nothing in the context counts as a secret. Look at: (a) is there a credential, connection string, token or internal endpoint in the
+  context → HIGH; (b) do authorization, role separation, policy or a content filter rest only on the text in the context and on its secrecy → HIGH (those controls must live OUTSIDE the
+  model, deterministic); (c) does an internal rule, filter criterion, role/permission description or tool schema **flow into the response path** (a `prompt`/`messages`/`tools` field
+  serialized into the response body, a debug flag, an error message, an endpoint that returns the provider's raw response, a log) → MEDIUM; (d) INFO if the context holds no secret and no
+  security logic and its secrecy is not relied on. Severity follows WHAT is put in the context and HOW the application relies on it; a disclosure that contains no secret on its own is not written CRITICAL.
+  PoC (on your own test setup): put a harmless marker (`__GEDIK_CTXMARK__`) into the context; if it comes back in the response body, in an error or in the raw provider response the disclosure
+  path **is proven**. What falls outside its scope is in other items: leakage of user/training data (the items above), agent memory (D8), server log leakage and client bundle review (Lane B/A).
+  Source: OWASP GenAI LLM Top 10 2026 (published 2026-08-04), the LLM08 raw text was read on 2026-11-22.
 
 ---
 
-## D6 — COST AND ABUSE
+## D6 — COST AND ABUSE (OWASP LLM06:2026 Unbounded Consumption)
 
 - Can an unauthenticated user call the model → **direct billing DoS** (B9.2).
 - Is there a prompt/output token cap; is there a per-user quota?
@@ -134,7 +144,7 @@ output? Is CSP `img-src` restrictive?
 
 ---
 
-## D7 — VECTOR & EMBEDDING WEAKNESSES (OWASP LLM08:2025)
+## D7 — VECTOR & EMBEDDING WEAKNESSES (OWASP LLM09:2026; LLM08:2025 in the 2025 list)
 
 RAG's vector layer is a separate surface; classic injection controls don't touch it.
 
@@ -157,7 +167,7 @@ RAG's vector layer is a separate surface; classic injection controls don't touch
 
 ---
 
-## D8 — TOOL / MCP SUPPLY-CHAIN TRUST & AGENT MEMORY (beyond OWASP LLM06)
+## D8 — TOOL / MCP SUPPLY-CHAIN TRUST & AGENT MEMORY (OWASP LLM04:2026 Supply Chain; beyond LLM03:2026)
 
 D3 measures the tool's **authorization**; this section measures the trustworthiness of the tool's **source** and agent memory. An untrusted tool definition can carry **instructions** to the model (tool poisoning).
 
@@ -189,10 +199,11 @@ D3 measures the tool's **authorization**; this section measures the trustworthin
 
 Agent configuration that sits in a repository is **not data, it is an executable surface:** whoever opens the repo in an agent client (Claude Code, Cursor, Copilot, Gemini, VS Code) may run the command, MCP server, or environment variable the configuration defines, **with their own authority.** This surface exists in a repo that uses no AI at all; so, unlike D1–D8, D9 is **not tied to T8** (trigger below).
 
-**Trigger (independent of T8):** D9 OPENS if the repo contains any of — `.claude/`, `.mcp.json`, `.cursor/`, `.cursorrules`, `.vscode/mcp.json`, `.vscode/settings.json`, `.vscode/tasks.json`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `SKILL.md`, or `.claude/skills/`. Measurement:
+**Trigger (independent of T8):** D9 OPENS if the repo contains any of — `.claude/`, `.mcp.json`, `.cursor/`, `.cursorrules`, `.vscode/mcp.json`, `.vscode/settings.json`, `.vscode/tasks.json`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `SKILL.md`, `.claude/skills/`, `.claude-plugin/`, or a code-agent step in `.github/workflows/` (`claude-code-action`, `run-gemini-cli`, `claude -p`, `gemini -p`). Measurement:
 
 ```bash
-find . -maxdepth 3 \( -path ./.git -o -path ./node_modules \) -prune -o \( -name '.claude' -o -name '.mcp.json' -o -name '.cursor' -o -name '.cursorrules' -o -name '.gemini' -o -name '.devcontainer' -o -name 'AGENTS.md' -o -name 'CLAUDE.md' -o -name 'SKILL.md' -o -name 'copilot-instructions.md' -o -path './.vscode/mcp.json' -o -path './.vscode/settings.json' -o -path './.vscode/tasks.json' \) -print
+find . -maxdepth 3 \( -path ./.git -o -path ./node_modules \) -prune -o \( -name '.claude' -o -name '.mcp.json' -o -name '.cursor' -o -name '.cursorrules' -o -name '.gemini' -o -name '.devcontainer' -o -name 'AGENTS.md' -o -name 'CLAUDE.md' -o -name 'SKILL.md' -o -name 'copilot-instructions.md' -o -name '.claude-plugin' -o -path './.vscode/mcp.json' -o -path './.vscode/settings.json' -o -path './.vscode/tasks.json' \) -print
+grep -rlE 'claude-code-action|run-gemini-cli|claude -p|gemini -p' .github/workflows 2>/dev/null
 ```
 
 If the output is empty D9 does NOT open and the scope records "D9: no trigger" (not called clean — there is no trigger). This measurement does not replace T8; D1–D8 of Lane D still open only if T8 is YES.
@@ -206,6 +217,8 @@ If the output is empty D9 does NOT open and the scope records "D9: no trigger" (
 | D9.5 | **Agent can write its own configuration** | no `Edit`/`Write` **deny** rule for `.claude/**`, `.mcp.json`, `AGENTS.md`; these paths absent from `CODEOWNERS` (the agent can loosen its own rules and make that persistent) | HIGH |
 | D9.6 | **Hidden Unicode in instruction files** | U+200B–200F, U+202A–202E, U+2060–2064, U+2066–2069, U+FEFF outside the file start, U+E0000–E007F (tag characters) in `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `SKILL.md`, `copilot-instructions.md` — the report gives **code point + line + byte offset together**; **NO LINE COUNTING:** the command below is run and the `line:offset:` numbers in its output are **copied verbatim** (do not count yourself, do not convert an offset to a line); an instruction invisible to the eye | HIGH/CRITICAL |
 | D9.7 | **Other IDE execution** | `runOn: folderOpen` in `.vscode/tasks.json`; `postCreateCommand`/`postStartCommand`/`initializeCommand` in `.devcontainer/devcontainer.json` | HIGH |
+| D9.8 | **Code agent running in CI** | A step with `anthropics/claude-code-action`, `google-github-actions/run-gemini-cli` or `claude -p`/`gemini -p` in `.github/workflows/*`. (a) **Version gate:** the action/CLI version by an advisory/scanner match; class example (thresholds read from an advisory on 2026-11-22, they GO STALE, NOT a list; the verdict comes from the advisory): `claude-code-action` 0.2.54–2.1.162 (CVE-2026-54316, fixed in 2.1.163), `run-gemini-cli` <0.1.22 and Gemini CLI <0.39.1 (CVE-2026-12537): secret exfiltration through an outside user's issue/PR/comment text. (b) **Trigger:** can an outside user start the agent (`issues`, `issue_comment`, `pull_request_target`, fork `pull_request`), and does the agent's environment hold a secret or a write-capable token (`permissions: write`) | HIGH; outside trigger + secret = CRITICAL |
+| D9.9 | **Plugin/marketplace SHA pinning** | In `.claude-plugin/marketplace.json` or a plugin source, a `ref`/`sha` that is 40-hex **and** a git host that is NOT GitHub (GitHub rejects a 40-hex branch name; another host may accept a hash-shaped branch name): "a SHA pin exists = PASS" gives false confidence here, **a pin alone is not an assurance**; the client version threshold (Claude Code <2.1.179, Codex <0.146.0) comes ONLY from a single secondary source (Help Net Security, 2026-09-18; CONFIDENCE WEAK, mechanism detail not verified), the verdict from the advisory. If the source is `"."` (the same repo) this path does not apply | MEDIUM |
 
 **PoC rule (D9 adaptation of K2 — WITHOUT running the configuration):** evidence = `file:line` + **field** + **value** + **which client executes it, and when** (e.g. "Claude Code runs the `SessionStart` hook when a session opens"; cite the documentation or CVE). **"Run it and see" is FORBIDDEN:** running the hook, MCP server, task, or CI step means executing the repo's attacker-controlled command on your own machine. Hidden Unicode (D9.6) is read without running anything: scan the file at byte level: run the command below; each output line has the form `line:byte-offset:byte-sequence`. The line and offset are **copied verbatim from the output**; the code point is decoded from the byte sequence (`cat -A` rendering: `M-bM-^@M-^K` = U+200B, `M-bM-^@M-.` = U+202E, `M-bM-^@M-,` = U+202C, `M-sM- M-^A…` = U+E00xx tag). If `grep -P` is missing or no output can be obtained, write **NOT MEASURED (no grep -P)** for D9.6; do not guess the line.
 
@@ -213,7 +226,7 @@ If the output is empty D9 does NOT open and the scope records "D9: no trigger" (
 LC_ALL=C.UTF-8 grep -nobaP '[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2064}\x{2066}-\x{2069}\x{FEFF}\x{E0000}-\x{E007F}]' DOSYA | cat -A
 ```
 
-**Honest limits:** (1) No fixed CVE list is kept; the version check is at the level of "keep the agent client up to date" (fixes that disable configuration-driven execution have shipped in the relevant clients; which version has them is NOT MEASURED by this skill). (2) D9 proves that a client **can** execute a configuration, not that it **was** executed; client behavior changes with version. (3) **The presence of a deny rule, a pinned MCP version, and a `CODEOWNERS` file — or gaps in its scope — are NOT D9 FINDINGS** (including that a deny rule can be bypassed through Bash, that a pinned package lacks a lockfile/integrity hash, or that CODEOWNERS has gaps outside the D9 paths). For a tight configuration write "no finding" under D9, not "safe"; if such an observation is wanted, it goes under the fixed **"## Sertleştirme notları (bulgu değil)"** section of the report template, **without severity** (no CRITICAL/HIGH/MEDIUM/LOW) and without a `G-n` number (`kanit-ve-rapor.md` §4).
+**Honest limits:** (1) No fixed CVE list is kept; the version check is at the level of "keep the agent client up to date" (fixes that disable configuration-driven execution have shipped in the relevant clients; which version has them is NOT MEASURED by this skill; the one exception is the single-dated example thresholds in D9.8–D9.9). (2) D9 proves that a client **can** execute a configuration, not that it **was** executed; client behavior changes with version. (3) **The presence of a deny rule, a pinned MCP version, and a `CODEOWNERS` file — or gaps in its scope — are NOT D9 FINDINGS** (including that a deny rule can be bypassed through Bash, that a pinned package lacks a lockfile/integrity hash, or that CODEOWNERS has gaps outside the D9 paths). For a tight configuration write "no finding" under D9, not "safe"; if such an observation is wanted, it goes under the fixed **"## Sertleştirme notları (bulgu değil)"** section of the report template, **without severity** (no CRITICAL/HIGH/MEDIUM/LOW) and without a `G-n` number (`kanit-ve-rapor.md` §4).
 
 **Report rule:** if the audited repo comes from an untrusted source (downloaded, fork, 3rd party), put one warning line at the top of the report: **"This repo carries agent configuration; inspect it without opening it in an agent."**
 
@@ -231,4 +244,4 @@ LC_ALL=C.UTF-8 grep -nobaP '[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2064}
 8. Does the system prompt carry no secrets, and has this **been checked**?
 9. Was it measured whether the vector tenant boundary is **in the query itself** (D7)?
 10. Has tool/MCP provenance been verified, and has description-injection/agent-memory poisoning been audited; have the MCP SDK version (from a scanner), the token `aud`, the credential–issuer binding and `Host`/`Origin` been checked (D8.1–D8.8)?
-11. Was there an agent-configuration file in the repo (was the D9 trigger measured); if so, were hooks/MCP/env/permissions/hidden Unicode audited **without running them**, with file:line + field + value (D9)?
+11. Was there an agent-configuration file in the repo (was the D9 trigger measured); if so, were hooks/MCP/env/permissions/hidden Unicode audited **without running them**, with file:line + field + value; were a CI agent step's version (by an advisory match), its trigger and the host of a plugin SHA pin checked (D9.1–D9.9)?

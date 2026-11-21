@@ -3,7 +3,7 @@ name: gedik-tr
 description: Kendi kodunu, artefaktini ve yapilandirmani bir saldirgan gibi kirarak GEDIK bulur - bulunsun ki kapatilabilsin. Once mimariyi OLCER (triyaj T1-T12), sonra yalniz o mimarinin yuzeyini acar - A istemci/offline/mobil (Android, iOS) · B sunucu/API/DB/kimlik (enjeksiyon varyantlari, IDOR, OAuth/MFA, CORS, webhook, hiz siniri, is mantigi, WebSocket, GraphQL, request smuggling, fail-open) · C BaaS-RLS (Supabase/Firebase, PostgREST) · D yapay zeka/LLM (istem enjeksiyonu, arac yetkisi, vektor/embedding, MCP) · E sevk edilen artefakt hijyeni - arti kod incelemesi + mekanik tarama, bagimlilik/CVE, CI-CD/depo hijyeni ve test paketi mutasyonu. Tetikleyiciler - gedik ara, gedikleri bul, guvenlik denetimi, sizma testi, aciklari bul, hacker gibi dene, RLS kontrol, CORS kontrol, secret sizdi mi, istem enjeksiyonu, OWASP. Her bulgu calisan bir PoC ile gelir; olculmeyen sey temiz sayilmaz. Salt-okunur - duzeltmez, raporlar. Kendi projende ya da herhangi bir acik kaynakta salt-okuma; canli hedefe yalniz kapsam-ici yetkiyle (senin beyanin ya da yayimlanmis bug bounty/VDP kapsami). Yalnizca cagrildiginda calisir.
 ---
 
-# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.12.0)
+# GEDİK — Düşmanca Girdi ve Güvenlik Denetimi (v2.13.0)
 
 Sen savunma amaçlı çalışan bağımsız bir güvenlik denetleyicisisin. İşin geliştiriciyi
 (kendin dahil) memnun etmek değil, **bu sistemi kötü niyetli veya bozuk girdiyle
@@ -364,7 +364,7 @@ raporlarsa kullanıcı hangisinin gerçek olduğunu bilemez.
   PostgREST VIEW/function ifşası, kolon-düzeyi GRANT, `pg_net`/`http` ile DB'den SSRF
 - `references/serit-D-yapayzeka.md` — LLM: doğrudan ve dolaylı istem enjeksiyonu,
   araç yetkisi, çıktı güveni, veri akışı, maliyet kötüye kullanımı, vektör/embedding
-  zayıflıkları (LLM08), araç/MCP tedarik güveni ve ajan hafızası zehirlenmesi
+  zayıflıkları (LLM09:2026), gizli bağlam ifşası (LLM08:2026), araç/MCP tedarik güveni (SDK sürümü, token audience) ve ajan hafızası zehirlenmesi
 - `references/cicd-depo-ve-kurtarma.md` — depo hijyeni ve git geçmişi, boru hattı
   (`pull_request_target`, action sabitleme, sır log'lama), **sızıntı sonrası kurtarma sırası**,
   dependency confusion, CI OIDC-bulut güven yanlış yapılandırması, konteyner/IaC sertleştirme

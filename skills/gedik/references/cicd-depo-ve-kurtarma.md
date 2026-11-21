@@ -38,6 +38,10 @@ configuration.
   fork's code** in a context that has access to the repository's secrets. If
   either trigger is present and the workflow checks out the **PR head** with
   `actions/checkout` → **CRITICAL** (anyone can open a PR and steal the secrets).
+- **Default block on `pull_request_target` (2026-12-02):** from 2026-12-02 GitHub blocks `pull_request_target` events by default **in public repositories** (source: GitHub Changelog
+  2026-11-02; this skill does NOT measure platform behavior); opening it is done with an Actions event policy. A `pull_request_target` OPENED by an event policy is a deliberate exception and
+  the pwn request check above continues UNCHANGED (the default block does not make a weak workflow safe). The block does NOT cover `issue_comment` and `workflow_run`: the checks in this
+  section do not change for them. No change for a private/internal repo. If the repo has `pull_request_target` but the event policy setting is not visible in the repo, write "event policy NOT MEASURED (setting outside the repo)".
 - **`issue_comment` pwn request (CRITICAL):** `on: issue_comment` is an event anyone can
   trigger (anyone who can write a comment). If, in the same workflow, the `actions/checkout`
   `ref:` value is a PR ref (`refs/pull/…`, `github.event.pull_request.head.*`) or a step runs

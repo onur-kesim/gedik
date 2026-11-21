@@ -564,6 +564,42 @@
       "dosya": "references/pasif-denetim.md",
       "tr": "ÖLÇÜLEMEDİ — sürüm eşlemesi advisory ister",
       "en": "NOT MEASURED — version matching needs an advisory"
+    },
+    {
+      "id": "d5-gizli-baglam-ifsa",
+      "dosya": "references/serit-D-yapayzeka.md",
+      "tr": "Gizli bağlamın ifşa edilebileceğini varsay",
+      "en": "Assume hidden context can be disclosed"
+    },
+    {
+      "id": "d9-pin-tek-basina",
+      "dosya": "references/serit-D-yapayzeka.md",
+      "tr": "pin tek başına güvence değildir",
+      "en": "a pin alone is not an assurance"
+    },
+    {
+      "id": "d9-dis-tetik-sir",
+      "dosya": "references/serit-D-yapayzeka.md",
+      "tr": "dış tetik + sır = KRİTİK",
+      "en": "outside trigger + secret = CRITICAL"
+    },
+    {
+      "id": "cicd-prt-pwn-aynen",
+      "dosya": "references/cicd-depo-ve-kurtarma.md",
+      "tr": "yukarıdaki pwn request kontrolü AYNEN sürer",
+      "en": "the pwn request check above continues UNCHANGED"
+    },
+    {
+      "id": "cicd-prt-engel-kapsam",
+      "dosya": "references/cicd-depo-ve-kurtarma.md",
+      "tr": "Engel `issue_comment` ve `workflow_run`'ı KAPSAMAZ",
+      "en": "The block does NOT cover `issue_comment` and `workflow_run`"
+    },
+    {
+      "id": "r3-ghsa-eslesme",
+      "dosya": "references/serit-B-rsc.md",
+      "tr": "CVE'si olmayan bir advisory'nin GHSA kimliği de eşleşme sayılır",
+      "en": "the GHSA id of an advisory that has no CVE also counts as a match"
     }
   ]
 }
