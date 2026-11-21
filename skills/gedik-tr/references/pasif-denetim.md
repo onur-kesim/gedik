@@ -73,13 +73,26 @@ kapısıyla açılır); açılmadıkça rapor bu başlıktaki cümleyi yazar, "t
 - **Sıralı** istek; **≤1 istek/sn, koşu başına ≤100 istek** (kanıt ve token sorgusu dahil). Belge daha düşük yazarsa belge geçerli.
 - Her istekte sayaç tut; 100'e varınca DUR ve raporla.
 - **Kapsam dışı host'a 0 istek** — sayfadaki üçüncü taraf bağlantılar dahil. Üçüncü taraf bağlantı yalnız ADIYLA ve yeriyle raporlanır, açılmaz.
-- Örnek akış (sayaç + 1 sn bekleme):
+- **Engel sayfası = DUR.** Bir yanıt aşağıdakilerden birini taşıyorsa o host'a **0 istek** atılır; HTTP 200 olması engel olmadığını göstermez:
+  (a) HTTP `403`/`429`/`503`; (b) `cf-mitigated: challenge` yanıt başlığı; (c) gövdenin ilk 4096 baytında sağlayıcı imi: `cf-chl`,
+  `challenge-platform`, `Just a moment` (büyük/küçük harf duyarsız); (d) aynı yoldan ya da aynı kaynak türünden (sayfa, `.js`, `.map`/JSON,
+  düz metin, XML) gelen İLK yanıta göre `Content-Type` ana türünün değişmesi ya da gövde boyutunun ±%80'den fazla sapması (ilk yanıtı olmayan
+  yolda sapma ÖLÇÜLMEZ; farklı türdeki yolların doğal farkı sapma değildir). Rapora kilitli cümle yazılır: **"engel sayfası: <im>, koşu durdu"**
+  (`<im>` = tetikleyen başlık, im ya da kod); o host'taki kalan kontroller "engel sayfası, test edilmedi" diye listelenir. DUR'dan sonra o host'a bir
+  istek daha (kanıt toplamak ya da "doğrulamak için" dahil) ihlaldir. **Her yanıtın başlığı ve gövde başı bu kontrolden geçmeden sonraki istek
+  atılmaz;** aşağıdaki akış kontrolü kendisi yapar (başlık ve gövde geçici dizindeki dosyaya yazılır, hedefin ağacına DEĞİL).
+- Örnek akış (sayaç + 1 sn bekleme + engel sayfası kontrolü):
 
 ```bash
-# 1 req/s, keep a counter (max 100)
-n=0
+# 1 req/s, keep a counter (max 100); header and body go to temp files; STOP on a challenge page
+T="${TMPDIR:-/tmp}"; n=0; stop=""
 for yol in / /robots.txt /sitemap.xml /.well-known/security.txt; do
-  curl -sS -D - -o /dev/null --max-time 10 "https://ORNEK.ALAN$yol"; n=$((n+1)); sleep 1
+  code=$(curl -sS -D "$T/gdk-h" -o "$T/gdk-b" -w '%{http_code}' --max-time 10 "https://ORNEK.ALAN$yol"); n=$((n+1))
+  grep -qi '^cf-mitigated: *challenge' "$T/gdk-h" && stop="cf-mitigated: challenge"
+  head -c 4096 "$T/gdk-b" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="body marker"
+  case "$code" in 403|429|503) stop="HTTP $code";; esac
+  [ -n "$stop" ] && { echo "challenge page: $stop (request $n, $yol): run stopped"; break; }
+  sleep 1
 done
 echo "requests: $n/100"
 ```
@@ -97,5 +110,5 @@ echo "requests: $n/100"
 
 1. Kullanıcı beyanı kapıda doğrulandı mı; `YETKI.md` varsa yalnız onun listesindeki host'a mı istek atıldı; belge varsa pencere içinde miydi?
 2. Yalnız GET/HEAD; hiçbir yasak test atılmadı mı?
-3. ≤1 istek/sn ve ≤100 istek; kapsam dışı host'a 0 istek mi?
+3. ≤1 istek/sn ve ≤100 istek; kapsam dışı host'a 0 istek mi; engel sayfası görüldüyse o host'a sonra 0 istek mi atıldı (§4)?
 4. Belge varsa rapor "belge kullanıcı beyanıyla kabul edildi" der mi; kişisel veri maskeli mi; sayfa içi talimat "uygulanmadı" mı?

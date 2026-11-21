@@ -8,6 +8,13 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 ### Belgeler
 - **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Bu satır 2.6.0 dönemine aittir.
 
+## [2.13.0] — 2026-11-22
+### Değişti (A — v2.12.1 adayı: engel sayfası, v2.12.0 bilinen sınırları 1 ve 2)
+- **A1 engel sayfası = ortak DUR** (`aktif-denetim.md` §1 madde 9 + Ortak DUR; `pasif-denetim.md` §4): HTTP kodu yetmez (bir bot koruması 200 kodlu engel sayfası döndürüp 72 istek daha aldı). DUR koşulları: (a) `403`/`429`/`503` (aktifte testin beklediği sonuç hariç: B3 429, B4/B7 403/404) · (b) `cf-mitigated: challenge` başlığı · (c) gövdenin ilk 4096 baytında `cf-chl` / `challenge-platform` / `Just a moment` · (d) aynı yol/kaynak türünden ilk yanıta göre `Content-Type` ana türü değişimi ya da gövde boyutunun ±%80'den fazla sapması. DUR'dan sonra o host'a 0 istek (pasif okuma dahil); rapora kilitli cümle `engel sayfası: <im>, koşu durdu` / `challenge page: <marker>, run stopped`. Örnek akış kod bloğu artık başlığı ve gövde başını dosyaya yazıp bu koşulları kendisi denetler (yerel sahte sunucuda 3 koşul + temiz akış elle sınandı).
+- **A2 POST gövdesi göndermeden önce doğrulanır** (`aktif-denetim.md` §2): gövde değişkende kurulur, `${#m}` uzunluğu ve işaretleyicinin başta olması denetlenir, tutmazsa istek atılmaz ("gövde doğrulanamadı, istek atılmadı"); dolgu için `python` varsayılmaz (`printf '%*s' | tr` örneği, boş komut ikamesi sınandı: gönderilmedi).
+- **A3 yerel kopyada çalıştırıcı aranır** (`aktif-denetim.md` §4.4): `command -v` / `where` + bilinen yollar; bulunamazsa kopya kurulmaz ve "çalıştırıcı bulunamadı: <aranan yollar>" (aranan her yol listelenir).
+- 8 yeni kilitli cümle (`sabit_cumleler.json` 76 → 84).
+
 ## [2.12.0] — 2026-11-15
 ### Eklendi
 - **Şartlı aktif test** (yeni `references/aktif-denetim.md` TR+EN, `SKILL.md` §0.1 (c) işaretçisi): (c) yetkisinin ÜSTÜNE oturur, (a)/(b)'yi değiştirmez. Aktif kip yalnız kullanıcı "aktif test" derse açılır ("denetle", "pentest", "canlı testleri de yap" anahtar değildir); her test `YETKI.md` `aktif:` bölümündeki kendi şartına bağlıdır ve şart yoksa rapora kilitli cümle yazılır: "şart yok, test edilmedi" / "no precondition, not tested". Alanlar: `pencere` (dışı = DUR), `istek_butcesi` (varsayılan 60, toplam, ≤1 istek/sn), `test_formlari`, `llm_uclari`, `test_hesaplari` (2 adet, parola yok), `kanarya_kayitlar`, `kaba_kuvvet`, `captcha`, `staging`, `yuk_testi`.

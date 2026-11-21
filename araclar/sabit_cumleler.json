@@ -456,6 +456,54 @@
       "dosya": "references/pasif-denetim.md",
       "tr": "JS'ten çıkan API uçlarına İSTEK ATILMAZ",
       "en": "NO request is sent to API endpoints found in JS"
+    },
+    {
+      "id": "aktif-engel-sayfasi-dur",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "engel sayfası: <im>, koşu durdu",
+      "en": "challenge page: <marker>, run stopped"
+    },
+    {
+      "id": "aktif-engel-sonrasi-sifir",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "o host'a **0 istek** atılır",
+      "en": "**0 requests** are sent to that host"
+    },
+    {
+      "id": "aktif-engel-sapma-80",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "gövde boyutunun ±%80'den fazla sapması",
+      "en": "the body size deviates by more than ±80%"
+    },
+    {
+      "id": "aktif-govde-once-dogrula",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Gövde GÖNDERİLMEDEN ÖNCE doğrulanır",
+      "en": "The body is verified BEFORE it is sent"
+    },
+    {
+      "id": "aktif-yerel-calistirici-yok",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "çalıştırıcı bulunamadı: <aranan yollar>",
+      "en": "runner not found: <searched paths>"
+    },
+    {
+      "id": "pasif-engel-sayfasi-dur",
+      "dosya": "references/pasif-denetim.md",
+      "tr": "engel sayfası: <im>, koşu durdu",
+      "en": "challenge page: <marker>, run stopped"
+    },
+    {
+      "id": "pasif-engel-sonrasi-sifir",
+      "dosya": "references/pasif-denetim.md",
+      "tr": "o host'a **0 istek** atılır",
+      "en": "**0 requests** are sent to that host"
+    },
+    {
+      "id": "pasif-engel-sapma-80",
+      "dosya": "references/pasif-denetim.md",
+      "tr": "gövde boyutunun ±%80'den fazla sapması",
+      "en": "the body size deviates by more than ±80%"
     }
   ]
 }
