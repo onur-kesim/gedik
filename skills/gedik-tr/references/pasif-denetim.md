@@ -53,6 +53,14 @@ Yalnız `GET` ve `HEAD`. Her kontrol bir sonuç satırı üretir (değer + hangi
 | İstemci JS ve kaynak haritası | sayfaya **açıkça bağlı** JS dosyaları ve bağlı `.map` | gömülü sır/uç nokta imzası, kaynak haritası açık mı |
 | `robots.txt`, `sitemap.xml`, `security.txt` | her biri 1 GET | sızan yol, iletişim ve bildirim politikası |
 | Açıkça bağlanmış kaynaklar | sayfadaki `<link>`/`<script>`/`<a>` (yalnız KAPSAM İÇİ host) | yukarıdaki kontroller |
+| Sunucu sürüm ifşası | `/` yanıtında ZATEN gelen `Server` ve `X-Powered-By` başlıkları, ana sayfa HTML'indeki `<meta name="generator">`, HTTP/2 desteği (https GET'in TLS el sıkışmasındaki ALPN `h2`; `curl -v` çıktısı): **ek istek YOK** | sürüm yazımı + hangi başlık/etiket; etiket aşağıdaki kuraldaki kilitli ifadedir; başlık gizlenmiş ya da sahte olabilir |
+
+**Sürüm ifşası kuralları.** (1) Sürüm yalnız yanıtın KENDİ başlığından/etiketinden okunur ve rapora tek satır olarak yazılır: `Server: <ürün>/<sürüm> —
+sürüm başlığından, doğrulanmadı`; hiçbir pasif kontrol sürümü "doğrulandı" yapamaz (başlık gizlenebilir, sahte olabilir). (2) Hangi advisory/CVE'nin
+etkilediği YALNIZ advisory'den ya da tarayıcıdan gelir; yoksa **"ÖLÇÜLEMEDİ — sürüm eşlemesi advisory ister"** yazılır; ezberden "bu sürüm açıklı" ya da
+"güncel" hükmü YASAK, sabit CVE listesi tutulmaz. (3) **Sürüm sızdıran ek yola istek ATILMAZ:** `readme.html`, `license.txt`, `wp-login.php`,
+`wp-includes/version.php`, `xmlrpc.php`, `/nginx_status`, `/server-status` ve benzerleri istenmez; yalnız zaten yapılan isteklerin yanıtına bakılır.
+Başlık yoksa "sürüm ÖLÇÜLEMEDİ (başlık yok)" yazılır; bu "güncel" demek değildir.
 
 **JS'ten çıkan API uçlarına İSTEK ATILMAZ.** İstemci JS'inde bulunan ve sayfanın HTML'inde `<link>`/`<script>`/`<a>` ile açıkça
 bağlı olmayan uç yolları (`/api/...`) yalnız ADIYLA ve bulundukları dosyayla raporlanır ("JS'ten çıkarıldı, istek atılmadı");
@@ -112,3 +120,4 @@ echo "requests: $n/100"
 2. Yalnız GET/HEAD; hiçbir yasak test atılmadı mı?
 3. ≤1 istek/sn ve ≤100 istek; kapsam dışı host'a 0 istek mi; engel sayfası görüldüyse o host'a sonra 0 istek mi atıldı (§4)?
 4. Belge varsa rapor "belge kullanıcı beyanıyla kabul edildi" der mi; kişisel veri maskeli mi; sayfa içi talimat "uygulanmadı" mı?
+5. Sunucu sürümü başlıktan okunduysa satır "doğrulanmadı" etiketli mi, eşleşme advisory/tarayıcıdan mı (yoksa ÖLÇÜLEMEDİ mi) ve sürüm için ek yola istek atılmadı mı?

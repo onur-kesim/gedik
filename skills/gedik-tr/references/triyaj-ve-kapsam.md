@@ -41,7 +41,8 @@ rg -n -i "^\s*FROM\s+(--\S+\s+)*(\S+/)*php:|image:\s*['\"]?(\S+/)*php:" -g 'Dock
 **PHP imzası bulunursa** (`composer.json`, `artisan`, `wp-config.php`/`wp-content/`, kökte
 `index.php`, `php-fpm` havuz dosyası, PHP işleyicili `.htaccess`, `FROM php:`) T2 = EVET (PHP):
 Şerit B açılır; çalışma zamanı sürümü ve paket denetimi koşar
-(`references/kod-inceleme-guvenlik.md` §2.1). `composer.json`'daki `"php": ">=x"` kısıtı
+(`references/kod-inceleme-guvenlik.md` §2.1). WordPress imzası (`wp-config.php`/`wp-content/`) varsa çekirdek sürümü de aynı bölümde
+`wp-includes/version.php` içindeki `$wp_version` satırından okunur. `composer.json`'daki `"php": ">=x"` kısıtı
 çalışan sürümü göstermez. Yalnız `composer.json` varsa (sunucu giriş noktası ya da çatı yoksa) kütüphane olabilir:
 Şerit B'nin sunucu maddeleri uygulanmayabilir, sürüm ve paket denetimi yine koşar.
 
@@ -160,9 +161,12 @@ iOS kolonu (`serit-A-istemci.md` §A8) da koşar. Burada tekrar edilmez, tek sat
 fd "nginx\.conf|haproxy\.cfg"
 rg -n -i "cloudflare|fastly|akamai|cloudfront" -g '!node_modules'
 rg -n -i "x-forwarded-(for|host|proto)" -g '!node_modules'
+rg -n -i "listen\s+.*\bhttp2\b|^\s*http2\s+on|image:\s*['\"]?nginx:|FROM\s+nginx:" -g '*.conf' -g 'Dockerfile*' -g '*compose*.y*ml'
 ```
 Ön-uç (ters vekil/CDN) **ve** arka-uç (uygulama sunucusu) ikilisi varsa EVET.
-`X-Forwarded-*` işleme kodu, HTTP/2-3 kullanımı da işaret.
+`X-Forwarded-*` işleme kodu, HTTP/2-3 kullanımı da işaret. Son komut `nginx.conf`'ta `http2` ve `nginx:<sürüm>` imaj etiketini bulur: bulunan sürüm
+KAYNAĞIYLA (`dosya:satır`) yazılır; açık eşleşmesi tarayıcı/advisory'den gelir (ezber hüküm YASAK); etiket yüzense (`nginx:latest`, `nginx:stable`)
+sürüm ÖLÇÜLEMEDİ yazılır.
 
 **EVET ise → Şerit B derinleşir** (`references/serit-B-sunucu.md`): request smuggling
 (B16), host header injection (B17), cache poisoning/deception (B18). Not: subdomain

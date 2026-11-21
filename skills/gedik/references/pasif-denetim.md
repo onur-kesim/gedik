@@ -55,6 +55,14 @@ document was accepted on the user's statement"**; gedik does NOT CLAIM to have p
 | Client JS and source map | JS files **explicitly linked** from the page and the linked `.map` | embedded secret/endpoint signature, whether the source map is exposed |
 | `robots.txt`, `sitemap.xml`, `security.txt` | 1 GET each | leaked paths, contact and disclosure policy |
 | Explicitly linked resources | `<link>`/`<script>`/`<a>` on the page (IN-SCOPE hosts only) | the checks above |
+| Server version disclosure | the `Server` and `X-Powered-By` headers ALREADY in the `/` response, the `<meta name="generator">` in the home page HTML, HTTP/2 support (the ALPN `h2` in the TLS handshake of the https GET; the `curl -v` output): **NO extra request** | the version string + which header/tag; the label is the fixed wording in the rule below; the header may be hidden or fake |
+
+**Version disclosure rules.** (1) The version is read only from the response's OWN header/tag and written to the report as one line: `Server: <product>/<version> —
+from the version header, not verified`; no passive check can make a version "verified" (a header can be hidden or fake); in a Turkish-language report copy the label verbatim in Turkish, `sürüm başlığından, doğrulanmadı`.
+(2) Which advisory/CVE affects it comes ONLY from an advisory or a scanner; without one write **"NOT MEASURED — version matching needs an advisory"**; a verdict from memory such as "this version is vulnerable" or
+"current" is FORBIDDEN, and no fixed CVE list is kept. (3) **NO request is sent to an extra path that leaks the version:** `readme.html`, `license.txt`, `wp-login.php`,
+`wp-includes/version.php`, `xmlrpc.php`, `/nginx_status`, `/server-status` and the like are not requested; only the responses to requests already made are looked at.
+If there is no header write "version NOT MEASURED (no header)"; that does not mean "current".
 
 **NO request is sent to API endpoints found in JS.** Endpoint paths (`/api/...`) found in client JS and not explicitly linked from the
 page's HTML with `<link>`/`<script>`/`<a>` are reported only BY NAME and with the file they were found in ("extracted from JS, no request
@@ -119,3 +127,4 @@ echo "requests: $n/100"
 2. GET/HEAD only; was no forbidden test sent?
 3. ≤1 request/s and ≤100 requests; 0 requests to an out-of-scope host; if a challenge page was seen, were 0 requests sent to that host afterwards (§4)?
 4. If a document exists, does the report say "the document was accepted on the user's statement"; is personal data masked; is a page instruction "not applied"?
+5. If a server version was read from a header, is the line labeled "not verified", does the match come from an advisory/scanner (otherwise NOT MEASURED), and was no request sent to an extra path for the version?

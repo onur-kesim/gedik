@@ -522,6 +522,48 @@
       "dosya": "references/serit-D-yapayzeka.md",
       "tr": "token'ın `aud` alanını bu sunucunun kaynak kimliğiyle karşılaştırmıyor",
       "en": "does not compare the token's `aud` field with this server's resource identifier"
+    },
+    {
+      "id": "pth-python-baslatma-yasak",
+      "dosya": "references/kod-inceleme-guvenlik.md",
+      "tr": "o `site-packages`'i kullanan `python`/`pip` başlatmak (kancayı TETİKLER)",
+      "en": "starting a `python`/`pip` that uses that `site-packages` (it TRIGGERS the hook)"
+    },
+    {
+      "id": "pth-bulgu-adayi",
+      "dosya": "references/kod-inceleme-guvenlik.md",
+      "tr": "bu iki dosyadan biri = **bulgu adayı**",
+      "en": "or inside a wheel/sdist = a **finding candidate**"
+    },
+    {
+      "id": "pth-sabit-liste-yok",
+      "dosya": "references/kod-inceleme-guvenlik.md",
+      "tr": "Sabit dosya adı/IOC listesi TUTULMAZ",
+      "en": "NO fixed file-name/IOC list is kept"
+    },
+    {
+      "id": "wp-surum-tarayici",
+      "dosya": "references/kod-inceleme-guvenlik.md",
+      "tr": "ÖLÇÜLEMEDİ — WordPress sürüm eşlemesi tarayıcı/advisory ister",
+      "en": "NOT MEASURED — WordPress version matching needs a scanner/advisory"
+    },
+    {
+      "id": "pasif-surum-baslik-dogrulanmadi",
+      "dosya": "references/pasif-denetim.md",
+      "tr": "sürüm başlığından, doğrulanmadı",
+      "en": "from the version header, not verified"
+    },
+    {
+      "id": "pasif-surum-ek-yol-yok",
+      "dosya": "references/pasif-denetim.md",
+      "tr": "Sürüm sızdıran ek yola istek ATILMAZ",
+      "en": "NO request is sent to an extra path that leaks the version"
+    },
+    {
+      "id": "pasif-surum-eslesme-advisory",
+      "dosya": "references/pasif-denetim.md",
+      "tr": "ÖLÇÜLEMEDİ — sürüm eşlemesi advisory ister",
+      "en": "NOT MEASURED — version matching needs an advisory"
     }
   ]
 }

@@ -15,9 +15,9 @@ Kurallar (v2.12 ile aynı): TR kanonik + EN birebir, çeviri kapısı · yeni ku
 - [x] B3 D8.8 istemci: şema `$ref` dışa çözümleme, kalıcı kimlik bilgisinin issuer'a bağlanmaması, WebSocket/HTTP transport'ta Host/Origin doğrulaması yok
 
 ## YAP — C: tedarik zinciri + pasif sürüm ifşası
-- [ ] C1 `.pth` / `sitecustomize.py` / `usercustomize.py` kancası (`kod-inceleme-guvenlik.md` §2 + `cicd-depo-ve-kurtarma.md` §4.1 + E7): `import` ile başlayan satır = bulgu adayı, PoC = dosya:satır + yorumlayıcı açılışında çalıştığı (çalıştırmadan)
-- [ ] C2 Pasif §2'ye satır: `Server`, `X-Powered-By`, ana sayfa `meta generator`, ALPN h2 → "sürüm başlığından, doğrulanmadı"; eşleşme advisory'den; ek yol isteği YOK (`readme.html` vb. istenmez)
-- [ ] C3 T11/T12 + T2 PHP: `nginx.conf` `http2` + imaj etiketi; WordPress `wp-includes/version.php` `$wp_version` alanı PHP bloğuna
+- [x] C1 `.pth` / `sitecustomize.py` / `usercustomize.py` kancası (`kod-inceleme-guvenlik.md` §2 + `cicd-depo-ve-kurtarma.md` §4.1 + E7): `import` ile başlayan satır = bulgu adayı, PoC = dosya:satır + yorumlayıcı açılışında çalıştığı (çalıştırmadan)
+- [x] C2 Pasif §2'ye satır: `Server`, `X-Powered-By`, ana sayfa `meta generator`, ALPN h2 → "sürüm başlığından, doğrulanmadı"; eşleşme advisory'den; ek yol isteği YOK (`readme.html` vb. istenmez)
+- [x] C3 T11/T12 + T2 PHP: `nginx.conf` `http2` + imaj etiketi; WordPress `wp-includes/version.php` `$wp_version` alanı PHP bloğuna
 
 ## YAP — D: metin güncellemeleri
 - [ ] D1 OWASP LLM Top 10 2026 numaraları (D3/D4/D5/D6/D7/D8 başlıkları) + D5'e "Hidden Context Exposure (LLM08:2026)" maddesi (desen: araç şeması/sistem istemi/RAG politika metni yanıt yoluna akıyor mu)

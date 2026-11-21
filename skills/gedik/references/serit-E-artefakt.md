@@ -136,6 +136,9 @@ Declared dependencies ↔ libraries that **actually make it into** the artifact.
 analytics / ad / telemetry SDK, an unexpected network client, a permission that arrives via a
 transitive dependency.
 
+In a Python artifact (wheel, sdist, image layer, embedded virtual environment) a line starting with `import` in a `*.pth` file, or `sitecustomize.py`/`usercustomize.py`, = an undeclared start-up
+hook: it goes into the footprint, its rule and detection command are in `kod-inceleme-guvenlik.md` §2 (running nothing).
+
 This also affects the accuracy of the privacy declaration — **but compliance of the
 declaration form is the job of build QA.** Here only "what's in the artifact" is measured; the
 conclusion is handed off there.

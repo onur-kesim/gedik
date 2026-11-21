@@ -41,7 +41,8 @@ rg -n -i "^\s*FROM\s+(--\S+\s+)*(\S+/)*php:|image:\s*['\"]?(\S+/)*php:" -g 'Dock
 **If a PHP signature is found** (`composer.json`, `artisan`, `wp-config.php`/`wp-content/`, a
 root `index.php`, a `php-fpm` pool file, `.htaccess` with a PHP handler, `FROM php:`), T2 = YES
 (PHP): Lane B opens, and the runtime version and package audit run
-(`references/kod-inceleme-guvenlik.md` §2.1). The `"php": ">=x"` constraint in `composer.json`
+(`references/kod-inceleme-guvenlik.md` §2.1). If there is a WordPress signature (`wp-config.php`/`wp-content/`), the core version is also read in that same
+section from the `$wp_version` line in `wp-includes/version.php`. The `"php": ">=x"` constraint in `composer.json`
 does not show the running version. If only `composer.json` exists (no server entry point or framework), it may be a library:
 Lane B's server items may not apply, but the version and package audit still run.
 
@@ -162,9 +163,12 @@ cross-reference line.
 fd "nginx\.conf|haproxy\.cfg"
 rg -n -i "cloudflare|fastly|akamai|cloudfront" -g '!node_modules'
 rg -n -i "x-forwarded-(for|host|proto)" -g '!node_modules'
+rg -n -i "listen\s+.*\bhttp2\b|^\s*http2\s+on|image:\s*['\"]?nginx:|FROM\s+nginx:" -g '*.conf' -g 'Dockerfile*' -g '*compose*.y*ml'
 ```
 If both a front end (reverse proxy/CDN) **and** a back end (application server) are present,
-YES. `X-Forwarded-*` handling code and HTTP/2-3 usage are also signals.
+YES. `X-Forwarded-*` handling code and HTTP/2-3 usage are also signals. The last command finds `http2` in `nginx.conf` and an `nginx:<version>` image tag: a version found is
+written WITH its source (`file:line`); the vulnerability match comes from a scanner/advisory (a verdict from memory is FORBIDDEN); if the tag is floating (`nginx:latest`, `nginx:stable`)
+the version is written NOT MEASURED.
 
 **If YES → Lane B goes deeper** (`references/serit-B-sunucu.md`): request smuggling (B16),
 host header injection (B17), cache poisoning/deception (B18). Note: subdomain takeover (B19)

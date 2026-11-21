@@ -124,6 +124,10 @@ geçmeyen yeni bir dosya, kütüphane ya da izin, açıklanmamış bir değişik
 Beyan edilen bağımlılıklar ↔ artefakta **fiilen giren** kütüphaneler. Sızmış analitik / reklam /
 telemetri SDK'sı, beklenmeyen ağ istemcisi, geçişli bağımlılıkla gelen izin.
 
+Python artefaktında (wheel, sdist, imaj katmanı, gömülü sanal ortam) `*.pth` içinde `import` ile başlayan satır ya da
+`sitecustomize.py`/`usercustomize.py` = beyan edilmeyen başlangıç kancası: ayak izine yazılır, kuralı ve tespit komutu `kod-inceleme-guvenlik.md` §2'dedir
+(çalıştırmadan).
+
 Bu, gizlilik beyanının doğruluğunu da etkiler — **ama beyan formu uyumu build QA'nın işidir.**
 Burada yalnız "artefaktta ne var" ölçülür, sonuç oraya devredilir.
 

@@ -85,6 +85,23 @@ doğrulama koşulsuz." Envanter yoksa inceleme yoktur.
 - **Kilit dosyası:** `package-lock.json` / `poetry.lock` repoda mı; kurulum `ci`/`--frozen`
   ile mi (aksi hâlde sürüm sürüklenir)?
 - **`postinstall` betikleri:** bağımlılıkların kurulumda kod çalıştırması.
+- **Python başlangıç kancası (`.pth`, `sitecustomize.py`, `usercustomize.py`):** Python açılırken `site` modülü `site-packages` içindeki
+  `*.pth` dosyalarında `import` ile başlayan her satırı çalıştırır: paket hiç `import` edilmeden, her yorumlayıcı açılışında (pip'in kendisi
+  dahil). `sitecustomize.py` ve `usercustomize.py` de her açılışta yüklenir. Depoda, gömülü sanal ortamda, imaj katmanında ya da wheel/sdist
+  içinde `.pth` dosyasında `import` ile başlayan satır ya da bu iki dosyadan biri = **bulgu adayı** (meşru paketler de kullanır: kaynağı
+  `*.dist-info/RECORD`'dan, amacı satırın içeriğinden ayır; "zararsız" ya da "kötü" hükmünü ezberden verme). Şiddet: satırda
+  `exec`/`eval`/`base64`/`subprocess`/`socket`/`urllib`/`os.system`/`__import__` ya da 120 karakteri aşan tek satır → KRİTİK; hiçbir
+  `dist-info/RECORD`'da listelenmeyen `.pth` → YÜKSEK; başka bir `import` satırı → ORTA (kaynağı yazılır). Sabit dosya adı/IOC listesi
+  TUTULMAZ: imza mekanizmadır. Tespit, hiçbir şey çalıştırmadan:
+
+```bash
+# Python start-up hooks: list file:line only and RUN NOTHING (a .pth line starting with "import" executes on every interpreter start)
+grep -rnE --include='*.pth' --exclude-dir=.git '^[[:space:]]*import[[:space:]]' . 2>/dev/null
+find . \( -name sitecustomize.py -o -name usercustomize.py \) -not -path '*/.git/*' -not -path '*/node_modules/*' -print 2>/dev/null
+```
+
+  **PoC (K2, çalıştırmadan):** `dosya:satır` + satırın ilk 120 karakteri + "yorumlayıcı açılışında çalışır" gerekçesi. **YASAK:**
+  o `site-packages`'i kullanan `python`/`pip` başlatmak (kancayı TETİKLER), `python -m site`, paketi kurmak ya da `import` etmek.
 - **Typosquat / sahiplik:** yeni eklenen paket adı popüler bir paketin yazım varyantı mı;
   bakım terk edilmiş mi (son yayın tarihi)?
 - **Lisans:** kullanıcının kırmızı çizgisi — yeni bağımlılık = lisans + CVE kontrolü.
@@ -120,6 +137,12 @@ eşleşmesi tarayıcı veri tabanından gelir; burada yalnız EOL dalı kuralı 
   ve "temiz" DENMEZ: "PHP çalışma zamanı sürümü depoda yok — ÖLÇÜLEMEDİ; sunucu/hosting panelinden kontrol et."
   Bu sonuç raporun ÖLÇÜLMEYENLER bölümüne ve JSON'da `kapsam` (`olculmedi`, `sebep`) satırına da
   yazılır; karar `ÖNCE ÖLÇ` olur. `ÖLÇÜLEMEDİ` ile `ÖLÇÜLMEDİ` aynı durumdur.
+
+**WordPress çekirdek sürümü (T2'de `wp-config.php`/`wp-content/` imzası varsa).** Çekirdek sürümü `wp-includes/version.php` içindeki
+`$wp_version = '…';` satırından okunur ve KAYNAĞIYLA (`wp-includes/version.php:<satır>`) yazılır; dosya depoda yoksa (yalnız tema/eklenti deposu)
+**"WordPress çekirdek: YOK"** yazılır ve çekirdek sürümü ÖLÇÜLEMEDİ sayılır. Açık eşleşmesi (çekirdek yükseltme penceresi gibi sınıflar dahil) advisory'den ya da
+tarayıcıdan gelir; yoksa **"ÖLÇÜLEMEDİ — WordPress sürüm eşlemesi tarayıcı/advisory ister"**; ezberden hüküm YASAK, sabit CVE tablosu tutulmaz. Rapor bloğunda
+(`SKILL.md` ŞERİT B) bu bilgi İSTEĞE BAĞLI `WordPress çekirdek` satırıdır; mekanik kapı bu satırı DOĞRULAMAZ.
 
 **EOL kuralı** (ölçüm 2026-10-22, php.net `supported-versions` ve `eol.php`; **yeniden doğrula**):
 PHP ≤ 8.1 resmî güvenlik yaması almıyor → bulgu (dağıtımın/LTS sağlayıcısının backport'u

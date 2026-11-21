@@ -96,6 +96,22 @@ unconditional validation." Without an inventory, there is no review.
 - **Lock file:** is `package-lock.json` / `poetry.lock` in the repo; is install done
   with `ci`/`--frozen` (otherwise versions drift)?
 - **`postinstall` scripts:** dependencies running code at install time.
+- **Python start-up hook (`.pth`, `sitecustomize.py`, `usercustomize.py`):** when Python starts, the `site` module executes every line that starts with `import` in the
+  `*.pth` files inside `site-packages`: with the package never `import`ed, on every interpreter start (pip itself included). `sitecustomize.py` and `usercustomize.py` are
+  also loaded on every start. A `.pth` file with a line starting with `import`, or either of those two files, in the repo, in an embedded virtual environment, in an image layer
+  or inside a wheel/sdist = a **finding candidate** (legitimate packages use them too: tell the source apart from `*.dist-info/RECORD` and the purpose from the line's
+  content; never give a "harmless" or "malicious" verdict from memory). Severity: `exec`/`eval`/`base64`/`subprocess`/`socket`/`urllib`/`os.system`/`__import__` in the line, or a
+  single line over 120 characters → CRITICAL; a `.pth` not listed in any `dist-info/RECORD` → HIGH; any other `import` line → MEDIUM (its source is written). NO fixed file-name/IOC
+  list is kept: the signature is the mechanism. Detection, running nothing:
+
+```bash
+# Python start-up hooks: list file:line only and RUN NOTHING (a .pth line starting with "import" executes on every interpreter start)
+grep -rnE --include='*.pth' --exclude-dir=.git '^[[:space:]]*import[[:space:]]' . 2>/dev/null
+find . \( -name sitecustomize.py -o -name usercustomize.py \) -not -path '*/.git/*' -not -path '*/node_modules/*' -print 2>/dev/null
+```
+
+  **PoC (K2, without running):** `file:line` + the first 120 characters of the line + the reason "runs at interpreter start". **FORBIDDEN:**
+  starting a `python`/`pip` that uses that `site-packages` (it TRIGGERS the hook), `python -m site`, installing or `import`ing the package.
 - **Typosquatting / ownership:** is a newly added package name a spelling variant of
   a popular package; is it maintenance-abandoned (date of last release)?
 - **License:** the user's red line — a new dependency = license + CVE check.
@@ -133,6 +149,12 @@ SOURCE (`8.3.30 — Dockerfile:1`); a comment line (`#`) is not a source:
   fixed line** into the report and do NOT say "clean": "PHP runtime version is not in the repository — NOT MEASURED; check it on the server/hosting panel."
   This result is also written to the report's NOT MEASURED section and to a `kapsam` row in the
   JSON (`olculmedi`, `sebep`); the verdict becomes `MEASURE FIRST`.
+
+**WordPress core version (if T2 finds a `wp-config.php`/`wp-content/` signature).** The core version is read from the `$wp_version = '…';` line in `wp-includes/version.php`
+and written WITH its source (`wp-includes/version.php:<line>`); if the file is not in the repo (a theme/plugin-only repo) write **"WordPress core: NONE"** and count the core version
+NOT MEASURED. The vulnerability match (classes such as the core upgrade window included) comes from an advisory or a scanner; without one write **"NOT MEASURED — WordPress version
+matching needs a scanner/advisory"**; a verdict from memory is FORBIDDEN and no fixed CVE table is kept. In the report block (`SKILL.md` LANE B) this is the OPTIONAL
+`WordPress core` line; the mechanical gate does NOT verify that line.
 
 **EOL rule** (measured 2026-10-22, php.net `supported-versions` and `eol.php`; **re-verify**):
 PHP ≤ 8.1 no longer receives official security patches → finding (the distribution's/LTS

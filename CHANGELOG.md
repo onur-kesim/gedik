@@ -19,6 +19,11 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 - **D8.7 sunucu token audience:** `verifyAccessToken` token'ın `aud`'unu kendi kaynak kimliğiyle karşılaştırmıyor ve SDK audience ayarı açık değil → YÜKSEK; "SDK'yı yükseltmek tek başına yetmez" (bulgu sürüm VE ayar+kod olarak ayrı yazılır).
 - **D8.8 MCP istemci tarafı:** şema `$ref` dışa çözümleme (SSRF/yerel dosya), kalıcı kimlik bilgisi tek global anahtar (issuer'a bağlı değil), WebSocket/HTTP transport'ta `Host`/`Origin` doğrulaması yok → YÜKSEK. PoC çalıştırmadan (`dosya:satır` + eksik kontrol); karşıt örnek "bulgu yok", "güvenli" değil.
 - 3 yeni kilitli cümle (`sabit_cumleler.json` 84 → 87).
+### Eklendi (C — tedarik zinciri + pasif sürüm ifşası)
+- **C1 Python başlangıç kancası** (`kod-inceleme-guvenlik.md` §2 + `cicd-depo-ve-kurtarma.md` §4.1 A6 + `serit-E-artefakt.md` E7): `*.pth` içinde `import` ile başlayan satır ya da `sitecustomize.py`/`usercustomize.py` = bulgu adayı (paket `import` edilmeden her yorumlayıcı açılışında çalışır); şiddet `exec`/`base64`/`subprocess`… içeriğine ve `dist-info/RECORD` kaydına göre; sabit ad/IOC listesi YOK (imza mekanizma); çalıştırmadan tespit komutu (kod bloğu) + PoC `dosya:satır`; o `site-packages`'i kullanan `python`/`pip` başlatmak YASAK (kancayı tetikler).
+- **C2 pasif sunucu sürüm ifşası** (`pasif-denetim.md` §2 yeni tablo satırı + kurallar): `Server`, `X-Powered-By`, ana sayfa `meta generator`, ALPN `h2` yalnız zaten yapılmış isteklerin yanıtından; satır "sürüm başlığından, doğrulanmadı" etiketiyle; eşleşme yalnız advisory/tarayıcıdan, yoksa ÖLÇÜLEMEDİ; sürüm için ek yola (`readme.html`, `license.txt`, `wp-login.php`, `/nginx_status`…) istek YOK.
+- **C3** `triyaj-ve-kapsam.md` T11 (`nginx.conf` `http2` + `nginx:<sürüm>` imaj etiketi, kaynağıyla; yüzen etikette ÖLÇÜLEMEDİ) ve T2 PHP (WordPress `wp-includes/version.php` `$wp_version`, `kod-inceleme-guvenlik.md` §2.1); `SKILL.md` PHP bloğuna İSTEĞE BAĞLI `WordPress çekirdek` satırı (mekanik kapı bu satırı doğrulamaz).
+- 7 yeni kilitli cümle (`sabit_cumleler.json` 87 → 94).
 
 ## [2.12.0] — 2026-11-15
 ### Eklendi

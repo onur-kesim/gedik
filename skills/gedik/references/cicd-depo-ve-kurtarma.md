@@ -144,8 +144,11 @@ allow-git=all
   goes to the advisory database, not to the target. If there is no scanner or no network write
   **"NOT MEASURED — malicious-version matching needs a scanner"**; a from-memory "this version is
   bad" or "clean" verdict is FORBIDDEN.
+- **Python start-up hook (A6):** in a wheel/sdist, an image layer, a virtual environment committed to the repo, or a `site-packages` that CI installs: a `.pth` file with a line starting
+  with `import`, or `sitecustomize.py`/`usercustomize.py`: it runs on every Python start without the package being `import`ed; in CI a `pip install` step installs the hook and every later `python` step
+  executes it (the secrets are in that step's environment). Mechanism, severity and the detection command: `kod-inceleme-guvenlik.md` §2. NO fixed file-name/IOC list is kept.
 - **PoC (K2, without running):** `file:line` + field + value; installing the dependency or running
-  the script is FORBIDDEN. For A3/A4 the evidence is the file content; for A5 it is the scanner output.
+  the script is FORBIDDEN. For A3/A4/A6 the evidence is the file content; for A5 it is the scanner output.
 
 ---
 

@@ -131,8 +131,12 @@ allow-git=all
   tarayıcıdan: `osv-scanner` (MAL- kayıtları dahil) ya da `npm audit` çağrılır; sorgu hedefe değil
   danışma veritabanınadır. Tarayıcı yoksa ya da ağ yoksa **"ÖLÇÜLEMEDİ — kötü sürüm eşlemesi
   tarayıcı ister"** yazılır; ezberden "şu sürüm kötü" ya da "temiz" hükmü YASAK.
+- **Python başlangıç kancası (A6):** wheel/sdist, imaj katmanı, depoya konmuş sanal ortam ya da CI'nın kurduğu `site-packages` içinde
+  `*.pth` dosyasında `import` ile başlayan satır ya da `sitecustomize.py`/`usercustomize.py`: paket `import` edilmeden her Python açılışında çalışır;
+  CI'da `pip install` adımı kancayı kurar, sonraki her `python` adımı onu yürütür (sırlar o adımın ortamındadır). Mekanizma, şiddet ve tespit
+  komutu: `kod-inceleme-guvenlik.md` §2. Sabit ad/IOC listesi TUTULMAZ.
 - **PoC (K2, çalıştırmadan):** `dosya:satır` + alan + değer; bağımlılığı kurmak/betiği çalıştırmak
-  YASAK. A3/A4'te kanıt dosya içeriğidir; A5'te kanıt tarayıcı çıktısıdır.
+  YASAK. A3/A4/A6'da kanıt dosya içeriğidir; A5'te kanıt tarayıcı çıktısıdır.
 
 ---
 
