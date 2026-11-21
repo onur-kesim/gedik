@@ -504,6 +504,24 @@
       "dosya": "references/pasif-denetim.md",
       "tr": "gövde boyutunun ±%80'den fazla sapması",
       "en": "the body size deviates by more than ±80%"
+    },
+    {
+      "id": "d8-sdk-surum-tarayici",
+      "dosya": "references/serit-D-yapayzeka.md",
+      "tr": "ÖLÇÜLEMEDİ — SDK sürüm eşlemesi tarayıcı ister",
+      "en": "NOT MEASURED — SDK version matching needs a scanner"
+    },
+    {
+      "id": "d8-sdk-yukseltme-yetmez",
+      "dosya": "references/serit-D-yapayzeka.md",
+      "tr": "SDK'yı yükseltmek tek başına yetmez",
+      "en": "upgrading the SDK alone is not enough"
+    },
+    {
+      "id": "d8-aud-dogrulanmiyor",
+      "dosya": "references/serit-D-yapayzeka.md",
+      "tr": "token'ın `aud` alanını bu sunucunun kaynak kimliğiyle karşılaştırmıyor",
+      "en": "does not compare the token's `aud` field with this server's resource identifier"
     }
   ]
 }

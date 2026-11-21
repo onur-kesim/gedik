@@ -10,9 +10,9 @@ Kurallar (v2.12 ile aynı): TR kanonik + EN birebir, çeviri kapısı · yeni ku
 - [x] A3 (v2.12.0 sınırı 2) Yerel kopya için çalıştırıcı `command -v` / `where` / bilinen yollarla aranır; yoksa "çalıştırıcı bulunamadı: <aranan yollar>" yazılır
 
 ## YAP — B: MCP SDK eki (`serit-D-yapayzeka.md` D8.6–D8.8; tetik D8 ile aynı)
-- [ ] B1 D8.6 SDK sürüm kapısı: lockfile'da `mcp` / `@modelcontextprotocol/*` → tarayıcı eşleşmesi (CVE-2026-116686, -111771, -59950 örnek olarak, liste değil)
-- [ ] B2 D8.7 sunucu token audience: `verifyAccessToken` `aud` doğrulamıyor ve audience ayarı açık değil → YÜKSEK; "yükseltme tek başına yetmez" notu
-- [ ] B3 D8.8 istemci: şema `$ref` dışa çözümleme, kalıcı kimlik bilgisinin issuer'a bağlanmaması, WebSocket/HTTP transport'ta Host/Origin doğrulaması yok
+- [x] B1 D8.6 SDK sürüm kapısı: lockfile'da `mcp` / `@modelcontextprotocol/*` → tarayıcı eşleşmesi (CVE-2026-116686, -111771, -59950 örnek olarak, liste değil)
+- [x] B2 D8.7 sunucu token audience: `verifyAccessToken` `aud` doğrulamıyor ve audience ayarı açık değil → YÜKSEK; "yükseltme tek başına yetmez" notu
+- [x] B3 D8.8 istemci: şema `$ref` dışa çözümleme, kalıcı kimlik bilgisinin issuer'a bağlanmaması, WebSocket/HTTP transport'ta Host/Origin doğrulaması yok
 
 ## YAP — C: tedarik zinciri + pasif sürüm ifşası
 - [ ] C1 `.pth` / `sitecustomize.py` / `usercustomize.py` kancası (`kod-inceleme-guvenlik.md` §2 + `cicd-depo-ve-kurtarma.md` §4.1 + E7): `import` ile başlayan satır = bulgu adayı, PoC = dosya:satır + yorumlayıcı açılışında çalıştığı (çalıştırmadan)

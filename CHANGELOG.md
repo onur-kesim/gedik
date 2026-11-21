@@ -14,6 +14,11 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 - **A2 POST gövdesi göndermeden önce doğrulanır** (`aktif-denetim.md` §2): gövde değişkende kurulur, `${#m}` uzunluğu ve işaretleyicinin başta olması denetlenir, tutmazsa istek atılmaz ("gövde doğrulanamadı, istek atılmadı"); dolgu için `python` varsayılmaz (`printf '%*s' | tr` örneği, boş komut ikamesi sınandı: gönderilmedi).
 - **A3 yerel kopyada çalıştırıcı aranır** (`aktif-denetim.md` §4.4): `command -v` / `where` + bilinen yollar; bulunamazsa kopya kurulmaz ve "çalıştırıcı bulunamadı: <aranan yollar>" (aranan her yol listelenir).
 - 8 yeni kilitli cümle (`sabit_cumleler.json` 76 → 84).
+### Eklendi (B — MCP SDK eki, `serit-D-yapayzeka.md` D8.6–D8.8; tetik D8 ile aynı, PyPI `mcp` tetiğe eklendi)
+- **D8.6 SDK sürüm kapısı:** kilit dosyalarında `mcp` (PyPI) / `@modelcontextprotocol/*` → sürüm eşleşmesi YALNIZ tarayıcıdan (`osv-scanner`, `npm audit`, `pip-audit`); tarayıcı yoksa "ÖLÇÜLEMEDİ — SDK sürüm eşlemesi tarayıcı ister"; sabit CVE/sürüm aralığı listesi YOK (CVE-2026-116686, -111771, -59950 yalnız sınıf örneği, ezber hüküm yasak).
+- **D8.7 sunucu token audience:** `verifyAccessToken` token'ın `aud`'unu kendi kaynak kimliğiyle karşılaştırmıyor ve SDK audience ayarı açık değil → YÜKSEK; "SDK'yı yükseltmek tek başına yetmez" (bulgu sürüm VE ayar+kod olarak ayrı yazılır).
+- **D8.8 MCP istemci tarafı:** şema `$ref` dışa çözümleme (SSRF/yerel dosya), kalıcı kimlik bilgisi tek global anahtar (issuer'a bağlı değil), WebSocket/HTTP transport'ta `Host`/`Origin` doğrulaması yok → YÜKSEK. PoC çalıştırmadan (`dosya:satır` + eksik kontrol); karşıt örnek "bulgu yok", "güvenli" değil.
+- 3 yeni kilitli cümle (`sabit_cumleler.json` 84 → 87).
 
 ## [2.12.0] — 2026-11-15
 ### Eklendi
