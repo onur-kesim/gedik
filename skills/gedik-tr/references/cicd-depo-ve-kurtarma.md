@@ -36,7 +36,7 @@ Bu dosya, kaynak deposuna ve/veya CI yapılandırmasına erişim varsa okunur.
   ve iş akışı `actions/checkout` ile **PR head'ini** çekiyorsa → **KRİTİK**
   (herhangi biri PR açıp sırları çalar).
 - **`pull_request_target` varsayılan engeli (2026-12-02):** GitHub, **public depolarda** `pull_request_target` olaylarını 2026-12-02'den itibaren varsayılan
-  olarak engelliyor (kaynak: GitHub Changelog 2026-11-02; platform davranışı bu skill'de ÖLÇÜLMEZ); açmak Actions event policy'siyle olur. Event policy ile
+  olarak engelleyecek (duyuru: GitHub Changelog 2026-11-02; 2026-12-02 öncesi yürürlükte değildir, tarih daha önce kaydırılmıştır; GitHub Enterprise Server kapsamı ÖLÇÜLEMEDİ; platform davranışı bu skill'de ÖLÇÜLMEZ); açmak Actions event policy'siyle olur. Event policy ile
   AÇILMIŞ `pull_request_target` bilinçli bir istisnadır ve yukarıdaki pwn request kontrolü AYNEN sürer (varsayılan engel zayıf iş akışını güvenli yapmaz).
   Engel `issue_comment` ve `workflow_run`'ı KAPSAMAZ: onlar için bu bölümdeki kontroller değişmez. Private/internal depoda değişiklik yok. Depoda
   `pull_request_target` var ama event policy ayarı depoda görünmüyorsa "event policy ÖLÇÜLEMEDİ (depo dışı ayar)" yazılır.

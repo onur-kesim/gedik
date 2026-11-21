@@ -55,13 +55,13 @@ document was accepted on the user's statement"**; gedik does NOT CLAIM to have p
 | Client JS and source map | JS files **explicitly linked** from the page and the linked `.map` | embedded secret/endpoint signature, whether the source map is exposed |
 | `robots.txt`, `sitemap.xml`, `security.txt` | 1 GET each | leaked paths, contact and disclosure policy |
 | Explicitly linked resources | `<link>`/`<script>`/`<a>` on the page (IN-SCOPE hosts only) | the checks above |
-| Server version disclosure | the `Server` and `X-Powered-By` headers ALREADY in the `/` response, the `<meta name="generator">` in the home page HTML, HTTP/2 support (the ALPN `h2` in the TLS handshake of the https GET; the `curl -v` output): **NO extra request** | the version string + which header/tag; the label is the fixed wording in the rule below; the header may be hidden or fake |
+| Server version disclosure | the `Server` and `X-Powered-By` headers ALREADY in the `/` response, the `<meta name="generator">` in the home page HTML, HTTP/2 support (the ALPN `h2` in the TLS handshake of the https GET already made, from that request's `-v` output; NOT MEASURED if curl has no HTTP/2): **NO extra request** | the version string + which header/tag; the label is the fixed wording in the rule below; the header may be hidden or fake |
 
 **Version disclosure rules.** (1) The version is read only from the response's OWN header/tag and written to the report as one line: `Server: <product>/<version> —
 from the version header, not verified`; no passive check can make a version "verified" (a header can be hidden or fake); in a Turkish-language report copy the label verbatim in Turkish, `sürüm başlığından, doğrulanmadı`.
 (2) Which advisory/CVE affects it comes ONLY from an advisory or a scanner; without one write **"NOT MEASURED — version matching needs an advisory"**; a verdict from memory such as "this version is vulnerable" or
 "current" is FORBIDDEN, and no fixed CVE list is kept. (3) **NO request is sent to an extra path that leaks the version:** `readme.html`, `license.txt`, `wp-login.php`,
-`wp-includes/version.php`, `xmlrpc.php`, `/nginx_status`, `/server-status` and the like are not requested; only the responses to requests already made are looked at.
+`wp-includes/version.php`, `xmlrpc.php`, `/nginx_status`, `/server-status` and the like are not requested for the version even when the page links them explicitly (e.g. `<link rel="EditURI">`, a footer login link); only the responses to requests already made are looked at.
 If there is no header write "version NOT MEASURED (no header)"; that does not mean "current".
 
 **NO request is sent to API endpoints found in JS.** Endpoint paths (`/api/...`) found in client JS and not explicitly linked from the
@@ -87,23 +87,23 @@ not authorization).
 - **0 requests to an out-of-scope host** — third-party links on the page included. A third-party link is reported by NAME and
   location only, never opened.
 - **Challenge page = STOP.** If a response carries any of the following, **0 requests** are sent to that host; an HTTP 200 does not show it is not a challenge:
-  (a) HTTP `403`/`429`/`503`; (b) the `cf-mitigated: challenge` response header; (c) a provider marker in the first 4096 bytes of the body: `cf-chl`,
-  `challenge-platform`, `Just a moment` (case-insensitive); (d) against the FIRST response from the same path or the same resource kind (page, `.js`,
-  `.map`/JSON, plain text, XML): the `Content-Type` main type changes or the body size deviates by more than ±80% (on a path with no first response,
-  deviation is NOT measured; the natural difference between paths of different kinds is not a deviation). The report writes the fixed sentence
+  (a) HTTP `403`/`429`/`503`; (b) the `cf-mitigated: challenge` response header; (c) a provider marker in the first 4096 bytes of the body: `cf-chl`, `challenge-platform`, `Just a moment` (case-insensitive; `challenge-platform` may also be injected into normal pages on some sites (GUESS, not measured): the marker is still a STOP, the report writes the response it appeared in and the user is asked "challenge or false alarm"; the run on that host continues only with the user's approval); (d) against the FIRST response from the **same path**: the `Content-Type` main type changes or the body size deviates by more than ±80%; against the first response from the **same resource kind** (page, `.js`, `.map`/JSON, plain text, XML): ONLY a change of the `Content-Type` main type (a size difference between different paths is natural and is not a deviation; on a path/kind with no first response, deviation is NOT measured). The report writes the fixed sentence
   **"challenge page: <marker>, run stopped"** (`<marker>` = the triggering header, marker or code); in a Turkish-language report copy it verbatim in Turkish,
   `engel sayfası: <im>, koşu durdu`, never paraphrased; the remaining checks on that host are listed as "challenge page, not tested". One more request to that host after the STOP
   (evidence gathering or "to confirm" included) is a violation. **No next request is sent before the header and the start of the body of every response
-  have passed this check;** the flow below does the check itself (header and body are written to files in the temp directory, NOT the target's tree).
+  have passed this check;** the flow below does (a)–(c) itself; for (d) it prints each response's `Content-Type` and byte count, and the comparison with the first response and the STOP decision are YOURS (header and body are written to per-response files in the temp directory, NOT the target's tree).
 - Example flow (counter + 1 s wait + challenge page check):
 
 ```bash
-# 1 req/s, keep a counter (max 100); header and body go to temp files; STOP on a challenge page
-T="${TMPDIR:-/tmp}"; n=0; stop=""
+# 1 req/s, keep a counter (max 100); header and body go to per-request temp files; STOP on a challenge page (a-c); (d) is yours: compare the printed type and size
+T="$(mktemp -d)"; n=0; stop=""
 for yol in / /robots.txt /sitemap.xml /.well-known/security.txt; do
-  code=$(curl -sS -D "$T/gdk-h" -o "$T/gdk-b" -w '%{http_code}' --max-time 10 "https://ORNEK.ALAN$yol"); n=$((n+1))
-  grep -qi '^cf-mitigated: *challenge' "$T/gdk-h" && stop="cf-mitigated: challenge"
-  head -c 4096 "$T/gdk-b" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="body marker"
+  n=$((n+1)); H="$T/h$n"; B="$T/b$n"
+  code=$(curl -sS -D "$H" -o "$B" -w '%{http_code}' --max-time 10 "https://ORNEK.ALAN$yol") || code=000
+  [ "$code" = 000 ] && { echo "--- request $n $yol: no response (curl failed)"; sleep 1; continue; }
+  echo "--- request $n $yol HTTP $code bytes=$(wc -c < "$B")"; cat "$H"
+  grep -qi '^cf-mitigated: *challenge' "$H" && stop="cf-mitigated: challenge"
+  head -c 4096 "$B" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="body marker"
   case "$code" in 403|429|503) stop="HTTP $code";; esac
   [ -n "$stop" ] && { echo "challenge page: $stop (request $n, $yol): run stopped"; break; }
   sleep 1

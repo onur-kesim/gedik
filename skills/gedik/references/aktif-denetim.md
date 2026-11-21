@@ -44,29 +44,30 @@ the test's own precondition written in `YETKI.md`, and a valid window. **Respons
    inside the window, is budget left, has ≥1 s passed since the previous request, was the previous response not a challenge page (rule 9). If any answer is no the request is NOT sent.
 9. **Challenge page = common STOP (for a live host; not applied to the local copy).** If a response carries any of the following, **0 requests** are sent to that host;
    an HTTP 200 does not show it is not a challenge:
-   (a) HTTP `403`/`429`/`503` — except the result the test EXPECTS (429 in B3, 403/404 in B4, 403/404 in B7);
+   (a) HTTP `403`/`429`/`503` — except the result the test EXPECTS or that is the safe one (the form's CSRF/nonce rejection 403/419 in B1, 429 in B3, 403/404 in B4, canary record absent 404/403 in B6, 403/404 in B7, authorization refusal 403 in B9);
    (b) the `cf-mitigated: challenge` response header;
-   (c) a provider marker in the first 4096 bytes of the body: `cf-chl`, `challenge-platform`, `Just a moment` (case-insensitive);
-   (d) against the FIRST response from the same path or the same resource kind (page, `.js`, `.map`/JSON, plain text, XML): the `Content-Type`
-   main type changes or the body size deviates by more than ±80% (on a path with no first response, deviation is NOT measured; the natural difference between paths of different kinds is not a deviation).
+   (c) a provider marker in the first 4096 bytes of the body: `cf-chl`, `challenge-platform`, `Just a moment` (case-insensitive; `challenge-platform` may also be injected into normal pages on some sites (GUESS, not measured): the marker is still a STOP, the report writes the response it appeared in and the user is asked "challenge or false alarm"; the run on that host continues only with the user's approval);
+   (d) against the FIRST response from the **same path**: the `Content-Type` main type changes or the body size deviates by more than ±80%; against the first response from the **same resource kind** (page, `.js`, `.map`/JSON, plain text, XML): ONLY a change of the `Content-Type` main type (a size difference between different paths is natural and is not a deviation; on a path/kind with no first response, deviation is NOT measured).
    The report writes the fixed sentence **"challenge page: <marker>, run stopped"** (`<marker>` = the triggering header, marker or code); in a
    Turkish-language report copy it verbatim in Turkish, `engel sayfası: <im>, koşu durdu`, never paraphrased; the remaining tests on that host are
    listed as "challenge page, not tested". One more request to that host after the STOP (evidence gathering or "to confirm" included) is a violation.
-   **No next request is sent before the header and the start of the body of every response have passed this check;** the flow below
-   does the check itself (header and body are written to files in the temp directory, NOT the target's tree).
+   **No next request is sent before the header and the start of the body of every response have passed this check;** the flow below does (a)–(c) itself; for (d) it prints each response's `Content-Type` and byte count, and the comparison with the first response and the STOP decision are YOURS (header and body are written to per-response files in the temp directory, NOT the target's tree).
 
 **Every Bash call sends ONE request or is a counted flow with `sleep 1`.** `curl a; curl b`, `curl a b` (several URLs), `&`,
 `xargs -P`, `--parallel` and a loop without `sleep` are FORBIDDEN: with no wait in between, the gap falls below 1 s. Example flow:
 
 ```bash
 # live active requests: ONE request per step, sleep 1 after each, counter against the budget (<=1 req/s)
-# header and body go to temp files (NOT the target tree); STOP on a challenge page (rule 9)
-T="${TMPDIR:-/tmp}"; n=0; stop=""
+# header and body go to per-request temp files (NOT the target tree); STOP on a challenge page (rule 9 a-c); (d) is yours: compare the printed type and size
+T="$(mktemp -d)"; n=0; stop=""
 for yol in /yol1 /yol2; do
-  code=$(curl -sS -D "$T/gdk-h" -o "$T/gdk-b" -w '%{http_code}' --max-time 10 "https://ORNEK.ALAN$yol"); n=$((n+1))
-  grep -qi '^cf-mitigated: *challenge' "$T/gdk-h" && stop="cf-mitigated: challenge"
-  head -c 4096 "$T/gdk-b" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="body marker"
-  case "$code" in 403|429|503) stop="HTTP $code";; esac   # drop a code ONLY if this test expects it (B3 429, B4/B7 403/404)
+  n=$((n+1)); H="$T/h$n"; B="$T/b$n"
+  code=$(curl -sS -D "$H" -o "$B" -w '%{http_code}' --max-time 10 "https://ORNEK.ALAN$yol") || code=000
+  [ "$code" = 000 ] && { echo "--- request $n $yol: no response (curl failed)"; sleep 1; continue; }
+  echo "--- request $n $yol HTTP $code bytes=$(wc -c < "$B")"; cat "$H"
+  grep -qi '^cf-mitigated: *challenge' "$H" && stop="cf-mitigated: challenge"
+  head -c 4096 "$B" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="body marker"
+  case "$code" in 403|429|503) stop="HTTP $code";; esac   # drop a code ONLY if this test expects it (B1 403/419, B3 429, B4/B6/B7 403/404, B9 403)
   [ -n "$stop" ] && { echo "challenge page: $stop (request $n, $yol): run stopped"; break; }
   sleep 1
 done
@@ -120,7 +121,7 @@ written into the report or the request log ("account A", "account B" is written)
 L=500; M="GEDIK-TEST-${RUN_ID:?set the run id first} "; pad=$((L + 1 - ${#M}))
 m="$M$(printf '%*s' "$pad" '' | tr ' ' a)"
 if [ "${#m}" -eq $((L + 1)) ] && [[ "$m" == GEDIK-TEST-* ]]; then
-  curl -sS -X POST --data-urlencode "message=$m" --max-time 10 "https://ORNEK.ALAN/api/sohbet"; sleep 1
+  curl -sS -X POST --data-urlencode "message=$m" --max-time 10 -w ' HTTP %{http_code}\n' "https://ORNEK.ALAN/api/sohbet"; sleep 1   # then run the rule-9 check on the response (use the flow above) before the next message
 else
   echo "body check failed (length ${#m}, want $((L + 1))): request NOT sent"
 fi
@@ -156,7 +157,7 @@ short, the plan order is: low-request tests first (B4, B2, B1, B5, B6), the bulk
 | B9 | on `staging` ≤20 write requests; load ≤300 requests, ≤5 concurrent, ≤60 s |
 | B10 | absolute prohibition (below) |
 
-**Common STOP** (all active requests stop, passive reading stays free; on a challenge page passive reading to that host stops too): 2 consecutive 5xx responses · an unexpected 429 outside B3 ·
+**Common STOP** (all active requests stop, passive reading stays free; on a challenge page passive reading to that host stops too): 2 consecutive 5xx responses (a 503 alone is also a challenge: §1 rule 9) · an unexpected 429 outside B3 ·
 a challenge page (§1 rule 9: code, header, body marker or deviation; even on HTTP 200) · a redirect to an out-of-scope host (not followed) · the user's "stop".
 
 - **B1 Form submission.** First GET the form's page (passive). If the form has no nonce/CSRF field the single submission sends the
@@ -225,17 +226,18 @@ grep -cEi '[A-Z0-9._%+-]+@(gmail|hotmail|yahoo|outlook|icloud)\.[a-z]{2,}|(^|[^0
 ```
 
 4. **Bringing it up.** With the repo's README/command (Docker if present, otherwise the language's local runner). **The runner is not assumed, it is
-   LOOKED FOR:** first on PATH with `command -v <name>` (on Windows `where <name>`), then in well-known locations; if not found the copy is NOT set up
+   LOOKED FOR:** first on PATH with `command -v <name>` (on Windows `where.exe <name>`: in PowerShell a bare `where` is an alias) and proven to really run with `<name> --version`, then in well-known locations; if not found the copy is NOT set up
    and the report writes **"runner not found: <searched paths>"** (in a Turkish-language report copy it verbatim in Turkish,
    `çalıştırıcı bulunamadı: <aranan yollar>`; every searched path is listed, "none" is not enough). Search example:
 
 ```bash
-# find the runner without assuming PATH: PATH first, then well-known locations; print every searched path
+# find the runner without assuming PATH: PATH first (and prove it runs), then well-known locations; print every searched path
 for r in python3 python py node php docker; do
-  if p=$(command -v "$r" 2>/dev/null); then echo "found: $r -> $p"; else echo "not on PATH: $r"; fi
+  if p=$(command -v "$r" 2>/dev/null) && "$r" --version >/dev/null 2>&1; then echo "found: $r -> $p"; else echo "not usable on PATH: $r"; fi
 done
-for d in /usr/bin /usr/local/bin "$HOME/.local/bin" /c/Python3* "$(cygpath -u "$LOCALAPPDATA" 2>/dev/null)/Programs/Python"; do
-  if [ -d "$d" ]; then echo "searched, exists: $d"; else echo "searched, missing: $d"; fi
+for d in /usr/bin /usr/local/bin "$HOME/.local/bin" /c/Python3* "${LOCALAPPDATA:+$(cygpath -u "$LOCALAPPDATA" 2>/dev/null)/Programs/Python}"; do
+  [ -n "$d" ] || continue
+  echo "searched: $d"; find "$d" -maxdepth 3 -type f \( -iname 'python3*' -o -iname 'python.exe' -o -iname 'node*' -o -iname 'php*' \) 2>/dev/null | head -5
 done
 ```
 

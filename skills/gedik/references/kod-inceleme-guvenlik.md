@@ -92,7 +92,7 @@ unconditional validation." Without an inventory, there is no review.
 ## 2. Dependencies and supply chain
 
 - **CVE scan:** `npm audit` / `pip-audit` / `osv-scanner` — write the output in the
-  report **as a count** (number of critical/high). If not run, `NOT MEASURED`.
+  report **as a count** (number of critical/high). If not run, `NOT MEASURED`. `pip-audit -r` INSTALLS the target's dependencies; only with `--no-deps --disable-pip` and on a fully pinned/hashed file, otherwise `osv-scanner`.
 - **Lock file:** is `package-lock.json` / `poetry.lock` in the repo; is install done
   with `ci`/`--frozen` (otherwise versions drift)?
 - **`postinstall` scripts:** dependencies running code at install time.
@@ -100,9 +100,7 @@ unconditional validation." Without an inventory, there is no review.
   `*.pth` files inside `site-packages`: with the package never `import`ed, on every interpreter start (pip itself included). `sitecustomize.py` and `usercustomize.py` are
   also loaded on every start. A `.pth` file with a line starting with `import`, or either of those two files, in the repo, in an embedded virtual environment, in an image layer
   or inside a wheel/sdist = a **finding candidate** (legitimate packages use them too: tell the source apart from `*.dist-info/RECORD` and the purpose from the line's
-  content; never give a "harmless" or "malicious" verdict from memory). Severity: `exec`/`eval`/`base64`/`subprocess`/`socket`/`urllib`/`os.system`/`__import__` in the line, or a
-  single line over 120 characters → CRITICAL; a `.pth` not listed in any `dist-info/RECORD` → HIGH; any other `import` line → MEDIUM (its source is written). NO fixed file-name/IOC
-  list is kept: the signature is the mechanism. Detection, running nothing:
+  content; never give a "harmless" or "malicious" verdict from memory). Severity: `exec`/`eval`/`compile`/`base64`/`subprocess`/`socket`/`urllib`/`os.system`/`os.popen` in the line, or a pattern that reads from another file and runs it → CRITICAL; `__import__`, a single line over 120 characters, or a `.pth` not listed in any `dist-info/RECORD` → HIGH; any other `import` line → MEDIUM (what the line does and its source are written). **A RECORD entry is NOT proof of legitimacy** (a malicious wheel writes its own `.pth` into RECORD); it only tells the source. NO fixed file-name/IOC list is kept: the signature is the mechanism. Detection, running nothing:
 
 ```bash
 # Python start-up hooks: list file:line only and RUN NOTHING (a .pth line starting with "import" executes on every interpreter start)
@@ -111,7 +109,7 @@ find . \( -name sitecustomize.py -o -name usercustomize.py \) -not -path '*/.git
 ```
 
   **PoC (K2, without running):** `file:line` + the first 120 characters of the line + the reason "runs at interpreter start". **FORBIDDEN:**
-  starting a `python`/`pip` that uses that `site-packages` (it TRIGGERS the hook), `python -m site`, installing or `import`ing the package.
+  starting a `python`/`pip` that uses that `site-packages` (it TRIGGERS the hook), `python -m site`, installing or `import`ing the package. **Inside archives:** `.pth` files in a wheel/sdist and in image tarballs are read without extracting (`unzip -l <whl>` for member names, `unzip -p <whl> '*.pth'` for the lines; `tar -tzf`/`tar -xzOf` for an sdist); without the tool the inside of the archive is NOT MEASURED. `2>/dev/null` in the commands hides unreadable directories: an empty output is NOT "clean", and if a directory/archive could not be read write "NOT MEASURED (<reason>)".
 - **Typosquatting / ownership:** is a newly added package name a spelling variant of
   a popular package; is it maintenance-abandoned (date of last release)?
 - **License:** the user's red line — a new dependency = license + CVE check.

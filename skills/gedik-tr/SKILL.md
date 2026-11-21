@@ -231,7 +231,7 @@ olmasın).
   > üstüne biner.
   > **D9 (depo içi ajan yapılandırması) T8'den BAĞIMSIZDIR:** `.claude/`, `.mcp.json`, `.cursor/`,
   > `.vscode/{mcp,settings,tasks}.json`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`,
-  > `.github/copilot-instructions.md`, `.cursorrules`, `SKILL.md`/`.claude/skills/` varsa T8 HAYIR
+  > `.github/copilot-instructions.md`, `.cursorrules`, `SKILL.md`/`.claude/skills/`, `.claude-plugin/` ya da `.github/workflows/` içinde bir kod ajanı adımı varsa T8 HAYIR
   > olsa bile `references/serit-D-yapayzeka.md` D9 okunur ve yapılandırma **çalıştırılmadan** denetlenir.
 - **ŞERİT E — sevk edilen artefakt** (`references/serit-E-artefakt.md`): **T9 EVET ise.**
   > Kullanıcının eline geçen şey artefakttır, kaynak değil. **"Kaynakta düzelttim" bulguyu

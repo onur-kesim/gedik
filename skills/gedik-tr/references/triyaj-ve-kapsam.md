@@ -142,11 +142,11 @@ LLM ucu da bir API ucudur (kimlik, hız sınırı, maliyet → B2/B9).
 **T8'e ek ölçüm — vektör/ajan yüzeyi (D7/D8'i açar):** bağımlılıklarda `pgvector`,
 `@pinecone-database/pinecone`, `weaviate-client`, `chromadb`, `qdrant-client`, `faiss` ·
 kodda `embeddings.create`, `.similaritySearch(`, `.upsert(`, `.query(vector` · MCP
-sunucu bağlantısı (`mcpServers`, `@modelcontextprotocol/*`) · ajan çerçevesi (LangChain
+sunucu bağlantısı ya da MCP SDK bağımlılığı (`mcpServers`, `@modelcontextprotocol/*`, PyPI `mcp`) · ajan çerçevesi (LangChain
 agent, LlamaIndex agent, AutoGen, CrewAI) · kalıcı hafıza (`memory`, vektör-hafıza,
 konuşma geçmişi kalıcılığı). Bunlardan biri EVET ise D7 (vektör/embedding) ve/veya D8
 (araç/MCP tedarik güveni, ajan hafızası) şeridin **içinde** ayrıca koşar — yeni T
-gerekmez, zaten T8 EVET olduğu için Şerit D açık.
+gerekmez, zaten T8 EVET olduğu için Şerit D açık. MCP sunucu bağlantısı ya da MCP SDK bağımlılığı T8'i KENDİ BAŞINA EVET yapar (LLM SDK'sı olmasa da: araç sunucusu bir YZ yüzeyidir).
 
 **Not — iOS tespiti:** Şerit A **her zaman** koşar (yeni T gerekmez); `Info.plist`,
 `*.xcodeproj`/`*.xcworkspace`, Capacitor `ios/` klasörü veya `.ipa` varsa Şerit A'nın
@@ -161,12 +161,11 @@ iOS kolonu (`serit-A-istemci.md` §A8) da koşar. Burada tekrar edilmez, tek sat
 fd "nginx\.conf|haproxy\.cfg"
 rg -n -i "cloudflare|fastly|akamai|cloudfront" -g '!node_modules'
 rg -n -i "x-forwarded-(for|host|proto)" -g '!node_modules'
-rg -n -i "listen\s+.*\bhttp2\b|^\s*http2\s+on|image:\s*['\"]?nginx:|FROM\s+nginx:" -g '*.conf' -g 'Dockerfile*' -g '*compose*.y*ml'
+rg -n -i "listen\s+.*\bhttp2\b|^\s*http2\s+on|(image:|FROM)\s+['\"]?(--\S+\s+)*(\S+/)*nginx[a-z-]*:" -g '*.conf*' -g '*.template' -g 'Dockerfile*' -g '*.y*ml'
 ```
 Ön-uç (ters vekil/CDN) **ve** arka-uç (uygulama sunucusu) ikilisi varsa EVET.
 `X-Forwarded-*` işleme kodu, HTTP/2-3 kullanımı da işaret. Son komut `nginx.conf`'ta `http2` ve `nginx:<sürüm>` imaj etiketini bulur: bulunan sürüm
-KAYNAĞIYLA (`dosya:satır`) yazılır; açık eşleşmesi tarayıcı/advisory'den gelir (ezber hüküm YASAK); etiket yüzense (`nginx:latest`, `nginx:stable`)
-sürüm ÖLÇÜLEMEDİ yazılır.
+KAYNAĞIYLA (`dosya:satır`) yazılır; açık eşleşmesi tarayıcı/advisory'den gelir (ezber hüküm YASAK); etiket yama düzeyini vermiyorsa (`nginx:latest`, `stable`, `mainline`, `alpine`, `1.27`) sürüm ÖLÇÜLEMEDİ yazılır (dal belliyse dal).
 
 **EVET ise → Şerit B derinleşir** (`references/serit-B-sunucu.md`): request smuggling
 (B16), host header injection (B17), cache poisoning/deception (B18). Not: subdomain

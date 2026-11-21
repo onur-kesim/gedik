@@ -53,13 +53,13 @@ Yalnız `GET` ve `HEAD`. Her kontrol bir sonuç satırı üretir (değer + hangi
 | İstemci JS ve kaynak haritası | sayfaya **açıkça bağlı** JS dosyaları ve bağlı `.map` | gömülü sır/uç nokta imzası, kaynak haritası açık mı |
 | `robots.txt`, `sitemap.xml`, `security.txt` | her biri 1 GET | sızan yol, iletişim ve bildirim politikası |
 | Açıkça bağlanmış kaynaklar | sayfadaki `<link>`/`<script>`/`<a>` (yalnız KAPSAM İÇİ host) | yukarıdaki kontroller |
-| Sunucu sürüm ifşası | `/` yanıtında ZATEN gelen `Server` ve `X-Powered-By` başlıkları, ana sayfa HTML'indeki `<meta name="generator">`, HTTP/2 desteği (https GET'in TLS el sıkışmasındaki ALPN `h2`; `curl -v` çıktısı): **ek istek YOK** | sürüm yazımı + hangi başlık/etiket; etiket aşağıdaki kuraldaki kilitli ifadedir; başlık gizlenmiş ya da sahte olabilir |
+| Sunucu sürüm ifşası | `/` yanıtında ZATEN gelen `Server` ve `X-Powered-By` başlıkları, ana sayfa HTML'indeki `<meta name="generator">`, HTTP/2 desteği (zaten yapılan https GET'in TLS el sıkışmasındaki ALPN `h2`, o isteğin `-v` çıktısından; curl HTTP/2 bilmiyorsa ÖLÇÜLEMEDİ): **ek istek YOK** | sürüm yazımı + hangi başlık/etiket; etiket aşağıdaki kuraldaki kilitli ifadedir; başlık gizlenmiş ya da sahte olabilir |
 
 **Sürüm ifşası kuralları.** (1) Sürüm yalnız yanıtın KENDİ başlığından/etiketinden okunur ve rapora tek satır olarak yazılır: `Server: <ürün>/<sürüm> —
 sürüm başlığından, doğrulanmadı`; hiçbir pasif kontrol sürümü "doğrulandı" yapamaz (başlık gizlenebilir, sahte olabilir). (2) Hangi advisory/CVE'nin
 etkilediği YALNIZ advisory'den ya da tarayıcıdan gelir; yoksa **"ÖLÇÜLEMEDİ — sürüm eşlemesi advisory ister"** yazılır; ezberden "bu sürüm açıklı" ya da
 "güncel" hükmü YASAK, sabit CVE listesi tutulmaz. (3) **Sürüm sızdıran ek yola istek ATILMAZ:** `readme.html`, `license.txt`, `wp-login.php`,
-`wp-includes/version.php`, `xmlrpc.php`, `/nginx_status`, `/server-status` ve benzerleri istenmez; yalnız zaten yapılan isteklerin yanıtına bakılır.
+`wp-includes/version.php`, `xmlrpc.php`, `/nginx_status`, `/server-status` ve benzerleri sayfada açıkça bağlı olsalar bile (örn. `<link rel="EditURI">`, altbilgideki giriş bağlantısı) SÜRÜM için istenmez; yalnız zaten yapılan isteklerin yanıtına bakılır.
 Başlık yoksa "sürüm ÖLÇÜLEMEDİ (başlık yok)" yazılır; bu "güncel" demek değildir.
 
 **JS'ten çıkan API uçlarına İSTEK ATILMAZ.** İstemci JS'inde bulunan ve sayfanın HTML'inde `<link>`/`<script>`/`<a>` ile açıkça
@@ -82,22 +82,22 @@ kapısıyla açılır); açılmadıkça rapor bu başlıktaki cümleyi yazar, "t
 - Her istekte sayaç tut; 100'e varınca DUR ve raporla.
 - **Kapsam dışı host'a 0 istek** — sayfadaki üçüncü taraf bağlantılar dahil. Üçüncü taraf bağlantı yalnız ADIYLA ve yeriyle raporlanır, açılmaz.
 - **Engel sayfası = DUR.** Bir yanıt aşağıdakilerden birini taşıyorsa o host'a **0 istek** atılır; HTTP 200 olması engel olmadığını göstermez:
-  (a) HTTP `403`/`429`/`503`; (b) `cf-mitigated: challenge` yanıt başlığı; (c) gövdenin ilk 4096 baytında sağlayıcı imi: `cf-chl`,
-  `challenge-platform`, `Just a moment` (büyük/küçük harf duyarsız); (d) aynı yoldan ya da aynı kaynak türünden (sayfa, `.js`, `.map`/JSON,
-  düz metin, XML) gelen İLK yanıta göre `Content-Type` ana türünün değişmesi ya da gövde boyutunun ±%80'den fazla sapması (ilk yanıtı olmayan
-  yolda sapma ÖLÇÜLMEZ; farklı türdeki yolların doğal farkı sapma değildir). Rapora kilitli cümle yazılır: **"engel sayfası: <im>, koşu durdu"**
+  (a) HTTP `403`/`429`/`503`; (b) `cf-mitigated: challenge` yanıt başlığı; (c) gövdenin ilk 4096 baytında sağlayıcı imi: `cf-chl`, `challenge-platform`, `Just a moment` (büyük/küçük harf duyarsız; `challenge-platform` bazı sitelerde normal sayfalara da eklenebilir (TAHMİN, ölçülmedi): iz yine de DUR'dur, raporda imin geçtiği yanıt yazılır ve kullanıcıya "engel mi, yanlış alarm mı" sorulur; o host'ta koşu yalnız kullanıcının onayıyla sürer); (d) **aynı yoldan** gelen İLK yanıta göre `Content-Type` ana türünün değişmesi ya da gövde boyutunun ±%80'den fazla sapması; **aynı kaynak türünden** (sayfa, `.js`, `.map`/JSON, düz metin, XML) gelen ilk yanıta göre YALNIZ `Content-Type` ana türünün değişmesi (farklı yollardaki boyut farkı doğaldır, sapma sayılmaz; ilk yanıtı olmayan yolda/türde sapma ÖLÇÜLMEZ). Rapora kilitli cümle yazılır: **"engel sayfası: <im>, koşu durdu"**
   (`<im>` = tetikleyen başlık, im ya da kod); o host'taki kalan kontroller "engel sayfası, test edilmedi" diye listelenir. DUR'dan sonra o host'a bir
   istek daha (kanıt toplamak ya da "doğrulamak için" dahil) ihlaldir. **Her yanıtın başlığı ve gövde başı bu kontrolden geçmeden sonraki istek
-  atılmaz;** aşağıdaki akış kontrolü kendisi yapar (başlık ve gövde geçici dizindeki dosyaya yazılır, hedefin ağacına DEĞİL).
+  atılmaz;** aşağıdaki akış (a)–(c)'yi kendisi yapar; (d) için her yanıtın `Content-Type` ve bayt sayısını basar, ilk yanıtla karşılaştırma ve DUR kararı SENİNDİR (başlık ve gövde geçici dizinde yanıta özel dosyalara yazılır, hedefin ağacına DEĞİL).
 - Örnek akış (sayaç + 1 sn bekleme + engel sayfası kontrolü):
 
 ```bash
-# 1 req/s, keep a counter (max 100); header and body go to temp files; STOP on a challenge page
-T="${TMPDIR:-/tmp}"; n=0; stop=""
+# 1 req/s, keep a counter (max 100); header and body go to per-request temp files; STOP on a challenge page (a-c); (d) is yours: compare the printed type and size
+T="$(mktemp -d)"; n=0; stop=""
 for yol in / /robots.txt /sitemap.xml /.well-known/security.txt; do
-  code=$(curl -sS -D "$T/gdk-h" -o "$T/gdk-b" -w '%{http_code}' --max-time 10 "https://ORNEK.ALAN$yol"); n=$((n+1))
-  grep -qi '^cf-mitigated: *challenge' "$T/gdk-h" && stop="cf-mitigated: challenge"
-  head -c 4096 "$T/gdk-b" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="body marker"
+  n=$((n+1)); H="$T/h$n"; B="$T/b$n"
+  code=$(curl -sS -D "$H" -o "$B" -w '%{http_code}' --max-time 10 "https://ORNEK.ALAN$yol") || code=000
+  [ "$code" = 000 ] && { echo "--- request $n $yol: no response (curl failed)"; sleep 1; continue; }
+  echo "--- request $n $yol HTTP $code bytes=$(wc -c < "$B")"; cat "$H"
+  grep -qi '^cf-mitigated: *challenge' "$H" && stop="cf-mitigated: challenge"
+  head -c 4096 "$B" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="body marker"
   case "$code" in 403|429|503) stop="HTTP $code";; esac
   [ -n "$stop" ] && { echo "challenge page: $stop (request $n, $yol): run stopped"; break; }
   sleep 1

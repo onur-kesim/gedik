@@ -247,8 +247,7 @@ results verbatim into section 0 of your report.
   > not replace Lane B, it stacks on top of it.
   > **D9 (in-repo agent configuration) is INDEPENDENT of T8:** if the repo has `.claude/`,
   > `.mcp.json`, `.cursor/`, `.vscode/{mcp,settings,tasks}.json`, `.gemini/`, `.devcontainer/`,
-  > `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.cursorrules`, or
-  > `SKILL.md`/`.claude/skills/`, read D9 in `references/serit-D-yapayzeka.md` even when T8 is NO,
+  > `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.cursorrules`, `SKILL.md`/`.claude/skills/`, `.claude-plugin/`, or a code-agent step in `.github/workflows/`, read D9 in `references/serit-D-yapayzeka.md` even when T8 is NO,
   > and audit the configuration **without running it.**
 - **LANE E — shipped artifact** (`references/serit-E-artefakt.md`): **if T9 is YES.**
   > What reaches the user's hands is the artifact, not the source. **"I fixed it in the

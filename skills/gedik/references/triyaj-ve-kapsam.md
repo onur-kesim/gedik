@@ -144,11 +144,11 @@ B2/B9).
 **Additional measurement for T8 — vector/agent surface (opens D7/D8):** in dependencies,
 `pgvector`, `@pinecone-database/pinecone`, `weaviate-client`, `chromadb`, `qdrant-client`,
 `faiss` · in code, `embeddings.create`, `.similaritySearch(`, `.upsert(`, `.query(vector` ·
-an MCP server connection (`mcpServers`, `@modelcontextprotocol/*`) · an agent framework
+an MCP server connection or an MCP SDK dependency (`mcpServers`, `@modelcontextprotocol/*`, PyPI `mcp`) · an agent framework
 (LangChain agent, LlamaIndex agent, AutoGen, CrewAI) · persistent memory (`memory`, vector
 memory, conversation history persistence). If any one of these is YES, D7 (vector/embedding)
 and/or D8 (tool/MCP supply-chain trust, agent memory) additionally run **inside** the lane —
-no new T is needed, since Lane D is already open because T8 is YES.
+no new T is needed, since Lane D is already open because T8 is YES. An MCP server connection or an MCP SDK dependency makes T8 YES BY ITSELF (even with no LLM SDK: a tool server is an AI surface).
 
 **Note — iOS detection:** Lane A **always** runs (no new T needed); if `Info.plist`,
 `*.xcodeproj`/`*.xcworkspace`, a Capacitor `ios/` folder, or `.ipa` is present, Lane A's iOS
@@ -163,12 +163,11 @@ cross-reference line.
 fd "nginx\.conf|haproxy\.cfg"
 rg -n -i "cloudflare|fastly|akamai|cloudfront" -g '!node_modules'
 rg -n -i "x-forwarded-(for|host|proto)" -g '!node_modules'
-rg -n -i "listen\s+.*\bhttp2\b|^\s*http2\s+on|image:\s*['\"]?nginx:|FROM\s+nginx:" -g '*.conf' -g 'Dockerfile*' -g '*compose*.y*ml'
+rg -n -i "listen\s+.*\bhttp2\b|^\s*http2\s+on|(image:|FROM)\s+['\"]?(--\S+\s+)*(\S+/)*nginx[a-z-]*:" -g '*.conf*' -g '*.template' -g 'Dockerfile*' -g '*.y*ml'
 ```
 If both a front end (reverse proxy/CDN) **and** a back end (application server) are present,
 YES. `X-Forwarded-*` handling code and HTTP/2-3 usage are also signals. The last command finds `http2` in `nginx.conf` and an `nginx:<version>` image tag: a version found is
-written WITH its source (`file:line`); the vulnerability match comes from a scanner/advisory (a verdict from memory is FORBIDDEN); if the tag is floating (`nginx:latest`, `nginx:stable`)
-the version is written NOT MEASURED.
+written WITH its source (`file:line`); the vulnerability match comes from a scanner/advisory (a verdict from memory is FORBIDDEN); if the tag does not give the patch level (`nginx:latest`, `stable`, `mainline`, `alpine`, `1.27`) the version is written NOT MEASURED (the branch if it is known).
 
 **If YES → Lane B goes deeper** (`references/serit-B-sunucu.md`): request smuggling (B16),
 host header injection (B17), cache poisoning/deception (B18). Note: subdomain takeover (B19)

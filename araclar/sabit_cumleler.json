@@ -600,6 +600,24 @@
       "dosya": "references/serit-B-rsc.md",
       "tr": "CVE'si olmayan bir advisory'nin GHSA kimliği de eşleşme sayılır",
       "en": "the GHSA id of an advisory that has no CVE also counts as a match"
+    },
+    {
+      "id": "pth-record-kanit-degil",
+      "dosya": "references/kod-inceleme-guvenlik.md",
+      "tr": "RECORD kaydı meşruiyet kanıtı DEĞİLDİR",
+      "en": "A RECORD entry is NOT proof of legitimacy"
+    },
+    {
+      "id": "d8-pip-audit-kurar",
+      "dosya": "references/serit-D-yapayzeka.md",
+      "tr": "`pip-audit -r` hedefin bağımlılıklarını KURAR",
+      "en": "`pip-audit -r` INSTALLS the target's dependencies"
+    },
+    {
+      "id": "d9-action-etiketi-cli",
+      "dosya": "references/serit-D-yapayzeka.md",
+      "tr": "Action etiketi (`@v1`) ile içindeki CLI sürümü ayrı şeylerdir",
+      "en": "An action tag (`@v1`) and the CLI version inside it are different things"
     }
   ]
 }

@@ -41,28 +41,29 @@ etkilenmez. (c) tek başına YALNIZ pasiftir; aktif test için **üç şey birli
    bütçe kaldı mı, bir önceki istekten ≥1 sn geçti mi, önceki yanıt engel sayfası değil miydi (madde 9). Biri hayırsa istek ATILMAZ.
 9. **Engel sayfası = ortak DUR (canlı host için; yerel kopyada uygulanmaz).** Bir yanıt aşağıdakilerden birini taşıyorsa o host'a **0 istek** atılır;
    HTTP 200 olması engel olmadığını göstermez:
-   (a) HTTP `403`/`429`/`503` — testin BEKLEDİĞİ sonuç hariç (B3'te 429, B4'te 403/404, B7'de 403/404);
+   (a) HTTP `403`/`429`/`503` — testin BEKLEDİĞİ ya da güvenli sonucu hariç (B1'de formun CSRF/nonce reddi 403/419, B3'te 429, B4'te 403/404, B6'da kanarya kaydı yok 404/403, B7'de 403/404, B9'da yetki reddi 403);
    (b) `cf-mitigated: challenge` yanıt başlığı;
-   (c) gövdenin ilk 4096 baytında sağlayıcı imi: `cf-chl`, `challenge-platform`, `Just a moment` (büyük/küçük harf duyarsız);
-   (d) aynı yoldan ya da aynı kaynak türünden (sayfa, `.js`, `.map`/JSON, düz metin, XML) gelen İLK yanıta göre `Content-Type` ana türünün değişmesi
-   ya da gövde boyutunun ±%80'den fazla sapması (ilk yanıtı olmayan yolda sapma ÖLÇÜLMEZ; farklı türdeki yolların doğal farkı sapma değildir).
+   (c) gövdenin ilk 4096 baytında sağlayıcı imi: `cf-chl`, `challenge-platform`, `Just a moment` (büyük/küçük harf duyarsız; `challenge-platform` bazı sitelerde normal sayfalara da eklenebilir (TAHMİN, ölçülmedi): iz yine de DUR'dur, raporda imin geçtiği yanıt yazılır ve kullanıcıya "engel mi, yanlış alarm mı" sorulur; o host'ta koşu yalnız kullanıcının onayıyla sürer);
+   (d) **aynı yoldan** gelen İLK yanıta göre `Content-Type` ana türünün değişmesi ya da gövde boyutunun ±%80'den fazla sapması; **aynı kaynak türünden** (sayfa, `.js`, `.map`/JSON, düz metin, XML) gelen ilk yanıta göre YALNIZ `Content-Type` ana türünün değişmesi (farklı yollardaki boyut farkı doğaldır, sapma sayılmaz; ilk yanıtı olmayan yolda/türde sapma ÖLÇÜLMEZ).
    Rapora kilitli cümle yazılır: **"engel sayfası: <im>, koşu durdu"** (`<im>` = tetikleyen başlık, im ya da kod); o host'taki kalan testler
    "engel sayfası, test edilmedi" diye listelenir. DUR'dan sonra o host'a bir istek daha (kanıt toplamak ya da "doğrulamak için" dahil) ihlaldir.
-   **Her yanıtın başlığı ve gövde başı bu kontrolden geçmeden sonraki istek atılmaz;** aşağıdaki akış kontrolü kendisi yapar (başlık ve gövde
-   geçici dizindeki dosyaya yazılır, hedefin ağacına DEĞİL).
+   **Her yanıtın başlığı ve gövde başı bu kontrolden geçmeden sonraki istek atılmaz;** aşağıdaki akış (a)–(c)'yi kendisi yapar; (d) için her yanıtın `Content-Type` ve bayt sayısını basar, ilk yanıtla karşılaştırma ve DUR kararı SENİNDİR (başlık ve gövde geçici dizinde yanıta özel dosyalara yazılır, hedefin ağacına DEĞİL).
 
 **Her Bash çağrısı TEK istek atar ya da `sleep 1`'li sayaçlı bir akıştır.** `curl a; curl b`, `curl a b` (çoklu URL), `&`,
 `xargs -P`, `--parallel` ve `sleep`'siz döngü YASAKTIR: araya bekleme girmediği için aralık 1 sn'nin altına düşer. Örnek akış:
 
 ```bash
 # live active requests: ONE request per step, sleep 1 after each, counter against the budget (<=1 req/s)
-# header and body go to temp files (NOT the target tree); STOP on a challenge page (rule 9)
-T="${TMPDIR:-/tmp}"; n=0; stop=""
+# header and body go to per-request temp files (NOT the target tree); STOP on a challenge page (rule 9 a-c); (d) is yours: compare the printed type and size
+T="$(mktemp -d)"; n=0; stop=""
 for yol in /yol1 /yol2; do
-  code=$(curl -sS -D "$T/gdk-h" -o "$T/gdk-b" -w '%{http_code}' --max-time 10 "https://ORNEK.ALAN$yol"); n=$((n+1))
-  grep -qi '^cf-mitigated: *challenge' "$T/gdk-h" && stop="cf-mitigated: challenge"
-  head -c 4096 "$T/gdk-b" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="body marker"
-  case "$code" in 403|429|503) stop="HTTP $code";; esac   # drop a code ONLY if this test expects it (B3 429, B4/B7 403/404)
+  n=$((n+1)); H="$T/h$n"; B="$T/b$n"
+  code=$(curl -sS -D "$H" -o "$B" -w '%{http_code}' --max-time 10 "https://ORNEK.ALAN$yol") || code=000
+  [ "$code" = 000 ] && { echo "--- request $n $yol: no response (curl failed)"; sleep 1; continue; }
+  echo "--- request $n $yol HTTP $code bytes=$(wc -c < "$B")"; cat "$H"
+  grep -qi '^cf-mitigated: *challenge' "$H" && stop="cf-mitigated: challenge"
+  head -c 4096 "$B" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="body marker"
+  case "$code" in 403|429|503) stop="HTTP $code";; esac   # drop a code ONLY if this test expects it (B1 403/419, B3 429, B4/B6/B7 403/404, B9 403)
   [ -n "$stop" ] && { echo "challenge page: $stop (request $n, $yol): run stopped"; break; }
   sleep 1
 done
@@ -107,7 +108,7 @@ istek günlüğüne YAZILMAZ ("hesap A", "hesap B" yazılır); iş bitince sahib
 - **Her POST zararsız işaretleyici `GEDIK-TEST-<koşu-id>` taşır.** `<koşu-id>` = UTC `YYYYAAGG-SSDD` + 4 hex. Gövdede gerçek ad,
   e-posta, telefon YOK: şemanın zorunlu alanları sahte değerle (`gedik-test@example.invalid`) doldurulur.
 - **Gövde GÖNDERİLMEDEN ÖNCE doğrulanır.** Gövde önce bir değişkende kurulur (`m=...`); uzunluğu `${#m}` ile ölçülür ve işaretleyicinin başta olduğu
-  denetlenir; ikisi de tutmazsa istek ATILMAZ ve rapora "gövde doğrulanamadı, istek atılmadı" yazılır. Komut ikamesi (`$(...)`) boş dönebilir:
+  denetlenir; ikisinden biri bile tutmazsa istek ATILMAZ ve rapora "gövde doğrulanamadı, istek atılmadı" yazılır. Komut ikamesi (`$(...)`) boş dönebilir:
   boş ya da beklenenden kısa gövde ASLA gönderilmez; dolgu için `python` varsayılmaz. Örnek (B2 uzunluk testi, sınır L):
 
 ```bash
@@ -115,7 +116,7 @@ istek günlüğüne YAZILMAZ ("hesap A", "hesap B" yazılır); iş bitince sahib
 L=500; M="GEDIK-TEST-${RUN_ID:?set the run id first} "; pad=$((L + 1 - ${#M}))
 m="$M$(printf '%*s' "$pad" '' | tr ' ' a)"
 if [ "${#m}" -eq $((L + 1)) ] && [[ "$m" == GEDIK-TEST-* ]]; then
-  curl -sS -X POST --data-urlencode "message=$m" --max-time 10 "https://ORNEK.ALAN/api/sohbet"; sleep 1
+  curl -sS -X POST --data-urlencode "message=$m" --max-time 10 -w ' HTTP %{http_code}\n' "https://ORNEK.ALAN/api/sohbet"; sleep 1   # then run the rule-9 check on the response (use the flow above) before the next message
 else
   echo "body check failed (length ${#m}, want $((L + 1))): request NOT sent"
 fi
@@ -151,7 +152,7 @@ testler (B4, B2, B1, B5, B6), hacimlileri (B3, B7) bütçenin kalanıyla.
 | B9 | `staging`'de ≤20 yazma isteği; yük ≤300 istek, ≤5 eşzamanlı, ≤60 sn |
 | B10 | mutlak yasak (aşağıda) |
 
-**Ortak DUR** (tüm aktif istekler durur, pasif okuma serbest kalır; engel sayfasında o host'a pasif okuma da durur): ardışık 2 yanıt 5xx · B3 dışında beklenmeyen 429 · engel sayfası
+**Ortak DUR** (tüm aktif istekler durur, pasif okuma serbest kalır; engel sayfasında o host'a pasif okuma da durur): ardışık 2 yanıt 5xx (503 tek başına da engeldir: §1 madde 9) · B3 dışında beklenmeyen 429 · engel sayfası
 (§1 madde 9: kod, başlık, gövde imi ya da sapma; HTTP 200 olsa da) · kapsam dışı host'a yönlendirme (takip edilmez) · kullanıcının "dur"u.
 
 - **B1 Form gönderimi.** Önce formun sayfasını GET'le (pasif). Formda nonce/CSRF alanı yoksa tek gönderim formu olduğu gibi yollar:
@@ -214,16 +215,17 @@ grep -cEi '[A-Z0-9._%+-]+@(gmail|hotmail|yahoo|outlook|icloud)\.[a-z]{2,}|(^|[^0
 ```
 
 4. **Ayağa kaldırma.** Depodaki README/komutla (Docker varsa onunla, yoksa dilin yerel çalıştırıcısıyla). **Çalıştırıcı varsayılmaz, ARANIR:**
-   önce `command -v <ad>` (Windows'ta `where <ad>`) ile PATH'te, sonra bilinen yollarda; bulunamazsa kopya KURULMAZ ve rapora
+   önce `command -v <ad>` ile PATH'te (Windows'ta `where.exe <ad>`: PowerShell'de çıplak `where` bir takma addır) ve gerçekten çalıştığı `<ad> --version` ile kanıtlanarak, sonra bilinen yollarda; bulunamazsa kopya KURULMAZ ve rapora
    **"çalıştırıcı bulunamadı: <aranan yollar>"** yazılır (aranan her yol listelenir; "yok" demek yetmez). Arama örneği:
 
 ```bash
-# find the runner without assuming PATH: PATH first, then well-known locations; print every searched path
+# find the runner without assuming PATH: PATH first (and prove it runs), then well-known locations; print every searched path
 for r in python3 python py node php docker; do
-  if p=$(command -v "$r" 2>/dev/null); then echo "found: $r -> $p"; else echo "not on PATH: $r"; fi
+  if p=$(command -v "$r" 2>/dev/null) && "$r" --version >/dev/null 2>&1; then echo "found: $r -> $p"; else echo "not usable on PATH: $r"; fi
 done
-for d in /usr/bin /usr/local/bin "$HOME/.local/bin" /c/Python3* "$(cygpath -u "$LOCALAPPDATA" 2>/dev/null)/Programs/Python"; do
-  if [ -d "$d" ]; then echo "searched, exists: $d"; else echo "searched, missing: $d"; fi
+for d in /usr/bin /usr/local/bin "$HOME/.local/bin" /c/Python3* "${LOCALAPPDATA:+$(cygpath -u "$LOCALAPPDATA" 2>/dev/null)/Programs/Python}"; do
+  [ -n "$d" ] || continue
+  echo "searched: $d"; find "$d" -maxdepth 3 -type f \( -iname 'python3*' -o -iname 'python.exe' -o -iname 'node*' -o -iname 'php*' \) 2>/dev/null | head -5
 done
 ```
 

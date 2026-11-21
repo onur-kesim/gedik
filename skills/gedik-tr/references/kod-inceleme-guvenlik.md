@@ -81,7 +81,7 @@ doğrulama koşulsuz." Envanter yoksa inceleme yoktur.
 ## 2. Bağımlılık ve tedarik zinciri
 
 - **CVE taraması:** `npm audit` / `pip-audit` / `osv-scanner` — çıktıyı rapora **sayıyla**
-  yaz (kritik/yüksek adedi). Yoksa `ÖLÇÜLMEDİ`.
+  yaz (kritik/yüksek adedi). Yoksa `ÖLÇÜLMEDİ`. `pip-audit -r` hedefin bağımlılıklarını KURAR; yalnız `--no-deps --disable-pip` ile ve tam sabitli/hash'li dosyada, aksi halde `osv-scanner`.
 - **Kilit dosyası:** `package-lock.json` / `poetry.lock` repoda mı; kurulum `ci`/`--frozen`
   ile mi (aksi hâlde sürüm sürüklenir)?
 - **`postinstall` betikleri:** bağımlılıkların kurulumda kod çalıştırması.
@@ -89,10 +89,7 @@ doğrulama koşulsuz." Envanter yoksa inceleme yoktur.
   `*.pth` dosyalarında `import` ile başlayan her satırı çalıştırır: paket hiç `import` edilmeden, her yorumlayıcı açılışında (pip'in kendisi
   dahil). `sitecustomize.py` ve `usercustomize.py` de her açılışta yüklenir. Depoda, gömülü sanal ortamda, imaj katmanında ya da wheel/sdist
   içinde `.pth` dosyasında `import` ile başlayan satır ya da bu iki dosyadan biri = **bulgu adayı** (meşru paketler de kullanır: kaynağı
-  `*.dist-info/RECORD`'dan, amacı satırın içeriğinden ayır; "zararsız" ya da "kötü" hükmünü ezberden verme). Şiddet: satırda
-  `exec`/`eval`/`base64`/`subprocess`/`socket`/`urllib`/`os.system`/`__import__` ya da 120 karakteri aşan tek satır → KRİTİK; hiçbir
-  `dist-info/RECORD`'da listelenmeyen `.pth` → YÜKSEK; başka bir `import` satırı → ORTA (kaynağı yazılır). Sabit dosya adı/IOC listesi
-  TUTULMAZ: imza mekanizmadır. Tespit, hiçbir şey çalıştırmadan:
+  `*.dist-info/RECORD`'dan, amacı satırın içeriğinden ayır; "zararsız" ya da "kötü" hükmünü ezberden verme). Şiddet: satırda `exec`/`eval`/`compile`/`base64`/`subprocess`/`socket`/`urllib`/`os.system`/`os.popen` ya da başka bir dosyadan okuyup çalıştıran kalıp → KRİTİK; `__import__`, 120 karakteri aşan tek satır ya da hiçbir `dist-info/RECORD`'da listelenmeyen `.pth` → YÜKSEK; başka bir `import` satırı → ORTA (satırın yaptığı iş ve kaynağı yazılır). **RECORD kaydı meşruiyet kanıtı DEĞİLDİR** (kötü amaçlı bir wheel kendi `.pth`'ini RECORD'a yazar); yalnız kaynağı söyler. Sabit dosya adı/IOC listesi TUTULMAZ: imza mekanizmadır. Tespit, hiçbir şey çalıştırmadan:
 
 ```bash
 # Python start-up hooks: list file:line only and RUN NOTHING (a .pth line starting with "import" executes on every interpreter start)
@@ -101,7 +98,7 @@ find . \( -name sitecustomize.py -o -name usercustomize.py \) -not -path '*/.git
 ```
 
   **PoC (K2, çalıştırmadan):** `dosya:satır` + satırın ilk 120 karakteri + "yorumlayıcı açılışında çalışır" gerekçesi. **YASAK:**
-  o `site-packages`'i kullanan `python`/`pip` başlatmak (kancayı TETİKLER), `python -m site`, paketi kurmak ya da `import` etmek.
+  o `site-packages`'i kullanan `python`/`pip` başlatmak (kancayı TETİKLER), `python -m site`, paketi kurmak ya da `import` etmek. **Arşiv içi:** wheel/sdist ve imaj tarball'ındaki `.pth` dosyaları çıkarılmadan okunur (`unzip -l <whl>` ile üye adları, `unzip -p <whl> '*.pth'` ile satırlar; sdist için `tar -tzf`/`tar -xzOf`); araç yoksa arşiv içi ÖLÇÜLEMEDİ. Komutlardaki `2>/dev/null` okunamayan dizinleri gizler: çıktı boşsa "temiz" DEĞİL, okunamayan dizin/arşiv varsa "ÖLÇÜLEMEDİ (<sebep>)" yazılır.
 - **Typosquat / sahiplik:** yeni eklenen paket adı popüler bir paketin yazım varyantı mı;
   bakım terk edilmiş mi (son yayın tarihi)?
 - **Lisans:** kullanıcının kırmızı çizgisi — yeni bağımlılık = lisans + CVE kontrolü.
