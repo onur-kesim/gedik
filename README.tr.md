@@ -15,7 +15,7 @@ ve yama önerisiyle gelir.
   teslim üstünlüğü hesaba bağlı.
 - **v2.13.1 (kurulum yasağı) yalnız yerel fixture'da ölçüldü** (2026-11-22; tek model, tek istem, EN
   skill; 5 koşu, gerçek siteye istek 0). gedik artık denetlediği depoda ve onun her kopyasında
-  bağımlılık kurmaz, paket indirip çalıştırmaz (`npm`/`pnpm`/`yarn` install/ci/add, `npx <paket>`,
+  bağımlılık kurmamaya, paket indirip çalıştırmamaya talimatlıdır (`npm`/`pnpm`/`yarn` install/ci/add, `npx <paket>`,
   `pip install` ve eşdeğerleri); kurulum gerektiren PoC `ŞÜPHE (ÇALIŞTIRILMADI)` olarak yazılır. Tek
   istisna, açıkça istenen yerel kopya kipi. MCP senaryosunda kurulum denemesi 4 koşunun 0'ında
   (aynı senaryoda v2.13.0: 3/4; n=4+4, istatistiksel olarak anlamlı değil, yön tutarlı); MCP

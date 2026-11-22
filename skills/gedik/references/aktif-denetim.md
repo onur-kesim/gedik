@@ -222,8 +222,9 @@ whose precondition is not written. The mode opens when the user provides the rep
 **This mode is the ONLY exception to the install ban (SKILL.md §1 K2):** if the user explicitly asks for a "local copy" and provides the owner's repo, the copy is installed and brought up with the repo's README/command (item 4);
 nothing installed in the copy is run against another target or outside the copy.
 
-1. **Location and isolation.** The copy is placed under `_calisma/yerel/<proje>-<koşu-id>/` (added to `.gitignore`); the owner's working
-   copy is NOT written to. It binds to `127.0.0.1` only. A real `.env`/production secret is NOT copied: it is set up from `.env.example`
+1. **Location and isolation.** The copy is placed under `_calisma/yerel/<proje>-<koşu-id>/` in the root of the audited project (added to `.gitignore`);
+   the relative path is relative to the root of the audited project, not to the working directory (the `_calisma/` of the skill/plugin directory or of any other parent directory is NOT used).
+   The owner's working copy is NOT written to. It binds to `127.0.0.1` only. A real `.env`/production secret is NOT copied: it is set up from `.env.example`
    with fake values.
 2. **External integrations are neutralized.** SMTP, SMS, payment, webhook, object store, third-party API: a fake or `.invalid`
    endpoint; a real key NEVER. If the copy's configuration holds the live domain it is turned into a local one; the copy sends no request

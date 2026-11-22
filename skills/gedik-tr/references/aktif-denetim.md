@@ -213,8 +213,9 @@ kopyaya UYGULANMAZ** (dokunulan şey kullanıcının kendi makinesidir, canlı s
 **Kurulum yasağının (SKILL.md §1 K2) TEK istisnası bu kiptir:** kullanıcı açıkça "yerel kopya" isterse ve sahibin deposunu verdiyse kopya, depodaki README/komutla kurulup ayağa kaldırılır (madde 4);
 kopyada kurulan hiçbir şey başka bir hedefte ya da kopya dışında çalıştırılmaz.
 
-1. **Konum ve izolasyon.** Kopya `_calisma/yerel/<proje>-<koşu-id>/` altına çıkarılır (`.gitignore`'a eklenir); sahibin çalışan
-   kopyasına YAZILMAZ. Yalnız `127.0.0.1`'e bağlanır. Gerçek `.env`/üretim sırrı KOPYALANMAZ: `.env.example`'dan sahte değerlerle kurulur.
+1. **Konum ve izolasyon.** Kopya denetlenen projenin kökündeki `_calisma/yerel/<proje>-<koşu-id>/` altına çıkarılır (`.gitignore`'a eklenir);
+   göreli yol çalışma dizinine değil, denetlenen projenin köküne göredir (skill/eklenti dizininin ya da başka bir üst dizinin `_calisma/`sı KULLANILMAZ).
+   Sahibin çalışan kopyasına YAZILMAZ. Yalnız `127.0.0.1`'e bağlanır. Gerçek `.env`/üretim sırrı KOPYALANMAZ: `.env.example`'dan sahte değerlerle kurulur.
 2. **Dış entegrasyonlar etkisizleştirilir.** SMTP, SMS, ödeme, webhook, nesne deposu, üçüncü taraf API: sahte ya da `.invalid` uç;
    gerçek anahtar ASLA. Kopyanın yapılandırmasında canlı alan adı varsa yerele çevrilir; kopya canlı alan adına hiç istek atmaz.
    Etkisizleştirilemeyen özellik test dışı kalır ve rapora yazılır.

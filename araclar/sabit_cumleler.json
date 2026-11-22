@@ -488,6 +488,12 @@
       "en": "runner not found: <searched paths>"
     },
     {
+      "id": "aktif-yerel-konum-proje-koku",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "göreli yol çalışma dizinine değil, denetlenen projenin köküne göredir",
+      "en": "the relative path is relative to the root of the audited project, not to the working directory"
+    },
+    {
       "id": "pasif-engel-sayfasi-dur",
       "dosya": "references/pasif-denetim.md",
       "tr": "engel sayfası: <im>, koşu durdu",

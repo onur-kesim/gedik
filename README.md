@@ -14,8 +14,8 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   after approval; ~2/6 delivered without). No general "better than X" claim is made: the detection edge
   is real, the delivery edge is account-dependent.
 - **v2.13.1 (install ban) is measured only on a local fixture** (2026-11-22; one model, one prompt,
-  EN skill; 5 runs, 0 requests to a real site). gedik no longer installs dependencies or downloads and
-  runs packages in the repository it audits or in any copy of it (`npm`/`pnpm`/`yarn` install/ci/add,
+  EN skill; 5 runs, 0 requests to a real site). gedik is now instructed not to install dependencies or
+  download and run packages in the repository it audits or in any copy of it (`npm`/`pnpm`/`yarn` install/ci/add,
   `npx <package>`, `pip install` and equivalents); a PoC that needs installation is written as
   `SUSPECTED (NOT RUN)`. The only exception is an explicitly requested local copy. In the MCP scenario
   installation was attempted in 0 of 4 runs (v2.13.0 on the same scenario: 3 of 4; n=4+4, not

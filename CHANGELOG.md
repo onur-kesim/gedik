@@ -5,6 +5,9 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 
 ## [Unreleased]
 
+### Değişti (v2.13.1 sonrası; sürüm numarası DEĞİŞMEZ, etiket YOK)
+- **§4.1 yerel kopya konumu netleştirildi (v2.13.1 T7'de n=1 gözlem); ÖLÇÜLMEDİ, bir sonraki sürümün ölçümüne dahil.** `aktif-denetim.md` §4.1 (TR+EN): kopya "denetlenen projenin kökündeki `_calisma/yerel/<proje>-<koşu-id>/`" altına çıkarılır; göreli yol çalışma dizinine değil, denetlenen projenin köküne göredir (skill/eklenti dizininin ya da başka bir üst dizinin `_calisma/`sı kullanılmaz). 1 yeni kilit (113→114).
+
 ### Belgeler
 - **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Bu satır 2.6.0 dönemine aittir.
 
