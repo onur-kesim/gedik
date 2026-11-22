@@ -2,7 +2,7 @@
 
 > **O30 ara not (2026-11-22, Cowork):** O29 "sıradaki ilk iş" 1–4 BİTTİ: tarama raporu `_calisma/arastirma_1122/gedik_guncelleme_2026-11-22.md` (+ Projects `claude/gedik-guncelleme-2026-11-22.md`), DILIM taslağı `_calisma/arastirma_1122/DILIM_v2.13_taslak.md`. KİLİT (Onur): tek dilim v2.13.0, DILIM.md yazıldı; sıradaki iş Claude Code YAP-A.
 
-## DEVİR O31 · 2026-11-22 · O30 → O31 · yazan: Claude Code · 🟢 ~690k/750k (DEVİR öncesi ölçüldü; TURUNCU'ya yakın) — v2.13.0 YAP A–D + DOĞRULA BİTTİ (6 commit; PUSH YOK; DÜZELT turu KULLANILMADI)
+## DEVİR O31 · 2026-11-22 · O30 → O31 · yazan: Claude Code · 🟢 695k/750k (DEVİR yazıldıktan sonra ölçüldü; yazı anındaki ~646k ölçümü bir önceki ölçümdür) — v2.13.0 YAP A–D + DOĞRULA BİTTİ (6 commit; PUSH YOK; DÜZELT turu KULLANILMADI)
 Aşama: YAPIM · sürüm dilimi (2.13.0), K2 son gün 2026-11-29. DILIM: YAP A–D [x] · DOĞRULA [x] (T2/T4/T6 TUTTU; T1 1/2, T3 0/4, T5 1/2 TUTMADI) · TESLİM 0/3 (Cowork hakemlik · README×2 · etiket+Release+dört sayı; push Onur).
 Son yapılan: A `78697c9` (engel sayfası = ortak DUR, gövde doğrulama, çalıştırıcı arama) · B `858aab3` (MCP SDK D8.6–D8.8) · C `dfd377c` (`.pth`, pasif sürüm ifşası, nginx/WordPress) · D `dd3cc20` (OWASP LLM 2026 + Hidden Context Exposure — kaynak ham metni okundu —, `pull_request_target`, CI ajan/plugin kapısı, R3 GHSA, sürüm 2.13.0) · `946b8e5` + `6261bdd` (2 bağımsız denetimin bulguları, ölçümden ÖNCE) · kilit 76 → 103; kapılar yeşil. Ölçüm: `_calisma/saha_2130/`, 16 koşu ≈ 5,8 USD; sonuçlar KRITER "v2.13.0 ÖLÇÜMÜ".
 Yarım kalan: yok. Çalışma ağacı temiz olacak (DURUM/DILIM/KRITER/CHANGELOG belge commit'i atılıyor).
