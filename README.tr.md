@@ -13,6 +13,17 @@ ve yama önerisiyle gelir.
   kesilmesi — artık **Cyber Verification Program onaylı hesaplar için** çözüldü (onay sonrası
   3/3 teslim; onaysız ~2/6 teslim). Genel "X'ten daha iyi" iddiası yok: tespit üstünlüğü gerçek,
   teslim üstünlüğü hesaba bağlı.
+- **v2.13.1 (kurulum yasağı) yalnız yerel fixture'da ölçüldü** (2026-11-22; tek model, tek istem, EN
+  skill; 5 koşu, gerçek siteye istek 0). gedik artık denetlediği depoda ve onun her kopyasında
+  bağımlılık kurmaz, paket indirip çalıştırmaz (`npm`/`pnpm`/`yarn` install/ci/add, `npx <paket>`,
+  `pip install` ve eşdeğerleri); kurulum gerektiren PoC `ŞÜPHE (ÇALIŞTIRILMADI)` olarak yazılır. Tek
+  istisna, açıkça istenen yerel kopya kipi. MCP senaryosunda kurulum denemesi 4 koşunun 0'ında
+  (aynı senaryoda v2.13.0: 3/4; n=4+4, istatistiksel olarak anlamlı değil, yön tutarlı); MCP
+  bulguları ekili depoda 2/2 bulundu, temiz depoda yanlış bulgu 0/2. Yerel kopya istisnası bozulmadı
+  (1 koşu: kopya kuruldu, silme/güncelleme yalnız kopyada, canlıya yalnız 10 GET). ⚠️ Sınır: kurulum
+  gerektirmeyen PoC'ler hedefin kopyasında hâlâ çalışabilir; güvenilmeyen depoyu yine izole ortamda
+  denetle. Yerel kopya bir koşuda denetlenen projenin değil, çalışma dizininin `_calisma/` klasörüne
+  kuruldu.
 - **v2.13 (2026 Kasım güncellemesi) yalnız yerel fixture'da ölçüldü** (2026-11-22; tek model
   claude-sonnet-5-5, tek istem, EN skill, senaryo başına n=2; ilk tur 16 + tek düzeltme turu 9 koşu,
   hepsi tamamlandı; gerçek siteye istek 0). Yeni: (a) **engel sayfası = DUR:** bot koruması 200 kodlu
@@ -26,7 +37,7 @@ ve yama önerisiyle gelir.
   başlığından, doğrulanmadı" etiketini taşır, sürüm eşleşmesi asla ezberden yapılmaz. (e) OWASP LLM
   Top 10 **2026** numaraları + Hidden Context Exposure; GitHub'ın 2026-12-02'de public depolarda
   `pull_request_target`'ı varsayılan engellemesi; CI ajan action'ı ve plugin sabitleme sürüm kapıları.
-  Bilinen sınırlar: (1) ⚠️ **gedik denetlediği deponun kodunu çalıştırabilir.** MCP senaryosunun 4
+  Bilinen sınırlar: (1) ⚠️ **gedik denetlediği deponun kodunu çalıştırabilir** (v2.13.1'de kurulum kısmı daraldı: 4 koşunun 0'ında denendi, yukarı bakın). MCP senaryosunun 4
   koşusunun 2'sinde ajan hedefin kopyasında PoC'yi `node` ile koştu ya da `npm install` denedi
   (diğer ikisinde izin reddedildi); yasak metinde var ama 4 koşunun 3'ünde ilgili dosya hiç açılmadı.
   **Güvenilmeyen bir depoyu yalnız izole ortamda ya da Bash izni kısıtlıyken denetle.** (2) `req.sh`
@@ -307,7 +318,7 @@ Onay kesilmeyi azaltır ama teslimi garanti etmez: onaylı hesapta PHP saha koş
 raporun 1'i reddedildi, v2.8.0'da 15'in 0'ı (her biri n=15 — oran değil, örnek). Bkz.
 [Benchmark](#benchmark-ölçülmüş--2026-09-30).
 
-**Başkasının deposunu denetlemeden önce.** gedik proje dosyalarını asla çalıştırmaz, ama onu
+**Başkasının deposunu denetlemeden önce.** gedik v2.13.1'den beri denetlenen depoda bağımlılık kurmamaya (açıkça istenen yerel kopya hariç) ve PoC'yi yalnız kurulumsuz çalıştırmaya talimatlıdır, ama onu
 çalıştıran ajan çalıştırabilir: bir deponun `.claude/settings.json` hook'ları ve `.mcp.json`
 sunucuları, o klasörü açtığında Claude Code'un yürütebileceği proje yapılandırmasıdır
 (CVE-2025-59536 / CVE-2026-21852, açıklanmadan önce yamalandı — Check Point, 2026-02-25; Cursor'da

@@ -13,6 +13,18 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   targets — is now resolved **for Cyber-Verification-Program-approved accounts** (3/3 delivered
   after approval; ~2/6 delivered without). No general "better than X" claim is made: the detection edge
   is real, the delivery edge is account-dependent.
+- **v2.13.1 (install ban) is measured only on a local fixture** (2026-11-22; one model, one prompt,
+  EN skill; 5 runs, 0 requests to a real site). gedik no longer installs dependencies or downloads and
+  runs packages in the repository it audits or in any copy of it (`npm`/`pnpm`/`yarn` install/ci/add,
+  `npx <package>`, `pip install` and equivalents); a PoC that needs installation is written as
+  `SUSPECTED (NOT RUN)`. The only exception is an explicitly requested local copy. In the MCP scenario
+  installation was attempted in 0 of 4 runs (v2.13.0 on the same scenario: 3 of 4; n=4+4, not
+  statistically significant, consistent direction); the MCP findings were found 2 of 2 in the seeded
+  repository, with 0 of 2 false findings in the clean one. The local-copy exception still works (1 run:
+  the copy was set up, delete/update only on the copy, only 10 GETs to the live site). ⚠️ Limit: PoCs
+  that need no installation may still run on a copy of the target; still audit an untrusted repository
+  in an isolated environment. In one run the local copy was set up in the working directory's
+  `_calisma/` folder rather than the audited project's.
 - **v2.13 (November 2026 update) is measured only on a local fixture** (2026-11-22; one model,
   claude-sonnet-5-5, one prompt, EN skill, n=2 per scenario; 16 runs in the first round + 9 in the
   single fix round, all completed; 0 requests to a real site). New: (a) **block page = STOP:** even when
@@ -27,7 +39,7 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   verified", and version matching is never done from memory. (e) OWASP LLM Top 10 **2026** numbering +
   Hidden Context Exposure; GitHub blocking `pull_request_target` by default in public repos from
   2026-12-02; version gates for CI agent actions and plugin pinning. Known limits: (1) ⚠️ **gedik may
-  execute code from the repository it audits.** In 2 of the 4 MCP-scenario runs the agent ran a PoC with
+  execute code from the repository it audits** (the installation part narrowed in v2.13.1: 0 of 4 runs attempted it, see above). In 2 of the 4 MCP-scenario runs the agent ran a PoC with
   `node` on a copy of the target or attempted `npm install` (in the other two the permission was
   denied); the prohibition is in the text, but in 3 of the 4 runs the file containing it was never
   opened. **Audit an untrusted repository only in an isolated environment or with Bash permissions
@@ -317,7 +329,7 @@ Approval lowers the cut rate but does not guarantee delivery: in PHP field runs 
 account, 1 of 15 reports was refused on v2.7.1 and 0 of 15 on v2.8.0 (n=15 each — a sample, not
 a rate). See [Benchmark](#benchmark-measured--2026-09-30).
 
-**Before auditing someone else's repository.** gedik itself never runs project files, but the
+**Before auditing someone else's repository.** Since v2.13.1 gedik is instructed not to install dependencies in an audited repository (except an explicitly requested local copy) and to run PoCs only without installation, but the
 agent around it can: a repository's `.claude/settings.json` hooks and `.mcp.json` servers are
 project configuration that Claude Code may execute when you open that folder (CVE-2025-59536 /
 CVE-2026-21852, patched before disclosure — Check Point, 2026-02-25; a similar Cursor issue is
