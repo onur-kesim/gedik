@@ -52,6 +52,7 @@ Kurallar (v2.12 ile aynı): TR kanonik + EN birebir, çeviri kapısı · yeni ku
 1. Onur: tek dilim (A+B+C+D).
 2. K7 (en ucuz geri alınabilir): A1 boyut sapması = ilk yanıta göre `Content-Type` değişimi ya da gövde boyutu ±%80; Code eşiği koşudan ÖNCE `_calisma/saha_2130/esikler.md`'ye yazar, sonradan değiştirmez.
 3. K7: D1'de numara güncellemesi kesin; "Hidden Context Exposure" maddesi YAP'ın ilk adımında OWASP 2026 metni okunursa girer, okunamazsa `ATLANDI: kaynak okunamadı` (numara güncellemesi yine yapılır).
+4. Onur (2026-11-22, DÜZELT sonrası): v2.13.0 bu sınırlarla yayımlanır; v2.13.1 (D8 yasağını `SKILL.md`'ye taşı) şimdi açılmadı.
 
 ## Sonuç
 **YAP A–D tamam (6 commit: A `78697c9` · B `858aab3` · C `dfd377c` · D `dd3cc20` · denetim düzeltmeleri `946b8e5`, `6261bdd`); DOĞRULA (16 koşu): T2, T4, T6 TUTTU; T1 1/2, T3 0/4, T5 1/2 TUTMADI. DÜZELT turu (Onur kararı 2026-11-22; metin `30b7206`, koşu öncesi kayıt `1b503d0`; 9 koşu): T1 2/2 · T5 2/2 · T6 `r2-a` TUTTU; T3 TUTMADI (anlamsal kısım tuttu, `kod_calistirilmadi` tutmadı — kök neden: yasak lane dosyasında, 3/4 koşu o dosyayı hiç açmadı).** Üçüncü tur YOK (K5): kalan sınırlar README sınırı; çare adayı (yasağı `SKILL.md`'ye taşıma) ayrı dilim, ölçüm ister. Bağımsız üç denetim turu ölçümden ÖNCE işlendi. Ayrıntı KRITER "v2.13.0 DÜZELT ÖLÇÜMÜ", CHANGELOG "Bilinen sınırlar — DÜZELT turu sonrası". TESLİM 0/3 (Cowork hakemlik · README×2 · etiket+Release+dört sayı; push Onur).
