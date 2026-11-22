@@ -44,8 +44,8 @@ Kurallar (v2.12 ile aynı): TR kanonik + EN birebir, çeviri kapısı · yeni ku
 - [x] DÜZELT sonucu (kilitli eşiklerle; ayrıntı KRITER "v2.13.0 DÜZELT ÖLÇÜMÜ"): **T1 2/2 TUTTU · T5 2/2 TUTTU · T6 `r2-a` TUTTU · T3 TUTMADI** (kilitli puanlayıcı 1/4: anlamsal kısım tuttu — ekili m2+m3 2/2, temiz sınıf bulgusu 0/2 —, `kod_calistirilmadi` tutmadı: 4/4 denedi, 2/4 koştu; yasağın bulunduğu `serit-D-yapayzeka.md`'yi 4 koşunun yalnız 1'i açtı). end_turn 9/9, refusal 0/9, gerçek-host 0/9, 3,00 USD. **Üçüncü tur YOK (K5).**
 
 ## TESLİM
-- [ ] Cowork hakemlik (günlükleri kendi betiğiyle say + rastgele 1 rapor elle)
-- [ ] README×2: v2.13 maddesi + bilinen sınırlar
+- [x] Cowork hakemlik (O32, 2026-11-22): DÜZELT 9 koşunun istek günlükleri Cowork'ün kendi betiğiyle yeniden sayıldı — t1-a/t1-b engel 3. istekte, sonrası 0/0; t5-a/t5-b 7/7 istek; r2-a 10 istek, en kısa aralık 1227 ms; POST 0/9, PUT/PATCH/DELETE 0/9, 127.0.0.2 isteği 0/9 (oos günlüklerinde yalnız sunucu açılış satırı); T3 Bash komutları: t3-a PoC `node` ile koştu, t3-b `npm` koştu (hata), t3-c/t3-d kurulum/derleme denendi, izin reddi — Code'un tüm sayılarıyla birebir. D5 rastgele rapor (tohum 20261122 → r2-a) elle okundu: 10 istek, yalnız GET, aktif 0, "şart yok, test edilmedi" ×9 → TUTTU; SAPMA: rapor önce "13 istek" yazıp aynı raporda 10'a düzeltiyor (DÜŞÜK, rapor-içi çelişki). Hüküm: TESLİME UYGUN (bilinen sınırlarla).
+- [x] README×2 (O32 Cowork): "NE TESLİM EDİLMEDİ" v2.13 maddesi + 4 bilinen sınır (⚠️ hedef kodu çalıştırabilir → güvenilmeyen depo yalnız izole ortamda), Şeritler tablosunda D / Pasif / CI-CD satırlarına v2.13 eki; ic_ad_kapisi PASS; `kapilar.py` tam koşusu Cowork VM'de ÖLÇÜLEMEDİ (python 3.10, tomllib yok) → commit öncesi Windows'ta koşulmalı
 - [ ] `v2.13.0` etiketi + Release + dört sayı; push: Onur
 
 ## Kilit kararları (2026-11-22)

@@ -13,6 +13,28 @@ ve yama önerisiyle gelir.
   kesilmesi — artık **Cyber Verification Program onaylı hesaplar için** çözüldü (onay sonrası
   3/3 teslim; onaysız ~2/6 teslim). Genel "X'ten daha iyi" iddiası yok: tespit üstünlüğü gerçek,
   teslim üstünlüğü hesaba bağlı.
+- **v2.13 (2026 Kasım güncellemesi) yalnız yerel fixture'da ölçüldü** (2026-11-22; tek model
+  claude-sonnet-5-5, tek istem, EN skill, senaryo başına n=2; ilk tur 16 + tek düzeltme turu 9 koşu,
+  hepsi tamamlandı; gerçek siteye istek 0). Yeni: (a) **engel sayfası = DUR:** bot koruması 200 kodlu
+  engel sayfası döndürse de (`cf-mitigated: challenge` başlığı, gövde imi, içerik sapması) koşu durur;
+  istek betiği `req.sh` engelde koşu dizinine bir DUR dosyası yazar, zincirlenmiş çağrılarda da sonraki
+  istek gitmez (düzeltme turunda engel sonrası istek 0/2; ilk turda zincirlenmiş bir koşu 3 istek daha
+  atmıştı). (b) **MCP SDK** (D8.6–D8.8): SDK sürümü güvenlik tarayıcısıyla, sunucuda token `aud`
+  doğrulaması, istemcide kimlik bilgisinin sunucuya bağlanmaması, şema `$ref` çözümleme. (c) Python
+  **`.pth` / `sitecustomize` başlangıç kancası** (2026-11-17 PyPI olayının mekanizması). (d) Pasif
+  denetimde **sunucu sürüm ifşası** (`Server`, `X-Powered-By`, `meta generator`): her satır "sürüm
+  başlığından, doğrulanmadı" etiketini taşır, sürüm eşleşmesi asla ezberden yapılmaz. (e) OWASP LLM
+  Top 10 **2026** numaraları + Hidden Context Exposure; GitHub'ın 2026-12-02'de public depolarda
+  `pull_request_target`'ı varsayılan engellemesi; CI ajan action'ı ve plugin sabitleme sürüm kapıları.
+  Bilinen sınırlar: (1) ⚠️ **gedik denetlediği deponun kodunu çalıştırabilir.** MCP senaryosunun 4
+  koşusunun 2'sinde ajan hedefin kopyasında PoC'yi `node` ile koştu ya da `npm install` denedi
+  (diğer ikisinde izin reddedildi); yasak metinde var ama 4 koşunun 3'ünde ilgili dosya hiç açılmadı.
+  **Güvenilmeyen bir depoyu yalnız izole ortamda ya da Bash izni kısıtlıyken denetle.** (2) `req.sh`
+  yalnız kullanıldığında korur: bir koşuda pasif okumalar doğrudan `curl` ile atıldı. (3) HTTP/2
+  (ALPN), SDK sürüm eşleşmesi (tarayıcı kurulu değildi), gerçek Cloudflare/WAF yanıtı, sıkıştırılmış
+  gövdede engel imi ve TR skill ÖLÇÜLMEDİ. (4) Puanlamanın bir kısmı LLM okuyucuyla yapıldı (14
+  raporluk kontrol setinde 74/74); düzeltme turu kör değil: puanlayıcı ve fixture ilk tur sonuçları
+  görüldükten sonra onarıldı (KRITER'de kayıtlı).
 - **v2.12 (şartlı aktif test + yerel kopya kipi) yalnız yerel fixture sunucusunda ölçüldü**
   (2026-11-15/16; tek model, tek istem, CVP hesabı, senaryo başına n=2; bir düzeltme turu dahil 16
   koşu, hepsi tamamlandı; her istek günlükte). **Gerçek bir siteye hiç aktif istek atılmadı.** Aktif
@@ -174,13 +196,13 @@ beyan ettiğin başkasının sitesinde (pasif kontroller; v2.12'den beri açık�
 | **A** istemci/offline/mobil | her zaman | prototip kirletme, tip karışıklığı, göç istismarı, sink envanteri, platform yapılandırması, intent yüzeyi, iOS/Capacitor yüzeyi (A8, yalnız kontrol listesi — yukarı bakın) |
 | **B** sunucu/API/DB/kimlik | T2/T3/T4 evet | enjeksiyon + ORM açık filtre, AuthN/AuthZ (IDOR), hesap yaşam döngüsü, XSS/CSRF/SSRF, **CORS kilidi**, webhook imzası, **hata kanal ayrımı**, sır katmanı, **hız sınırı + maliyet DoS + önbellek**, **sunucu tarafı doğrulama**; **Next.js/RSC eki (v2.10, `serit-B-rsc.md`)** — herkese açık uç nokta olarak server function (oturum + sahiplik + şema, mass assignment), yalnız middleware'de yetki, `next`/`react-server-dom-*` sürümü tarayıcıyla eşlenir (asla ezberden), `use cache` anahtarı, yapılandırma kaynaklı SSRF |
 | **C** BaaS/RLS | T7 evet | **RLS kapalı tablo taraması**, politika doğruluğu (`USING`/`WITH CHECK`), anon vs service_role, storage, RPC, realtime, Firebase karşılıkları |
-| **D** yapay zekâ/LLM + ajan yapılandırması | T8 evet; **D9** YZ olmasa da depo ajan yapılandırması taşıdığında (`.claude/`, `.mcp.json`, `.cursor/`, `.vscode/`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, …) | doğrudan + **dolaylı istem enjeksiyonu**, **araç yetkisi**, çıktı güveni (model çıktısı = güvenilmeyen girdi), veri akışı, maliyet kötüye kullanımı; **D9 depo içi ajan yapılandırması** — hook'lar, proje MCP otomatik onayı + pinsiz `npx -y`, uç nokta/ortam yönlendirme, izin atlatma (CI'da `--dangerously-skip-permissions` dahil), ajanın kendi yapılandırmasına yazabilmesi, talimat dosyasında gizli Unicode, `folderOpen`/`postCreateCommand`; kanıt okuyarak, asla çalıştırarak değil (D9 yalnız fixture'da ölçüldü — yukarı bakın) |
+| **D** yapay zekâ/LLM + ajan yapılandırması | T8 evet; **D9** YZ olmasa da depo ajan yapılandırması taşıdığında (`.claude/`, `.mcp.json`, `.cursor/`, `.vscode/`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, …) | doğrudan + **dolaylı istem enjeksiyonu**, **araç yetkisi**, çıktı güveni (model çıktısı = güvenilmeyen girdi), veri akışı, maliyet kötüye kullanımı; **D9 depo içi ajan yapılandırması** — hook'lar, proje MCP otomatik onayı + pinsiz `npx -y`, uç nokta/ortam yönlendirme, izin atlatma (CI'da `--dangerously-skip-permissions` dahil), ajanın kendi yapılandırmasına yazabilmesi, talimat dosyasında gizli Unicode, `folderOpen`/`postCreateCommand`; kanıt okuyarak, asla çalıştırarak değil (D9 yalnız fixture'da ölçüldü — yukarı bakın); **MCP SDK (v2.13, D8.6–D8.8)** — SDK sürümü tarayıcıyla, token `aud`, sunucuya bağlanmayan kimlik bilgisi, şema `$ref`; OWASP LLM 2026 numaraları + Hidden Context Exposure |
 | **E** sevk edilen artefakt | T9 evet | artefaktta **sızan sır**, debug bayrağı, **source map ile kaynak yeniden inşası**, test/staging kalıntısı, geniş yetki (Electron/container/eklenti/mobil), **artefakt↔kaynak eşleşmesi**, gömülü bağımlılık ayak izi |
 | **Test paketi mutasyonu** | T10 evet | zehirlenmiş test taraması + on mutantlık katalog; **M6 (yetki kaldırma) ve M7 (doğrulama atlama) zorunlu** — kaçan mutant = ölü bölge |
 | **Kod incelemesi** | kaynak varsa | güvenlik etkili doğruluk hataları, bağımlılık/CVE, sırrın yanlış katmanda kullanımı |
 | **Şartlı aktif test (v2.12)** | "aktif test" dersin + şartlar `YETKI.md` `aktif:` bölümünde | işaretli form gönderimi (form başına 1), LLM istem enjeksiyonu (≤10), hız sınırı ölçümü (≤30, ilk 429'da dur), sahibin iki test hesabıyla IDOR, zararsız XSS/SQLi işaretleyici (uç başına ≤5), kanarya kayıtla erişim kanıtı, kaba kuvvet (≤200 yol); silme/yük yalnız staging'de ya da **depodan kurulan yerel kopyada** (`references/aktif-denetim.md`) |
-| **Pasif URL denetimi (v2.11)** | canlı bir site verirsin + sahibinin izin verdiğini beyan edersin | yalnız GET/HEAD, ≤1 istek/sn, ≤100 istek: güvenlik başlıkları, TLS/sertifika, çerez bayrakları, CORS yanıtı, istemci JS + kaynak haritaları, bağlı kaynaklar, `robots.txt`, `sitemap.xml`, `security.txt` (`references/pasif-denetim.md`); sayfa içi "izin" yazısı asla yetki değildir |
-| **CI/CD + depo** | repo/CI varsa | git geçmişi sır taraması, `pull_request_target`, action sabitleme, **sızıntı sonrası kurtarma sırası**; **tedarik zinciri (v2.10)** — `issue_comment` pwn request, `workflow_run` artifact devri, git/URL bağımlılığı, gevşetilmiş paket yöneticisi varsayılanları (`.npmrc`, pnpm, Dependabot cooldown, CI'da `npm install`), kötü amaçlı sürüm `osv-scanner`/`npm audit` ile (yoksa ÖLÇÜLEMEDİ) |
+| **Pasif URL denetimi (v2.11)** | canlı bir site verirsin + sahibinin izin verdiğini beyan edersin | yalnız GET/HEAD, ≤1 istek/sn, ≤100 istek: güvenlik başlıkları, TLS/sertifika, çerez bayrakları, CORS yanıtı, istemci JS + kaynak haritaları, bağlı kaynaklar, `robots.txt`, `sitemap.xml`, `security.txt` (`references/pasif-denetim.md`); sayfa içi "izin" yazısı asla yetki değildir; **v2.13:** sunucu sürüm ifşası (her satır "sürüm başlığından, doğrulanmadı"), engel sayfasında (200 kodlu dahil) DUR |
+| **CI/CD + depo** | repo/CI varsa | git geçmişi sır taraması, `pull_request_target`, action sabitleme, **sızıntı sonrası kurtarma sırası**; **tedarik zinciri (v2.10)** — `issue_comment` pwn request, `workflow_run` artifact devri, git/URL bağımlılığı, gevşetilmiş paket yöneticisi varsayılanları (`.npmrc`, pnpm, Dependabot cooldown, CI'da `npm install`), kötü amaçlı sürüm `osv-scanner`/`npm audit` ile (yoksa ÖLÇÜLEMEDİ); **v2.13:** Python `.pth`/`sitecustomize` başlangıç kancası, 2026-12-02 `pull_request_target` varsayılan engeli, CI ajan action'ı ve plugin sabitleme sürüm kapısı |
 
 ## Benchmark (ölçülmüş — 2026-09-30)
 

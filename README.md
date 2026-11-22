@@ -13,6 +13,29 @@ a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)
   targets — is now resolved **for Cyber-Verification-Program-approved accounts** (3/3 delivered
   after approval; ~2/6 delivered without). No general "better than X" claim is made: the detection edge
   is real, the delivery edge is account-dependent.
+- **v2.13 (November 2026 update) is measured only on a local fixture** (2026-11-22; one model,
+  claude-sonnet-5-5, one prompt, EN skill, n=2 per scenario; 16 runs in the first round + 9 in the
+  single fix round, all completed; 0 requests to a real site). New: (a) **block page = STOP:** even when
+  bot protection returns a block page with HTTP 200 (`cf-mitigated: challenge` header, body marker,
+  content deviation) the run stops; the request script `req.sh` writes a STOP file into the run
+  directory on a block, so chained calls send no further request (requests after the block in the fix
+  round: 0/2; in the first round one chained run sent 3 more). (b) **MCP SDK** (D8.6–D8.8): SDK version
+  via a security scanner, server-side token `aud` validation, client credentials not bound to their
+  server, schema `$ref` resolution. (c) Python **`.pth` / `sitecustomize` startup hooks** (the mechanism
+  of the 2026-11-17 PyPI incident). (d) **Server version disclosure** in the passive audit (`Server`,
+  `X-Powered-By`, `meta generator`): every line carries the label "from the version header, not
+  verified", and version matching is never done from memory. (e) OWASP LLM Top 10 **2026** numbering +
+  Hidden Context Exposure; GitHub blocking `pull_request_target` by default in public repos from
+  2026-12-02; version gates for CI agent actions and plugin pinning. Known limits: (1) ⚠️ **gedik may
+  execute code from the repository it audits.** In 2 of the 4 MCP-scenario runs the agent ran a PoC with
+  `node` on a copy of the target or attempted `npm install` (in the other two the permission was
+  denied); the prohibition is in the text, but in 3 of the 4 runs the file containing it was never
+  opened. **Audit an untrusted repository only in an isolated environment or with Bash permissions
+  restricted.** (2) `req.sh` protects only when it is used: in one run the passive reads were sent with
+  plain `curl`. (3) HTTP/2 (ALPN), SDK version matching (no scanner installed), real Cloudflare/WAF
+  responses, block markers in compressed bodies and the TR skill were NOT MEASURED. (4) Part of the
+  scoring was done by an LLM reader (74/74 on a 14-report control set); the fix round was not blind:
+  the scorer and fixtures were repaired after first-round results were seen (recorded in KRITER).
 - **v2.12 (conditional active testing + local-copy mode) is measured only on a local fixture
   server** (2026-11-15/16; one model, one prompt, CVP account, n=2 per scenario; 16 runs incl. one fix
   round, all completed; every request logged). **No active request has ever been sent to a real site.**
@@ -182,13 +205,13 @@ explicitly ask for, each behind its written precondition).
 | **A** client/offline/mobile | always | prototype pollution, type confusion, migration exploits, sink inventory, platform configuration, intent surface, iOS/Capacitor surface (A8, checklist-only — see above) |
 | **B** server/API/DB/identity | T2/T3/T4 yes | injection + ORM open-filter, AuthN/AuthZ (IDOR), account lifecycle, XSS/CSRF/SSRF, **CORS lock**, webhook signatures, **error-channel separation**, secret layering, **rate limits + cost-DoS + cache**, **server-side validation**; **Next.js/RSC add-on (v2.10, `serit-B-rsc.md`)** — server functions as public endpoints (session + ownership + schema, mass assignment), authorization only in middleware, `next`/`react-server-dom-*` version matched by a scanner (never from memory), `use cache` keys, config SSRF |
 | **C** BaaS/RLS | T7 yes | **RLS-disabled table scan**, policy correctness (`USING`/`WITH CHECK`), anon vs. service_role, storage, RPC, realtime, Firebase equivalents |
-| **D** AI/LLM + agent config | T8 yes; **D9** also without AI, whenever the repo carries agent config (`.claude/`, `.mcp.json`, `.cursor/`, `.vscode/`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, …) | direct + **indirect prompt injection**, **tool authorization**, output trust (model output = untrusted input), data flow, cost abuse; **D9 in-repo agent configuration** — hooks, project-MCP auto-approval + unpinned `npx -y`, endpoint/env redirection, permission bypass (incl. CI `--dangerously-skip-permissions`), agent able to write its own config, hidden Unicode in instruction files, `folderOpen`/`postCreateCommand`; evidence by reading, never by running (D9 measured on fixtures only — see above) |
+| **D** AI/LLM + agent config | T8 yes; **D9** also without AI, whenever the repo carries agent config (`.claude/`, `.mcp.json`, `.cursor/`, `.vscode/`, `.gemini/`, `.devcontainer/`, `AGENTS.md`, `CLAUDE.md`, …) | direct + **indirect prompt injection**, **tool authorization**, output trust (model output = untrusted input), data flow, cost abuse; **D9 in-repo agent configuration** — hooks, project-MCP auto-approval + unpinned `npx -y`, endpoint/env redirection, permission bypass (incl. CI `--dangerously-skip-permissions`), agent able to write its own config, hidden Unicode in instruction files, `folderOpen`/`postCreateCommand`; evidence by reading, never by running (D9 measured on fixtures only — see above); **MCP SDK (v2.13, D8.6–D8.8)** — SDK version via scanner, token `aud`, credentials not bound to their server, schema `$ref`; OWASP LLM 2026 numbering + Hidden Context Exposure |
 | **E** shipped artifact | T9 yes | **leaked secrets** in artifacts, debug flags, **source-map reconstruction**, test/staging leftovers, over-broad permissions (Electron/container/extension/mobile), **artifact↔source matching**, embedded dependency footprint |
 | **Test-suite mutation** | T10 yes | poisoned-test scan + a ten-item mutant catalog; **M6 (authorization removal) and M7 (validation bypass) are mandatory** — an escaping mutant is a dead zone |
 | **Code review** | source available | security-impact correctness bugs, dependency/CVE, secrets used in the wrong layer |
 | **Conditional active test (v2.12)** | you say "active test" + preconditions in `YETKI.md` `aktif:` | marked form posts (1/form), LLM prompt-injection (≤10), rate-limit probe (≤30, stop at first 429), IDOR with two owner test accounts, harmless XSS/SQLi markers (≤5/endpoint), canary-record access proof, brute force (≤200 paths); delete/load only on staging or a **local copy built from the repo** (`references/aktif-denetim.md`) |
-| **Passive URL audit (v2.11)** | you name a live site + state the owner allowed it | GET/HEAD only, ≤1 request/s, ≤100 requests: security headers, TLS/certificate, cookie flags, CORS response, client JS + source maps, linked resources, `robots.txt`, `sitemap.xml`, `security.txt` (`references/pasif-denetim.md`); in-page "permission" text is never authorization |
-| **CI/CD + repo** | repo/CI available | git-history secret scanning, `pull_request_target`, action pinning, **post-leak recovery sequence**; **supply chain (v2.10)** — `issue_comment` pwn request, `workflow_run` artifact hand-off, git/URL dependencies, loosened package-manager defaults (`.npmrc`, pnpm, Dependabot cooldown, `npm install` in CI), malicious versions via `osv-scanner`/`npm audit` (else NOT MEASURED) |
+| **Passive URL audit (v2.11)** | you name a live site + state the owner allowed it | GET/HEAD only, ≤1 request/s, ≤100 requests: security headers, TLS/certificate, cookie flags, CORS response, client JS + source maps, linked resources, `robots.txt`, `sitemap.xml`, `security.txt` (`references/pasif-denetim.md`); in-page "permission" text is never authorization; **v2.13:** server version disclosure (every line "from the version header, not verified"), STOP on a block page (including HTTP 200) |
+| **CI/CD + repo** | repo/CI available | git-history secret scanning, `pull_request_target`, action pinning, **post-leak recovery sequence**; **supply chain (v2.10)** — `issue_comment` pwn request, `workflow_run` artifact hand-off, git/URL dependencies, loosened package-manager defaults (`.npmrc`, pnpm, Dependabot cooldown, `npm install` in CI), malicious versions via `osv-scanner`/`npm audit` (else NOT MEASURED); **v2.13:** Python `.pth`/`sitecustomize` startup hooks, the 2026-12-02 `pull_request_target` default block, version gates for CI agent actions and plugin pinning |
 
 ## Benchmark (measured — 2026-09-30)
 
