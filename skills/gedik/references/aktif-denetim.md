@@ -51,27 +51,38 @@ the test's own precondition written in `YETKI.md`, and a valid window. **Respons
    The report writes the fixed sentence **"challenge page: <marker>, run stopped"** (`<marker>` = the triggering header, marker or code); in a
    Turkish-language report copy it verbatim in Turkish, `engel sayfası: <im>, koşu durdu`, never paraphrased; the remaining tests on that host are
    listed as "challenge page, not tested". One more request to that host after the STOP (evidence gathering or "to confirm" included) is a violation.
-   **No next request is sent before the header and the start of the body of every response have passed this check;** the flow below does (a)–(c) itself; for (d) it prints each response's `Content-Type` and byte count, and the comparison with the first response and the STOP decision are YOURS (header and body are written to per-response files in the temp directory, NOT the target's tree).
+   **Every request of an active run to a live host (GET and POST, the passive reads included) goes through the request script below, which keeps the STOP in a FILE:** if the file `DUR` exists in the run directory no request is sent (the script prints the locked sentence in English and exits; a Turkish-language report writes the Turkish form), and after each response the script does (a)–(c) itself and on a hit writes the marker into `DUR`. So the STOP holds in a chained call, in a loop and in a new Bash call alike: the call after the challenge sends 0 requests. A chain of script calls (`bash "$R/req.sh" /a; bash "$R/req.sh" /b`) is a counted flow (the script waits 1 s after each request) and a bare `curl a; curl b` is FORBIDDEN; the script refuses a request that runs at the same time as another one (no parallel tool calls) and enforces the request budget itself (the `budget` file; 60 when absent). For (d) the script prints each response's `Content-Type` and byte count; the comparison with the first response is YOURS and happens after the call, so a request whose (d) comparison matters is sent in its OWN call, not in a chain; on a deviation you write the marker yourself (`printf '%s' "Content-Type changed" > "$R/DUR"`) before the next call. `DUR` is deleted ONLY on the user's approval after the question "challenge or false alarm" (c); starting a new run id or a new run directory to get around a STOP is a violation. A live request sent in any other way (a direct `curl`, a script of your own) is FORBIDDEN.
 
 **Every Bash call sends ONE request or is a counted flow with `sleep 1`.** `curl a; curl b`, `curl a b` (several URLs), `&`,
-`xargs -P`, `--parallel` and a loop without `sleep` are FORBIDDEN: with no wait in between, the gap falls below 1 s. Example flow:
+`xargs -P`, `--parallel` and a loop without `sleep` are FORBIDDEN: with no wait in between, the gap falls below 1 s; the script itself waits `sleep 1` after each request. Request script (for LIVE hosts; on the local copy, §4, use a plain `curl`). Write it ONCE to the run directory, outside the target tree, with a quoted heredoc; the shell does not carry variables between Bash calls, so every call sets `R` again from the SAME run id; the response bodies `b<n>` stay only in the run directory and are deleted when the run ends (where B6/B7 forbid keeping a body: right after the status is read):
 
 ```bash
-# live active requests: ONE request per step, sleep 1 after each, counter against the budget (<=1 req/s)
-# header and body go to per-request temp files (NOT the target tree); STOP on a challenge page (rule 9 a-c); (d) is yours: compare the printed type and size
-T="$(mktemp -d)"; n=0; stop=""
-for yol in /yol1 /yol2; do
-  n=$((n+1)); H="$T/h$n"; B="$T/b$n"
-  code=$(curl -sS -D "$H" -o "$B" -w '%{http_code}' --max-time 10 "https://ORNEK.ALAN$yol") || code=000
-  [ "$code" = 000 ] && { echo "--- request $n $yol: no response (curl failed)"; sleep 1; continue; }
-  echo "--- request $n $yol HTTP $code bytes=$(wc -c < "$B")"; cat "$H"
-  grep -qi '^cf-mitigated: *challenge' "$H" && stop="cf-mitigated: challenge"
-  head -c 4096 "$B" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="body marker"
-  case "$code" in 403|429|503) stop="HTTP $code";; esac   # drop a code ONLY if this test expects it (B1 403/419, B3 429, B4/B6/B7 403/404, B9 403)
-  [ -n "$stop" ] && { echo "challenge page: $stop (request $n, $yol): run stopped"; break; }
-  sleep 1
-done
-echo "requests: $n/BUDGET"
+# req.sh: EVERY request to a LIVE host (GET and POST) goes through this script; write it ONCE with a QUOTED heredoc (<<'EOF'); check: grep -cF '$@' "$R/req.sh" must NOT print 0 (an unquoted heredoc rewrites the file); use it AS IS
+# every Bash call: R="${TMPDIR:-/tmp}/gedik-$RUN_ID"   (the SAME run id literal in every call; variables do NOT carry between calls; add -<host label> for a second in-scope host: ONE run directory per host)
+# first time only: mkdir -p "$R"; chmod 700 "$R" 2>/dev/null; echo 'https://ORNEK.ALAN' > "$R/host"; echo 60 > "$R/budget"   (local copy, section 4: plain curl, not this script)
+# use: [OK_CODES="403 404"] bash "$R/req.sh" /path [-H 'X: y' | -b c | -d d | --data-urlencode k=v | --data-raw d | --data-binary d | -F f | -X M | -A a | -e r | -I | -i | -k | -G]   (OK_CODES = space-separated; ONLY the codes THAT test expects: B1 403/419, B3 429, B4/B6/B7 403/404, B9 403)
+export LC_ALL=C MSYS_NO_PATHCONV=1; R="$(cd "$(dirname "$0")" && pwd)"; cd "$R" || exit 5; SITE="$(cat host)"; OK_CODES="${OK_CODES-}"
+dur() { [ -f DUR ] || return 0; echo "challenge page: $(cat DUR), run stopped"; echo "NOT SENT: the DUR file exists"; exit 3; }   # a challenge page was seen: 0 requests, whoever calls (chain, loop, "to confirm")
+dur
+mkdir lock 2>/dev/null || { echo "NOT SENT: another request is running (no parallel calls); if a call was killed: rmdir \"$R/lock\""; exit 4; }
+trap 'rmdir "$R/lock" 2>/dev/null' EXIT
+dur
+yol="$1"; shift; case "$yol" in /*) ;; *) echo "NOT SENT: the path must start with /"; exit 2;; esac
+skip=0; for a in "$@"; do   # allow-list: the script itself owns -D -o -w, redirects, retries, proxies, globbing and every URL
+  if [ "$skip" = 1 ]; then skip=0; continue; fi
+  case "$a" in -H|-b|-d|--data|--data-raw|--data-urlencode|--data-binary|-F|-X|-A|-e) skip=1;; -I|-i|-k|-G) ;; *) echo "NOT SENT: curl argument not allowed: $a"; exit 2;; esac
+done; [ "$skip" = 0 ] || { echo "NOT SENT: option without a value"; exit 2; }
+n=$(cat n 2>/dev/null || echo 0); [ "$n" -lt "$(cat budget 2>/dev/null || echo 60)" ] || { echo "NOT SENT: budget spent ($n requests)"; exit 4; }
+n=$((n + 1)); echo "$n" > n; H="h$n"; B="b$n"; : > "$H"; : > "$B"   # counter; header and body go to per-request files in the run directory, NOT the target tree
+code=$(curl -q -g -sS --proto '=http,https' --path-as-is --max-redirs 0 --max-time 10 -D "$H" -o "$B" -w '%{http_code}' "$@" "$SITE$yol") || true; code="${code:-000}"
+if [ "$code" = 000 ] && [ ! -s "$H" ]; then echo "--- request $n $yol: no response (curl failed)"; sleep 1; exit 0; fi
+echo "--- request $n $yol HTTP $code bytes=$(wc -c < "$B")"; cat "$H"      # (d) is yours: compare the printed Content-Type and size with the first response
+stop=""
+grep -qi '^cf-mitigated: *challenge' "$H" && stop="cf-mitigated: challenge"
+head -c 4096 "$B" | grep -qiE 'cf-chl|challenge-platform|just a moment' && stop="${stop:+$stop + }body marker"
+case " ${OK_CODES//,/ } " in *" $code "*) ;; *) case "$code" in 403|429|503) stop="${stop:+$stop + }HTTP $code";; esac;; esac
+if [ -n "$stop" ]; then printf '%s' "$stop" > DUR; echo "challenge page: $stop, run stopped (request $n, $yol)"; exit 3; fi
+sleep 1
 ```
 
 `YETKI.md` `aktif:` fields (template; appended BELOW the (c) fields of `pasif-denetim.md` §1):
@@ -121,7 +132,7 @@ written into the report or the request log ("account A", "account B" is written)
 L=500; M="GEDIK-TEST-${RUN_ID:?set the run id first} "; pad=$((L + 1 - ${#M}))
 m="$M$(printf '%*s' "$pad" '' | tr ' ' a)"
 if [ "${#m}" -eq $((L + 1)) ] && [[ "$m" == GEDIK-TEST-* ]]; then
-  curl -sS -X POST --data-urlencode "message=$m" --max-time 10 -w ' HTTP %{http_code}\n' "https://ORNEK.ALAN/api/sohbet"; sleep 1   # then run the rule-9 check on the response (use the flow above) before the next message
+  R="${TMPDIR:-/tmp}/gedik-$RUN_ID"; bash "$R/req.sh" /api/sohbet --data-urlencode "message=$m"   # live host: the request script does the rule-9 check and waits 1 s (local copy, section 4: plain curl)
 else
   echo "body check failed (length ${#m}, want $((L + 1))): request NOT sent"
 fi

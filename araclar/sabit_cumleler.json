@@ -618,6 +618,42 @@
       "dosya": "references/serit-D-yapayzeka.md",
       "tr": "Action etiketi (`@v1`) ile içindeki CLI sürümü ayrı şeylerdir",
       "en": "An action tag (`@v1`) and the CLI version inside it are different things"
+    },
+    {
+      "id": "aktif-istek-betigi",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "aşağıdaki istek betiğinden geçer",
+      "en": "goes through the request script below"
+    },
+    {
+      "id": "aktif-dur-dosyasi",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "koşu dizininde `DUR` dosyası varsa istek ATILMAZ",
+      "en": "if the file `DUR` exists in the run directory no request is sent"
+    },
+    {
+      "id": "aktif-baska-yolla-yasak",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Başka yolla (doğrudan `curl`, kendi yazdığın betik) canlı istek atmak YASAKTIR",
+      "en": "A live request sent in any other way (a direct `curl`, a script of your own) is FORBIDDEN"
+    },
+    {
+      "id": "pasif-surum-her-satir",
+      "dosya": "references/pasif-denetim.md",
+      "tr": "bir sürümü anan HER satır",
+      "en": "EVERY line that names a version"
+    },
+    {
+      "id": "pasif-surum-toplu-cumle-yetmez",
+      "dosya": "references/pasif-denetim.md",
+      "tr": "etiketin yerine GEÇMEZ",
+      "en": "does NOT replace the label"
+    },
+    {
+      "id": "d8-hedef-kod-calistirilmaz",
+      "dosya": "references/serit-D-yapayzeka.md",
+      "tr": "D8.6–D8.8 için hedefin HİÇBİR kodu çalıştırılmaz",
+      "en": "None of the target's code is run for D8.6–D8.8"
     }
   ]
 }

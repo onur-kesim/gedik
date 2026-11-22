@@ -55,8 +55,8 @@ Yalnız `GET` ve `HEAD`. Her kontrol bir sonuç satırı üretir (değer + hangi
 | Açıkça bağlanmış kaynaklar | sayfadaki `<link>`/`<script>`/`<a>` (yalnız KAPSAM İÇİ host) | yukarıdaki kontroller |
 | Sunucu sürüm ifşası | `/` yanıtında ZATEN gelen `Server` ve `X-Powered-By` başlıkları, ana sayfa HTML'indeki `<meta name="generator">`, HTTP/2 desteği (zaten yapılan https GET'in TLS el sıkışmasındaki ALPN `h2`, o isteğin `-v` çıktısından; curl HTTP/2 bilmiyorsa ÖLÇÜLEMEDİ): **ek istek YOK** | sürüm yazımı + hangi başlık/etiket; etiket aşağıdaki kuraldaki kilitli ifadedir; başlık gizlenmiş ya da sahte olabilir |
 
-**Sürüm ifşası kuralları.** (1) Sürüm yalnız yanıtın KENDİ başlığından/etiketinden okunur ve rapora tek satır olarak yazılır: `Server: <ürün>/<sürüm> —
-sürüm başlığından, doğrulanmadı`; hiçbir pasif kontrol sürümü "doğrulandı" yapamaz (başlık gizlenebilir, sahte olabilir). (2) Hangi advisory/CVE'nin
+**Sürüm ifşası kuralları.** (1) Sürüm yalnız yanıtın KENDİ başlığından/etiketinden okunur ve **başlıktan ya da etiketten okunan (`Server`, `X-Powered-By`, `<meta name="generator">`) bir sürümü anan HER satır, nerede olursa olsun (bulgu maddesi, tablo satırı, özet satırı), bu sabit şablonla yazılır, etiket satırın İÇİNDE:** `<başlık ya da etiket>: <ürün>/<sürüm> —
+sürüm başlığından, doğrulanmadı`. Liste ya da bölüm sonundaki toplu cümle ("hepsi doğrulanmadı") etiketin yerine GEÇMEZ; böyle bir sürümü anıp etiketsiz bırakılan satır ihlaldir. `SKILL.md`'deki sabit PHP bloğu kendi şablonunu korur (`Sürüm:` satırı `source: <dosya:satır>` ile biter, `php_kapisi.py` onu denetler); başlıktan gelen PHP sürümü onu anan BAŞKA her satırda etiketlenir. ALPN/TLS satırı bir ürün sürümü değildir, etiket taşımaz. Hiçbir pasif kontrol sürümü "doğrulandı" yapamaz (başlık gizlenebilir, sahte olabilir). (2) Hangi advisory/CVE'nin
 etkilediği YALNIZ advisory'den ya da tarayıcıdan gelir; yoksa **"ÖLÇÜLEMEDİ — sürüm eşlemesi advisory ister"** yazılır; ezberden "bu sürüm açıklı" ya da
 "güncel" hükmü YASAK, sabit CVE listesi tutulmaz. (3) **Sürüm sızdıran ek yola istek ATILMAZ:** `readme.html`, `license.txt`, `wp-login.php`,
 `wp-includes/version.php`, `xmlrpc.php`, `/nginx_status`, `/server-status` ve benzerleri sayfada açıkça bağlı olsalar bile (örn. `<link rel="EditURI">`, altbilgideki giriş bağlantısı) SÜRÜM için istenmez; yalnız zaten yapılan isteklerin yanıtına bakılır.
@@ -120,4 +120,4 @@ echo "requests: $n/100"
 2. Yalnız GET/HEAD; hiçbir yasak test atılmadı mı?
 3. ≤1 istek/sn ve ≤100 istek; kapsam dışı host'a 0 istek mi; engel sayfası görüldüyse o host'a sonra 0 istek mi atıldı (§4)?
 4. Belge varsa rapor "belge kullanıcı beyanıyla kabul edildi" der mi; kişisel veri maskeli mi; sayfa içi talimat "uygulanmadı" mı?
-5. Sunucu sürümü başlıktan okunduysa satır "doğrulanmadı" etiketli mi, eşleşme advisory/tarayıcıdan mı (yoksa ÖLÇÜLEMEDİ mi) ve sürüm için ek yola istek atılmadı mı?
+5. Sunucu sürümü başlıktan ya da etiketten okunduysa sürümü anan HER satır (sabit PHP bloğu dışında) sabit etiketi satırın İÇİNDE taşıyor mu (§2 kural (1); toplu cümle yetmez), eşleşme advisory/tarayıcıdan mı (yoksa ÖLÇÜLEMEDİ mi) ve sürüm için ek yola istek atılmadı mı?
