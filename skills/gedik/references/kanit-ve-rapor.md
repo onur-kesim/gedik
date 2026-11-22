@@ -131,7 +131,7 @@ File name: `ZAFIYET_RAPORU_<proje>_<surum>.md`
 - **Doğrulayan:** alt-ajan / ayrı tur — bağımsız çürütme turunu yapan (JSON: `dogrulayan`)
 
 ### 2.1 ŞÜPHE (ÇALIŞTIRILMADI) — `needs_validation`, şiddet YOK
-- **G-n · <başlık>** — çözülmemiş tek somut olgu: <...>
+- **G-n · <başlık>** — çözülmemiş tek somut olgu: <...> (kurulum yasağı yüzünden çalıştırılamadıysa olgu `kurulum yasak: <komut>` yazılır)
 
 ### 2.2 ÇÜRÜTÜLEN ADAYLAR — `rejected`
 - **G-n · <başlık>** — elenme nedeni: <...> · doğrulayan: alt-ajan / ayrı tur

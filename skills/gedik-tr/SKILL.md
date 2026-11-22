@@ -155,10 +155,11 @@ bulgu değildir; ya çalıştır ve göster, ya `ŞÜPHE (ÇALIŞTIRILMADI)` eti
 bölüme koy.
 
 > **Kurulum yasağı (K2'nin sınırı, v2.13.1).** **Hedefin kopyası da hedefin kodudur: hedefte ve onun her kopyasında bağımlılık kurulumu ya da paket indirip çalıştırma YOKTUR**
-> — `npm`/`pnpm`/`yarn`/`bun` `install`·`ci`·`add`, `npx <paket>` (`pnpm dlx`, `yarn dlx`, `bunx`, `npm exec`), `pip install` (`python -m pip install`,
-> `uv … install`/`sync`, `pipx run`, `uvx`), `poetry install`, `bundle install`, `composer install`, `go mod download` ve uzak modülle `go run`,
-> `cargo build` (`build.rs` çalışır) ve eşdeğerleri; kurulum betikleri SENİN yetkinle çalışır.
-> Kurulum gerektiren PoC `ŞÜPHE (ÇALIŞTIRILMADI)` yazılır, gerekçe "kurulum yasak"; kurulum gerektirmeyen PoC K2 gereği yine çalıştırılıp gösterilir.
+> — `npm`/`pnpm`/`yarn`/`bun` `install`·`ci`·`add`, `npx <paket>` (`pnpm dlx`, `yarn dlx`, `bunx`, `npm exec`, `npm init`/`create <paket>`), `pip install` (`python -m pip install`,
+> `uv … install`/`sync`/`run`, `pipx run`, `uvx`), `poetry install`, `bundle install`, `composer install`, `go mod download` ve uzak modülle `go run`, `cargo build` (`build.rs` çalışır) ve eşdeğerleri:
+> bağımlılığı bir kayıt defterinden indiren ya da paketin kurulum/derleme betiğini çalıştıran her komut (`go build`/`test`, `cargo test`/`run`, `mvn`/`gradle`, `dotnet restore`/`build`, `docker build`/`run`, `deno run npm:…`);
+> kurulum betikleri SENİN yetkinle çalışır. `npm run`/`npm test`/`make`/`./betik` koşulmadan önce betik gövdesi okunur; içinde kurulum varsa koşulmaz.
+> Kurulum gerektiren PoC `ŞÜPHE (ÇALIŞTIRILMADI)` yazılır, gerekçe "kurulum yasak"; kurulum gerektirmeyen PoC §0 kapsamı içinde K2 gereği yine çalıştırılıp gösterilir (şerit dosyalarındaki ayrı "çalıştırmadan" kuralları — D9 yapılandırması, `.pth` kancaları, CI iş akışları — bu cümleyle gevşemez).
 > Tek istisna: kullanıcı açıkça "yerel kopya" isterse ve sahibin deposunu verdiyse `references/aktif-denetim.md` §4 YEREL KOPYA kipi.
 
 > **Kanıtlı bulgu, bağımsız çürütme turundan da geçer (üreten ≠ doğrulayan).** Rapora
@@ -278,7 +279,7 @@ muhakemesi döner.
    uygulama açılıyor mu, durum bozuldu mu, beklenmedik çalıştırma/erişim oldu mu?
 5. **Kendi kapını sına (K4).** En az iki alanda mutant kur; yakaladığını kanıtla.
    T10 EVET ise ayrıca **projenin test paketini sına** (`references/test-paketi-mutasyon.md`);
-   M6 ve M7 mutantları atlanamaz.
+   M6 ve M7 mutantları atlanamaz (suite kurulum yasağı yüzünden koşamıyorsa `ÖLÇÜLEMEDİ` yazılır, atlanmış sayılmaz).
 6. **Çürüt.** Her `confirmed` adayı bağımsız bir çürütme turundan geçir (§1, K2'nin altındaki
    not): bulanın gerekçesini görmeden bulguyu düşürmeye çalışan ayrı bir bakış. Çürütülemeyen
    `confirmed` kalır; diğerleri `rejected` ya da `needs_validation` olur. Turu kimin yaptığı

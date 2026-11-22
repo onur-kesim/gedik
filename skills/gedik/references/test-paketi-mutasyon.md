@@ -19,6 +19,8 @@ measured NONE.
 
 1. Find the test command (`package.json` scripts, `pytest.ini`, `Makefile`, CI file) and run
    it. Record the number passed / failed / skipped **and the duration**.
+   If the dependencies are NOT already installed in the target (e.g. no `node_modules`/venv/`vendor`) or the command triggers an install/build (`cargo test`, `go test` download modules), the suite is NOT run: the SKILL.md §1 install ban applies
+   (the only exception is the local copy mode); the base run is written as `NOT MEASURED (dependencies not installed)` and mutation is not run.
 2. If the suite is not GREEN on a clean run, mutation is meaningless — in a suite that's
    already red, you cannot tell whether a mutant was killed. Finding: *"test suite is red or
    flaky — the gate isn't even shut to begin with"*.

@@ -672,6 +672,12 @@
       "dosya": "references/aktif-denetim.md",
       "tr": "Kurulum yasağının (SKILL.md §1 K2) TEK istisnası bu kiptir",
       "en": "This mode is the ONLY exception to the install ban (SKILL.md §1 K2)"
+    },
+    {
+      "id": "mutasyon-kurulum-yoksa-kosulmaz",
+      "dosya": "references/test-paketi-mutasyon.md",
+      "tr": "suite KOŞULMAZ: SKILL.md §1 kurulum yasağı geçerlidir",
+      "en": "the suite is NOT run: the SKILL.md §1 install ban applies"
     }
   ]
 }

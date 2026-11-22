@@ -17,6 +17,8 @@ güvenlik yüzeyine göre verilir. Bu bir ÖLÇÜLMEDİ değil, ölçülmüş bi
 
 1. Test komutunu bul (`package.json` scripts, `pytest.ini`, `Makefile`, CI dosyası) ve koş.
    Geçen / kalan / atlanan sayısını **ve süreyi** kaydet.
+   Bağımlılıklar hedefte ZATEN kurulu değilse (ör. `node_modules`/venv/`vendor` yok) ya da komut kurulum/derleme tetikliyorsa (`cargo test`, `go test` modül indirir) suite KOŞULMAZ: SKILL.md §1 kurulum yasağı geçerlidir
+   (tek istisna yerel kopya kipi); baz koşu `ÖLÇÜLEMEDİ (bağımlılık kurulu değil)` yazılır ve mutasyon yapılmaz.
 2. Suite temiz koşuda YEŞİL değilse mutasyon anlamsızdır — zaten kırmızı bir suitede mutantın
    öldürülüp öldürülmediği ayırt edilemez. Bulgu: *"test paketi kırmızı ya da kararsız — kapı
    zaten kapalı değil"*.

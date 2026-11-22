@@ -167,10 +167,11 @@ could be XSS" is not a finding; either run it and show it, or put it in a separa
 section tagged `SUSPECTED (NOT RUN)`.
 
 > **Install ban (the limit of K2, v2.13.1).** **The copy of the target is the target's code too: no dependency installation and no downloading-and-running of a package in the target or in any copy of it**
-> — `npm`/`pnpm`/`yarn`/`bun` `install`·`ci`·`add`, `npx <package>` (`pnpm dlx`, `yarn dlx`, `bunx`, `npm exec`), `pip install` (`python -m pip install`,
-> `uv … install`/`sync`, `pipx run`, `uvx`), `poetry install`, `bundle install`, `composer install`, `go mod download` and `go run` of a remote module,
-> `cargo build` (`build.rs` runs) and their equivalents; install scripts run with YOUR authority.
-> A PoC that needs an install is written as `SUSPECTED (NOT RUN)` with the reason "install forbidden"; a PoC that needs no install is still run and shown, per K2.
+> — `npm`/`pnpm`/`yarn`/`bun` `install`·`ci`·`add`, `npx <package>` (`pnpm dlx`, `yarn dlx`, `bunx`, `npm exec`, `npm init`/`create <package>`), `pip install` (`python -m pip install`,
+> `uv … install`/`sync`/`run`, `pipx run`, `uvx`), `poetry install`, `bundle install`, `composer install`, `go mod download` and `go run` of a remote module, `cargo build` (`build.rs` runs) and their equivalents:
+> any command that downloads dependencies from a registry or runs a package's install/build scripts (`go build`/`test`, `cargo test`/`run`, `mvn`/`gradle`, `dotnet restore`/`build`, `docker build`/`run`, `deno run npm:…`);
+> install scripts run with YOUR authority. Before `npm run`/`npm test`/`make`/`./script` is run, its script body is read; if it installs, it is not run.
+> A PoC that needs an install is written as `SUSPECTED (NOT RUN)` with the reason "install forbidden"; a PoC that needs no install is still run and shown within the §0 scope, per K2 (the separate "without running" rules in the lane files — D9 configuration, `.pth` hooks, CI workflows — are NOT loosened by this sentence).
 > The only exception is the LOCAL COPY mode of `references/aktif-denetim.md` §4: the user explicitly asks for a "local copy" and provides the owner's repo.
 
 > **A proven finding also passes an independent refutation round (producer ≠ verifier).**
@@ -297,7 +298,7 @@ for the relevant lane is returned.
    payload: does the app open, is state corrupted, did unexpected execution/access occur?
 5. **Test your own gate (K4).** Set up a mutant in at least two areas; prove that you
    caught it. If T10 is YES also **test the project's test suite**
-   (`references/test-paketi-mutasyon.md`); the M6 and M7 mutants cannot be skipped.
+   (`references/test-paketi-mutasyon.md`); the M6 and M7 mutants cannot be skipped (if the suite cannot run because of the install ban write `NOT MEASURED`; that is not a skip).
 6. **Refute.** Put every `confirmed` candidate through an independent refutation round
    (§1, the note under K2): a separate pass that does not see the finder's reasoning and
    tries to disprove the finding. A finding that cannot be refuted stays `confirmed`; the
