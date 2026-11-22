@@ -8,6 +8,14 @@ kendi 0.x geçmişi — KUR öncesi, aşağıda — ile karıştırılmaz).
 ### Belgeler
 - **Benchmark güncellemesi (2026-10-01).** README×2: Hedef 1 (NodeGoat) tespit 17/17, yanlış pozitif 0; rapor teslimi Cyber Verification Program onaylı hesapta 3/3, onaysız 2/6 (nedensellik kanıtsız, n=3). Bu satır 2.6.0 dönemine aittir.
 
+## [2.13.1] — 2026-11-22
+### Değişti (v2.13.0 T3 sınırının kapatılması — Onur kararı 2026-11-22: tam çalıştırma yasağı DEĞİL, KURULUM yasağı)
+- **Kurulum yasağı her zaman yüklenen `SKILL.md`'de** (§1 K2'nin hemen altı, TR+EN, 2 yeni kilit): "Hedefin kopyası da hedefin kodudur: hedefte ve onun her kopyasında bağımlılık kurulumu ya da paket indirip çalıştırma YOKTUR" (`npm`/`pnpm`/`yarn`/`bun` `install`·`ci`·`add`, `npx <paket>`, `pip install`, `uv`, `poetry`, `bundle`, `composer`, `go mod download`, `cargo build` ve eşdeğerleri). Kurulum gerektiren PoC `ŞÜPHE (ÇALIŞTIRILMADI)` yazılır, gerekçe "kurulum yasak"; kurulum gerektirmeyen PoC K2 gereği yine çalıştırılıp gösterilir. Dayanak: v2.13.0 DÜZELT ölçümünde yasak yalnız `serit-D-yapayzeka.md` içindeydi, 4 koşunun 3'ünde o dosya hiç açılmadı ve 2/4 koşuda hedefin kopyasında `node` PoC'si / `npm install` koştu.
+- **Tek istisna** `aktif-denetim.md` §4 YEREL KOPYA kipi (kullanıcı açıkça "yerel kopya" ister ve sahibin deposunu verir; 1 yeni kilit).
+- **D8.6–D8.8 kural (3) hizalandı** (`serit-D-yapayzeka.md`): v2.13.0'ın "hedefin HİÇBİR kodu çalıştırılmaz" tam yasağı yerine "kurulum gerektiren PoC = `ŞÜPHE (ÇALIŞTIRILMADI)`"; kilit `d8-hedef-kod-calistirilmaz` kaldırıldı, yerine `d8-kurulum-gerektiren-poc-supphe`. `.pth` bölümündeki "paketi kurmak" yasağı kurulum yasağına atıf yapar (`kod-inceleme-guvenlik.md` §2). `sabit_cumleler.json` 109 → 112.
+- Sürüm 2.13.1 (`plugin.json`, `marketplace.json`, `SKILL.md` TR+EN).
+- **ÖLÇÜM:** bu satır yazıldığında yapılmadı (DILIM v2.13.1 DOĞRULA: T3 ekili 2 + temiz 2, T7 yerel kopya n=1); sonuç ve "Bilinen sınırlar" ölçüm bitince bu bölüme eklenir.
+
 ## [2.13.0] — 2026-11-22
 ### Değişti (A — v2.12.1 adayı: engel sayfası, v2.12.0 bilinen sınırları 1 ve 2)
 - **A1 engel sayfası = ortak DUR** (`aktif-denetim.md` §1 madde 9 + Ortak DUR; `pasif-denetim.md` §4): HTTP kodu yetmez (bir bot koruması 200 kodlu engel sayfası döndürüp 72 istek daha aldı). DUR koşulları: (a) `403`/`429`/`503` (aktifte testin beklediği sonuç hariç: B3 429, B4/B7 403/404) · (b) `cf-mitigated: challenge` başlığı · (c) gövdenin ilk 4096 baytında `cf-chl` / `challenge-platform` / `Just a moment` · (d) aynı yol/kaynak türünden ilk yanıta göre `Content-Type` ana türü değişimi ya da gövde boyutunun ±%80'den fazla sapması. DUR'dan sonra o host'a 0 istek (pasif okuma dahil); rapora kilitli cümle `engel sayfası: <im>, koşu durdu` / `challenge page: <marker>, run stopped`. Örnek akış kod bloğu artık başlığı ve gövde başını dosyaya yazıp bu koşulları kendisi denetler (yerel sahte sunucuda 3 koşul + temiz akış elle sınandı).

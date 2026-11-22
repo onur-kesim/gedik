@@ -210,6 +210,8 @@ testler (B4, B2, B1, B5, B6), hacimlileri (B3, B7) bütçenin kalanıyla.
 Amaç: canlıda açılamayan ya da şartı yazılı olmayan aktif testleri, sahibin verdiği DEPODAN ayağa kaldırılan yerel kopyada yapmak.
 Kip, kullanıcı depoyu verip yerel kopyada test istediğinde açılır; **§1'in anahtar, `aktif:` şartı, pencere ve bütçe kapıları yerel
 kopyaya UYGULANMAZ** (dokunulan şey kullanıcının kendi makinesidir, canlı sistem değil).
+**Kurulum yasağının (SKILL.md §1 K2) TEK istisnası bu kiptir:** kullanıcı açıkça "yerel kopya" isterse ve sahibin deposunu verdiyse kopya, depodaki README/komutla kurulup ayağa kaldırılır (madde 4);
+kopyada kurulan hiçbir şey başka bir hedefte ya da kopya dışında çalıştırılmaz.
 
 1. **Konum ve izolasyon.** Kopya `_calisma/yerel/<proje>-<koşu-id>/` altına çıkarılır (`.gitignore`'a eklenir); sahibin çalışan
    kopyasına YAZILMAZ. Yalnız `127.0.0.1`'e bağlanır. Gerçek `.env`/üretim sırrı KOPYALANMAZ: `.env.example`'dan sahte değerlerle kurulur.

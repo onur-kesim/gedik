@@ -109,7 +109,7 @@ find . \( -name sitecustomize.py -o -name usercustomize.py \) -not -path '*/.git
 ```
 
   **PoC (K2, without running):** `file:line` + the first 120 characters of the line + the reason "runs at interpreter start". **FORBIDDEN:**
-  starting a `python`/`pip` that uses that `site-packages` (it TRIGGERS the hook), `python -m site`, installing or `import`ing the package. **Inside archives:** `.pth` files in a wheel/sdist and in image tarballs are read without extracting (`unzip -l <whl>` for member names, `unzip -p <whl> '*.pth'` for the lines; `tar -tzf`/`tar -xzOf` for an sdist); without the tool the inside of the archive is NOT MEASURED. `2>/dev/null` in the commands hides unreadable directories: an empty output is NOT "clean", and if a directory/archive could not be read write "NOT MEASURED (<reason>)".
+  starting a `python`/`pip` that uses that `site-packages` (it TRIGGERS the hook), `python -m site`, installing it (the SKILL.md §1 K2 install ban) or `import`ing the package. **Inside archives:** `.pth` files in a wheel/sdist and in image tarballs are read without extracting (`unzip -l <whl>` for member names, `unzip -p <whl> '*.pth'` for the lines; `tar -tzf`/`tar -xzOf` for an sdist); without the tool the inside of the archive is NOT MEASURED. `2>/dev/null` in the commands hides unreadable directories: an empty output is NOT "clean", and if a directory/archive could not be read write "NOT MEASURED (<reason>)".
 - **Typosquatting / ownership:** is a newly added package name a spelling variant of
   a popular package; is it maintenance-abandoned (date of last release)?
 - **License:** the user's red line — a new dependency = license + CVE check.

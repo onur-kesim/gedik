@@ -650,10 +650,28 @@
       "en": "does NOT replace the label"
     },
     {
-      "id": "d8-hedef-kod-calistirilmaz",
+      "id": "kurulum-yasagi-kopya-da-kod",
+      "dosya": "SKILL.md",
+      "tr": "Hedefin kopyası da hedefin kodudur: hedefte ve onun her kopyasında bağımlılık kurulumu ya da paket indirip çalıştırma YOKTUR",
+      "en": "The copy of the target is the target's code too: no dependency installation and no downloading-and-running of a package in the target or in any copy of it"
+    },
+    {
+      "id": "kurulum-gerektiren-poc-supphe",
+      "dosya": "SKILL.md",
+      "tr": "Kurulum gerektiren PoC `ŞÜPHE (ÇALIŞTIRILMADI)` yazılır, gerekçe \"kurulum yasak\"",
+      "en": "A PoC that needs an install is written as `SUSPECTED (NOT RUN)` with the reason \"install forbidden\""
+    },
+    {
+      "id": "d8-kurulum-gerektiren-poc-supphe",
       "dosya": "references/serit-D-yapayzeka.md",
-      "tr": "D8.6–D8.8 için hedefin HİÇBİR kodu çalıştırılmaz",
-      "en": "None of the target's code is run for D8.6–D8.8"
+      "tr": "D8.6–D8.8'de kurulum gerektiren PoC `ŞÜPHE (ÇALIŞTIRILMADI)` yazılır, gerekçe \"kurulum yasak\"",
+      "en": "In D8.6–D8.8 a PoC that needs an install is written as `SUSPECTED (NOT RUN)` with the reason \"install forbidden\""
+    },
+    {
+      "id": "kurulum-tek-istisna-yerel-kopya",
+      "dosya": "references/aktif-denetim.md",
+      "tr": "Kurulum yasağının (SKILL.md §1 K2) TEK istisnası bu kiptir",
+      "en": "This mode is the ONLY exception to the install ban (SKILL.md §1 K2)"
     }
   ]
 }

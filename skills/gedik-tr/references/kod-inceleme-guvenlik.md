@@ -98,7 +98,7 @@ find . \( -name sitecustomize.py -o -name usercustomize.py \) -not -path '*/.git
 ```
 
   **PoC (K2, çalıştırmadan):** `dosya:satır` + satırın ilk 120 karakteri + "yorumlayıcı açılışında çalışır" gerekçesi. **YASAK:**
-  o `site-packages`'i kullanan `python`/`pip` başlatmak (kancayı TETİKLER), `python -m site`, paketi kurmak ya da `import` etmek. **Arşiv içi:** wheel/sdist ve imaj tarball'ındaki `.pth` dosyaları çıkarılmadan okunur (`unzip -l <whl>` ile üye adları, `unzip -p <whl> '*.pth'` ile satırlar; sdist için `tar -tzf`/`tar -xzOf`); araç yoksa arşiv içi ÖLÇÜLEMEDİ. Komutlardaki `2>/dev/null` okunamayan dizinleri gizler: çıktı boşsa "temiz" DEĞİL, okunamayan dizin/arşiv varsa "ÖLÇÜLEMEDİ (<sebep>)" yazılır.
+  o `site-packages`'i kullanan `python`/`pip` başlatmak (kancayı TETİKLER), `python -m site`, paketi kurmak (SKILL.md §1 K2 kurulum yasağı) ya da `import` etmek. **Arşiv içi:** wheel/sdist ve imaj tarball'ındaki `.pth` dosyaları çıkarılmadan okunur (`unzip -l <whl>` ile üye adları, `unzip -p <whl> '*.pth'` ile satırlar; sdist için `tar -tzf`/`tar -xzOf`); araç yoksa arşiv içi ÖLÇÜLEMEDİ. Komutlardaki `2>/dev/null` okunamayan dizinleri gizler: çıktı boşsa "temiz" DEĞİL, okunamayan dizin/arşiv varsa "ÖLÇÜLEMEDİ (<sebep>)" yazılır.
 - **Typosquat / sahiplik:** yeni eklenen paket adı popüler bir paketin yazım varyantı mı;
   bakım terk edilmiş mi (son yayın tarihi)?
 - **Lisans:** kullanıcının kırmızı çizgisi — yeni bağımlılık = lisans + CVE kontrolü.

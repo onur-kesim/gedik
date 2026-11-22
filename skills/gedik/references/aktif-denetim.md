@@ -219,6 +219,8 @@ a challenge page (§1 rule 9: code, header, body marker or deviation; even on HT
 Purpose: do, on a local copy brought up from the REPO the owner provides, the active tests that cannot be opened on the live site or
 whose precondition is not written. The mode opens when the user provides the repo and asks for testing on a local copy; **the §1 gates
 (switch, `aktif:` precondition, window, budget) do NOT apply to the local copy** (what is touched is the user's own machine, not a live system).
+**This mode is the ONLY exception to the install ban (SKILL.md §1 K2):** if the user explicitly asks for a "local copy" and provides the owner's repo, the copy is installed and brought up with the repo's README/command (item 4);
+nothing installed in the copy is run against another target or outside the copy.
 
 1. **Location and isolation.** The copy is placed under `_calisma/yerel/<proje>-<koşu-id>/` (added to `.gitignore`); the owner's working
    copy is NOT written to. It binds to `127.0.0.1` only. A real `.env`/production secret is NOT copied: it is set up from `.env.example`
