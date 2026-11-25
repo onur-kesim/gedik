@@ -1,5 +1,18 @@
 # gedik
 
+**gedik finds the security breaches in your own code, build artifacts and configuration before an attacker does, and backs every finding with a PoC or marks it as not run.**
+
+![gedik auditing a test repository: measured triage, then numbered findings with severity](assets/gedik-demo.gif)
+
+*Replay of a real gedik v2.13.1 run on a synthetic test repository: lines copied verbatim from the run's report (written in Turkish because the prompt was Turkish), long lines shortened, sped up.*
+
+- **Triage first:** measures the architecture (network, server, database, auth, BaaS, AI, artifacts, CI) and opens only the lanes that apply.
+- **PoC or it is not a finding:** each finding comes with a PoC and a suggested patch, or is labeled `SUSPECTED (NOT RUN)`; what was not measured is reported as `NOT MEASURED`, never as clean.
+- **Lanes:** client/mobile, server/API/auth, BaaS/RLS (Supabase, Firebase), AI/LLM and in-repo agent config, shipped artifacts, CI/CD and supply chain, plus code review.
+- **Read-only:** it reports and never fixes; live targets only behind an authorization gate (passive audit on the owner's stated permission, conditional active tests).
+- **Two outputs:** a Markdown report and machine-readable `gedik-bulgular.json`.
+- **Measured detection:** 17/17 and 11/11 on two benchmark targets with 0 false positives (see [Benchmark](#benchmark-measured--2026-09-30)).
+
 **"Find it so it can be closed."** gedik breaks your own projects like an attacker and
 lists the breaches. Output: findings numbered `G-1`, `G-2`… each with a working PoC and
 a suggested patch. ("gedik" is Turkish for *a breach in a fortress wall.*)

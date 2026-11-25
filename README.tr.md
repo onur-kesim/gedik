@@ -1,5 +1,18 @@
 # gedik
 
+**gedik kendi kodundaki, sevk ettiğin artefaktlardaki ve yapılandırmandaki güvenlik gediklerini bir saldırgandan önce bulur; her bulguyu bir PoC ile kanıtlar ya da çalıştırılmadığını yazar.**
+
+![gedik bir test deposunu denetliyor: ölçülen triyaj, ardından şiddetiyle numaralı bulgular](assets/gedik-demo.gif)
+
+*Sentetik bir test deposunda gerçek bir gedik v2.13.1 koşusunun yeniden oynatımı: satırlar koşunun raporundan aynen alındı, uzun satırlar kısaltıldı, süre hızlandırıldı.*
+
+- **Önce triyaj:** mimariyi ölçer (ağ, sunucu, veritabanı, kimlik, BaaS, yapay zekâ, artefakt, CI) ve yalnız ilgili şeritleri açar.
+- **PoC yoksa bulgu yok:** her bulgu bir PoC ve yama önerisiyle gelir ya da `ŞÜPHE (ÇALIŞTIRILMADI)` etiketi alır; ölçülmeyen şey `ÖLÇÜLMEDİ` diye yazılır, asla "temiz" denmez.
+- **Şeritler:** istemci/mobil, sunucu/API/kimlik, BaaS/RLS (Supabase, Firebase), yapay zekâ/LLM ve depo içi ajan yapılandırması, sevk edilen artefakt, CI/CD ve tedarik zinciri, ayrıca kod incelemesi.
+- **Salt-okunur:** raporlar, asla düzeltmez; canlı hedefe yalnız yetki kapısı arkasında dokunur (sahibin iznine dair beyanla pasif denetim, şartlı aktif testler).
+- **İki çıktı:** Markdown rapor ve makine-okur `gedik-bulgular.json`.
+- **Ölçülmüş tespit:** iki benchmark hedefinde 17/17 ve 11/11, 0 yanlış pozitif ([Benchmark](#benchmark-ölçülmüş--2026-09-30)).
+
 **"Bulsun ki kapatılabilsin."** gedik kendi projelerini bir saldırgan gibi kırıp
 gedikleri listeler. Çıktı: `G-1`, `G-2`… numaralanan bulgular, her biri çalışan bir PoC
 ve yama önerisiyle gelir.
